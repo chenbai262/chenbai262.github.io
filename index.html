@@ -386,6 +386,61 @@
 
         @keyframes textLiquidShine { to { background-position: 200% center; } }
         @keyframes blink { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0.2; } }
+        /* 纯色时间模式附加样式 */
+        :root { --ui-time-color: #ffffff; }
+        .liquid-time-text.solid-color {
+            background: none !important;
+            color: var(--ui-time-color, #ffffff) !important;
+            -webkit-text-fill-color: var(--ui-time-color, #ffffff) !important;
+            -webkit-background-clip: border-box !important;
+            background-clip: border-box !important;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)) !important;
+            animation: none !important;
+        }
+        .liquid-time-text.solid-color + .liquid-date-text {
+            color: var(--ui-time-color, #ffffff) !important;
+            opacity: 0.9;
+        }
+
+        /* 纯色扁平图标与组件模式附加样式 */
+        body.flat-icons .app-icon {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+            border: 1px solid rgba(255,255,255,0.05) !important;
+        }
+        body.flat-icons .app-icon i { filter: none !important; }
+        body.flat-icons .dock { 
+            backdrop-filter: none !important; 
+            -webkit-backdrop-filter: none !important; 
+            box-shadow: none !important; 
+            border: 1px solid rgba(255,255,255,0.05) !important;
+        }
+        body.flat-icons .widget { 
+            backdrop-filter: none !important; 
+            -webkit-backdrop-filter: none !important; 
+            box-shadow: none !important; 
+            border: 1px solid rgba(255,255,255,0.05) !important;
+        }
+
+        /* 开启自定义颜色时强制覆盖内联样式 */
+        body.custom-icon-colors .app-icon,
+        body.custom-icon-colors .widget,
+        body.custom-icon-colors .dock {
+            background: var(--ui-icon-bg, rgba(255,255,255,0.15)) !important;
+            border: 1px solid var(--ui-icon-border, rgba(255,255,255,0.3)) !important;
+        }
+        body.custom-icon-colors .app-icon,
+        body.custom-icon-colors .app-icon i,
+        body.custom-icon-colors .app-label,
+        body.custom-icon-colors .widget,
+        body.custom-icon-colors .widget *,
+        body.custom-icon-colors .dock i {
+            color: var(--ui-icon-color, #ffffff) !important;
+        }
+
+
+
 
 
 
@@ -572,7 +627,8 @@
         .char-avatar-item:active { transform: scale(0.9); }
         .char-add-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--bg-panel); border: 2px dashed var(--text-sub); display: flex; justify-content: center; align-items: center; color: var(--text-sub); font-size: 24px; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; }
         .char-add-btn:active { transform: scale(0.9); }
-        .settings-content { padding-bottom: 80px; }
+               .settings-content { padding-bottom: 80px; flex-shrink: 0; }
+
         .settings-group-title { margin: 20px 20px 5px; color: var(--text-sub); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;}
         .settings-group { background: var(--bg-panel); border-radius: 16px; margin: 0 20px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .setting-item { padding: 16px; border-bottom: 0.5px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
@@ -861,6 +917,62 @@ input:checked + .slider:before {
         }
 
 
+        /* ========================================== */
+        /* 🌟 角色私密状态面板 - 柔和毛玻璃风 (支持自定义美化) */
+        /* ========================================== */
+        #char-status-panel-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%; 
+            background: rgba(0,0,0,0.4); z-index: 6000; display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        }
+        .char-status-panel {
+            width: 85%; max-width: 340px; 
+            background: var(--modal-bg, rgba(30, 30, 35, 0.85)); 
+            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
+            padding: 20px; font-family: -apple-system, "SF Pro Text", sans-serif; 
+            border-radius: 24px; color: var(--text-main);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+        }
+        .csp-header {
+            font-weight: bold; font-size: 16px; border-bottom: 0.5px solid var(--border-color); 
+            padding-bottom: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            letter-spacing: 1px; color: var(--text-main);
+        }
+        .csp-header i { 
+            cursor: pointer; background: rgba(255,255,255,0.1); width: 28px; height: 28px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 14px; transition: transform 0.1s, background 0.1s; 
+        }
+        .csp-header i:active { background: rgba(255,255,255,0.2); transform: scale(0.85); }
+        
+        .csp-list { max-height: 55vh; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
+        .csp-list::-webkit-scrollbar { width: 4px; display: block; }
+        .csp-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        
+        .csp-item { 
+            font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; 
+            background: var(--input-bg); padding: 12px; border-radius: 14px; 
+            border: 0.5px solid rgba(255,255,255,0.05); transition: background 0.2s;
+        }
+        .csp-item:active { background: rgba(255,255,255,0.1); }
+        .csp-label { 
+            font-weight: 600; color: var(--accent); margin-bottom: 6px; 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .csp-label::before {
+            content: ''; display: inline-block; width: 4px; height: 10px; 
+            background: var(--accent); border-radius: 2px;
+        }
+        .csp-val { 
+            font-weight: 400; color: var(--text-main); word-break: break-word; opacity: 0.95;
+        }
+
+
+
+
+
 
 
     </style>
@@ -990,14 +1102,15 @@ input:checked + .slider:before {
                 </div>
 
 
-
-
 <div class="app-container" onclick="openApp('beautify-app')">
     <div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);">
         <i class="fas fa-paint-brush"></i>
     </div>
     <div class="app-label">美化中心</div>
 </div>
+
+
+
 
                 <!-- 小恐龙游戏图标 -->
                 <div class="app-container" onclick="openApp('dino-app')">
@@ -1069,7 +1182,8 @@ input:checked + .slider:before {
                     <div class="chat-header-left">
                         <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; margin-bottom: 2px; cursor:pointer;" title="返回上一页"></i>
                         <div class="chat-info">
-    <h3 id="chat-name-display" onclick="changeRemark(event)" title="点击修改备注">AI <i class="fas fa-edit" style="font-size: 12px; color: var(--text-sub);"></i></h3>
+   <h3 id="chat-name-display" onmousedown="nameTouchStart(event)" onmouseup="nameTouchEnd(event)" ontouchstart="nameTouchStart(event)" ontouchend="nameTouchEnd(event)" title="点击查看状态，长按修改备注" style="cursor: pointer; user-select: none;">AI <i class="fas fa-id-badge" style="font-size: 14px; color: var(--accent); margin-left: 5px; pointer-events: none;"></i></h3>
+
     <p id="chat-status" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent);">在线</p>
 </div>
 
@@ -1132,6 +1246,26 @@ input:checked + .slider:before {
                                 <span class="slider"></span>
                             </label>
                         </div>
+
+
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                            <span class="setting-label">显示顶部状态栏 (时间/电量)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="global-statusbar-toggle" checked onchange="toggleStatusBar()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                            <span class="setting-label">显示底部导航条 (Home指示条)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="global-homebar-toggle" checked onchange="toggleHomeBar()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+
+
 
 
 
@@ -1407,16 +1541,102 @@ input:checked + .slider:before {
                 </div>
             </div>
 
+            <!-- 🌟 角色详细私密状态面板 (完全免疫美化) -->
+            <div id="char-status-panel-overlay" onclick="closeCharStatusPanel()">
+                <div class="char-status-panel" onclick="event.stopPropagation()">
+                    <div class="csp-header">
+                        <span><span id="csp-name">NAME</span>'S STATUS</span>
+                        <i class="fas fa-times" onclick="closeCharStatusPanel()"></i>
+                    </div>
+                    <div class="csp-list scrollable">
+                        <div class="csp-item"><span class="csp-label">GENITAL / 生殖状态</span> <span class="csp-val" id="csp-genital">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">PHYSIOLOGY / 生理反应</span> <span class="csp-val" id="csp-physio">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">OUTFIT / 衣着状态</span> <span class="csp-val" id="csp-outfit">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">LOCATION / 坐标地点</span> <span class="csp-val" id="csp-loc">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">INNER VOICE / 真实心声</span> <span class="csp-val" id="csp-voice">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">MUSIC / 正在听</span> <span class="csp-val" id="csp-music">尚未获取</span></div>
+                        <div class="csp-item"><span class="csp-label">WEBSITE / 浏览网页</span> <span class="csp-val" id="csp-web">尚未获取</span></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
   
-    
-   <!-- 美化中心 App -->
+    <!-- 美化中心 App -->
 <div id="beautify-app" class="app-view scrollable">
     <div class="settings-header glass-effect">
         <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
         全局美化中心
     </div>
+
+
     
+    <!-- ⚠️注意：就是这里之前漏掉了包裹层！现在补上了 -->
     <div class="settings-content">
+        
+        <!-- 新增时间小组件配置 -->
+        <div class="settings-group-title">时间小组件样式</div>
+        <div class="settings-group">
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">液态玻璃文字特效</span>
+                <label class="switch">
+                    <input type="checkbox" id="ui-liquid-toggle" checked onchange="updateUIParam('liquidTime', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">自定义时间颜色</span>
+                <input type="color" id="ui-time-color" value="#ffffff" onchange="updateUIParam('timeColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+            </div>
+            
+            <!-- 🌟新插入：图标与组件玻璃特效开关 -->
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+                <span class="setting-label">桌面图标/组件玻璃特效</span>
+                <label class="switch">
+                    <input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 🌟新增图标/组件自定义颜色 -->
+        <div class="settings-group-title">图标与组件颜色自定义</div>
+        <div class="settings-group">
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">开启自定义颜色</span>
+                <label class="switch">
+                    <input type="checkbox" id="ui-custom-color-toggle" onchange="updateUIParam('customIconColor', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">主体背景色</span>
+                <input type="color" id="ui-icon-bg" value="#ffffff" onchange="updateUIParam('iconBgColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">背景不透明度: <span id="val-icon-bg-opacity">0.15</span></span>
+                <input type="range" min="0" max="1" step="0.05" value="0.15" class="setting-input" oninput="updateUIParam('iconBgOpacity', this.value)">
+            </div>
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">内部图案及文字</span>
+                <input type="color" id="ui-icon-color" value="#ffffff" onchange="updateUIParam('iconColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+            </div>
+            <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <span class="setting-label">边缘线条颜色</span>
+                <input type="color" id="ui-icon-border" value="#ffffff" onchange="updateUIParam('iconBorderColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+            </div>
+        </div>
+
+
+
+
+
+
         <div class="settings-group-title">基础样式调节</div>
         <div class="settings-group">
             <div class="setting-item">
@@ -1456,9 +1676,13 @@ input:checked + .slider:before {
                 恢复默认
             </div>
         </div>
-    </div>
+
+    </div> <!-- 这个结束标签非常重要，它保证了可以滑动 -->
+    
     <div id="beauty-toast" class="beauty-toast">设置已持久化保存 ✓</div>
 </div>
+
+  
 
 
 <!-- 小恐龙 App -->
@@ -1655,7 +1879,7 @@ input:checked + .slider:before {
     }
 
     // --- 数据结构 ---
-       let globalAPI = { 
+        let globalAPI = { 
         apiType: 'siliconflow', 
         url: 'https://api.siliconflow.cn/v1', 
         key: '', 
@@ -1669,9 +1893,10 @@ input:checked + .slider:before {
         wallpaperMode: 'dark', 
         portraitLock: false,
         enableIsland: true,
-        uiZoom: 1  // <-- 这是新增的一行
+        uiZoom: 1,
+        enableStatusBar: true,  // <-- 新增
+        enableHomeBar: true     // <-- 新增
     };
-
   
 
     let globalUser = { name: "我", avatar: "https://ui-avatars.com/api/?name=Me&background=BDCBD2&color=fff", persona: "" };
@@ -1718,10 +1943,56 @@ input:checked + .slider:before {
         localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
     }
 
+
+
+    function toggleStatusBar() {
+        globalAPI.enableStatusBar = document.getElementById('global-statusbar-toggle').checked;
+        applyUIBarsState();
+        localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+    }
+
+    function toggleHomeBar() {
+        globalAPI.enableHomeBar = document.getElementById('global-homebar-toggle').checked;
+        applyUIBarsState();
+        localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+    }
+
+    function applyUIBarsState() {
+        const statusBar = document.getElementById('sys-status-bar');
+        const homeBarLine = document.querySelector('.home-bar');
+        
+        // 状态栏直接隐藏
+        if (statusBar) statusBar.style.display = globalAPI.enableStatusBar !== false ? 'flex' : 'none';
+        
+        // 导航条只隐藏线，保留外层包裹框，防止“上滑返回”手势失效
+        if (homeBarLine) homeBarLine.style.display = globalAPI.enableHomeBar !== false ? 'block' : 'none';
+    }
+
+
+
+
+
+
     function applyIslandState() {
         const island = document.getElementById('dynamic-island');
         if (island) island.style.display = globalAPI.enableIsland ? 'flex' : 'none';
     }
+
+        // --- 恢复状态栏与导航条开关 ---
+        if(typeof globalAPI.enableStatusBar === 'undefined') globalAPI.enableStatusBar = true;
+        if(typeof globalAPI.enableHomeBar === 'undefined') globalAPI.enableHomeBar = true;
+        
+        const sbToggle = document.getElementById('global-statusbar-toggle');
+        if(sbToggle) sbToggle.checked = globalAPI.enableStatusBar;
+        
+        const hbToggle = document.getElementById('global-homebar-toggle');
+        if(hbToggle) hbToggle.checked = globalAPI.enableHomeBar;
+        
+        applyUIBarsState();
+
+
+
+
 
     async function togglePortraitLock() {
         globalAPI.portraitLock = !globalAPI.portraitLock;
@@ -2274,7 +2545,8 @@ input:checked + .slider:before {
         document.getElementById('cfg-user-text-color').value = char.userTextColor;
         document.getElementById('cfg-prompt').value = char.prompt;
         
-        document.getElementById('chat-name-display').innerHTML = `${char.name} <i class="fas fa-edit" style="font-size: 12px; color: var(--text-sub);"></i>`; 
+       document.getElementById('chat-name-display').innerHTML = `${char.name} <i class="fas fa-id-badge" style="font-size: 14px; color: var(--accent); margin-left: 5px; pointer-events: none;"></i>`;
+
 document.getElementById('chat-status').innerText = char.status || "在线";
 
 
@@ -2640,7 +2912,21 @@ document.getElementById('chat-status').innerText = char.status || "在线";
             builtInRules += worldbookInjection;
         }
 
-        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + statusInjectBlock + builtInRules }];
+
+
+
+
+// 👇 插入到 let apiMessages = ... 的上一行
+        let detailStatusRules = `\n\n【绝密指令：实时状态面板】
+为了维持沉浸感，你必须在每一次回复的末尾，强制输出一段隐藏代码来更新你的私密状态。
+格式严格如下（使用竖线 | 分隔，不要换行，不要遗漏任何一项）：
+$$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址|真实心声|衣着状态|当前地点$$
+示例：$$PANEL:微微湿润|心跳加速，体温上升|Lana Del Rey - Video Games|www.amazon.com/lingerie|他怎么还不主动一点呢...|黑色丝质吊带裙，肩带滑落|卧室柔软的大床上$$`;
+
+        // ⚠️ 把原来的 let apiMessages = [...] 替换为带有 detailStatusRules 的这行：
+        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + statusInjectBlock + builtInRules + detailStatusRules }];
+
+ 
 
         const rawHistory = messageHistory.map(m => {
             if (m.role === 'system' || m.msgType === 'system' || m.msgType === 'transfer-claimed') {
@@ -2702,17 +2988,25 @@ document.getElementById('chat-status').innerText = char.status || "在线";
                 }
             }
 
-            let reply = fullReply || "（空白）";
+                      let reply = fullReply || "（空白）";
 
-            reply = reply.replace(/$$STICKER:(.+?)$$/g, (match, url) => `[MSG][STICKER:${url}][MSG]`);
-            reply = reply.replace(/$$NUDGE$$/g, () => `[MSG][NUDGE][MSG]`);
-            reply = reply.replace(/$$TRANSFER:([\d.]+)$$/g, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
-                        // 捕获 AI 备忘录指令
-            reply = reply.replace(/\$\$MEMO_ADD:(.+?)\$\$/g, (match, text) => `[MSG][MEMO_ADD:${text}][MSG]`);
-            reply = reply.replace(/\$\$MEMO_TOGGLE:(\d+)\$\$/g, (match, idx) => `[MSG][MEMO_TOGGLE:${idx}][MSG]`);
+            // --- 👑 终极高容错拦截指令正则表达式 (修复未转义的$、防丢失$$结尾、防中文冒号、兼容大小写与换行) ---
+            reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
+            reply = reply.replace(/\$\$\s*NUDGE(?:\$\$|$)/gi, () => `[MSG][NUDGE][MSG]`);
+            reply = reply.replace(/\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
+            
+            // 捕获 AI 备忘录指令
+            reply = reply.replace(/\$\$\s*MEMO_ADD(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][MEMO_ADD:${text}][MSG]`);
+            reply = reply.replace(/\$\$\s*MEMO_TOGGLE(?:[:：\s]*)(\d+)(?:\$\$|$)/gi, (match, idx) => `[MSG][MEMO_TOGGLE:${idx}][MSG]`);
 
             // 捕获 AI 状态更新指令
-            reply = reply.replace(/\$\$STATUS:(.+?)\$\$/g, (match, statusText) => `[MSG][STATUS:${statusText}][MSG]`);
+            reply = reply.replace(/\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, statusText) => `[MSG][STATUS:${statusText}][MSG]`);
+
+            // 捕获 AI 详细状态面板更新指令 (高强度容错，哪怕AI没写完闭合符号也能拦截，绝不漏出脏数据)
+            reply = reply.replace(/\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/gi, (match, panelData) => `[MSG][PANEL:${panelData}][MSG]`);
+
+
+
 
 
             // --- 强化聊天气泡强制分条逻辑 (完整句 + 随机活人感版) ---
@@ -2837,6 +3131,37 @@ document.getElementById('chat-status').innerText = char.status || "在线";
                     addMessageToUI('system', `${activeChar.name} 将状态更新为：[ ${newStatus} ]`, false, null, `[系统交互：${activeChar.name} 成功更新了个人状态]`);
                 }
 
+                             // 🌟 拦截并更新角色的绝密状态面板 (高容错版)
+                else if (msgs[i].startsWith('[PANEL:') && msgs[i].endsWith(']')) {
+                    // 强制去掉内部换行符，防止渲染断层
+                    const dataStr = msgs[i].substring(7, msgs[i].length - 1).replace(/\n/g, ' '); 
+                    const parts = dataStr.split('|');
+                    
+                    // 去除 parts.length >= 7 的死板限制，有几个算几个！
+                    activeChar.detailStatus = {
+                        genital: parts[0] ? parts[0].trim() : '保密',
+                        physio: parts[1] ? parts[1].trim() : '保密',
+                        music: parts[2] ? parts[2].trim() : '保密',
+                        web: parts[3] ? parts[3].trim() : '保密',
+                        voice: parts[4] ? parts[4].trim() : '保密',
+                        outfit: parts[5] ? parts[5].trim() : '保密',
+                        loc: parts[6] ? parts[6].trim() : '保密'
+                    };
+                    saveAllCharacters(); // 保存入库
+                    
+                    // 静默刷新 UI（如果用户正好开着面板，就能看到文字在跳动更新）
+                    const panelOverlay = document.getElementById('char-status-panel-overlay');
+                    if(panelOverlay && panelOverlay.style.display === 'flex') {
+                        updateCharStatusPanelUI(); 
+                    }
+                }
+
+
+
+
+
+
+
 
                 else addMessageToUI('char', msgs[i]);
             }
@@ -2895,6 +3220,60 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         selectedMsgIndex = null;
     }
     function cancelQuote() { quotedMessageText = null; document.getElementById('quote-bar').style.display = 'none'; }
+
+    // ==========================================
+    // 🌟 角色私密状态面板逻辑 (精准分离长按/短按)
+    // ==========================================
+    let namePressTimer;
+    let nameHasPressed = false;
+
+    function nameTouchStart(e) {
+        if (e.type !== 'touchstart' && e.type !== 'mousedown') return;
+        nameHasPressed = false;
+        namePressTimer = setTimeout(() => {
+            nameHasPressed = true;
+            changeRemark(e); // 长按触发修改备注
+        }, 500);
+    }
+
+    function nameTouchEnd(e) {
+        clearTimeout(namePressTimer);
+        if (!nameHasPressed) {
+            if(e.cancelable) e.preventDefault();
+            openCharStatusPanel(); // 短按触发打开面板
+        }
+    }
+
+    function updateCharStatusPanelUI() {
+        const char = characters.find(c => c.id === activeCharId);
+        if (!char) return;
+        document.getElementById('csp-name').innerText = char.name;
+        // 如果当前角色没有记录过，则显示默认值
+        const ds = char.detailStatus || { genital:"尚未获取", physio:"尚未获取", music:"尚未获取", web:"尚未获取", voice:"尚未获取", outfit:"尚未获取", loc:"尚未获取" };
+        document.getElementById('csp-genital').innerText = ds.genital;
+        document.getElementById('csp-physio').innerText = ds.physio;
+        document.getElementById('csp-music').innerText = ds.music;
+        document.getElementById('csp-web').innerText = ds.web;
+        document.getElementById('csp-voice').innerText = ds.voice;
+        document.getElementById('csp-outfit').innerText = ds.outfit;
+        document.getElementById('csp-loc').innerText = ds.loc;
+    }
+
+    function openCharStatusPanel() {
+        updateCharStatusPanelUI();
+        document.getElementById('char-status-panel-overlay').style.display = 'flex';
+    }
+    
+    function closeCharStatusPanel() {
+        document.getElementById('char-status-panel-overlay').style.display = 'none';
+    }
+
+
+
+
+
+
+
 
     // --- 8. 后台记忆 ---
     function checkAndRunBackgroundTasks(activeChar) { if (messageHistory.length > 0 && messageHistory.length % 10 === 0) generateAutoDiary(activeChar, messageHistory.slice(-10)); }
@@ -3225,9 +3604,17 @@ document.getElementById('chat-status').innerText = char.status || "在线";
             });
         });
     });
-
     // --- 全局美化参数逻辑 ---
-    let uiSettings = { iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, cssBubble: "", cssInputBar: "", cssLayout: "" };
+    let uiSettings = { iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, iconColor: "#ffffff", iconBorderColor: "#ffffff" };
+
+    function hexToRgba(hex, opacity) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
 
     function updateUIParam(key, value) {
         uiSettings[key] = value;
@@ -3244,11 +3631,48 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         root.style.setProperty('--ui-icon-scale', uiSettings.iconScale || 1);
         root.style.setProperty('--ui-bubble-radius', `${uiSettings.bubbleRadius}px`);
         root.style.setProperty('--ui-bubble-opacity', uiSettings.bubbleOpacity || 0.92);
+        
+        // 应用时间颜色和特效
+        root.style.setProperty('--ui-time-color', uiSettings.timeColor || '#ffffff');
+        const timeTextEl = document.getElementById('lq-time');
+        if(timeTextEl) {
+            if(uiSettings.liquidTime !== false) {
+                timeTextEl.classList.remove('solid-color');
+            } else {
+                timeTextEl.classList.add('solid-color');
+            }
+        }
 
+        // 应用图标液态玻璃开关
+        if(uiSettings.liquidIcon !== false) {
+            document.body.classList.remove('flat-icons');
+        } else {
+            document.body.classList.add('flat-icons');
+        }
+
+        // 🌟应用自定义颜色
+        if (uiSettings.customIconColor) {
+            document.body.classList.add('custom-icon-colors');
+            root.style.setProperty('--ui-icon-bg', hexToRgba(uiSettings.iconBgColor || '#ffffff', uiSettings.iconBgOpacity !== undefined ? uiSettings.iconBgOpacity : 0.15));
+            root.style.setProperty('--ui-icon-color', uiSettings.iconColor || '#ffffff');
+            root.style.setProperty('--ui-icon-border', uiSettings.iconBorderColor || '#ffffff');
+        } else {
+            document.body.classList.remove('custom-icon-colors');
+        }
+
+        // 👇 修复了单引号丢失的问题，并补全了后续闭合逻辑
         let styleTag = document.getElementById('user-injected-style');
-        if(!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'user-injected-style'; document.head.appendChild(styleTag); }
+        if(!styleTag) { 
+            styleTag = document.createElement('style'); 
+            styleTag.id = 'user-injected-style'; 
+            document.head.appendChild(styleTag); 
+        }
         styleTag.innerHTML = (uiSettings.cssLayout || "") + "\n" + (uiSettings.cssBubble || "") + "\n" + (uiSettings.cssInputBar || "");
     }
+
+   
+  
+      
 
     function finalSaveBeautify() {
         const btn = document.getElementById('save-beauty-btn');
@@ -3273,26 +3697,71 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         if(confirm) { localStorage.removeItem('ai_os_ui_settings'); location.reload(); }
     }
 
-    function initBeautify() {
+             function initBeautify() {
         const saved = localStorage.getItem('ai_os_ui_settings');
         if(saved) uiSettings = Object.assign(uiSettings, JSON.parse(saved));
+        
+        // 1. 兼容旧数据，防止新加的功能取不到值报错
+        if(typeof uiSettings.liquidTime === 'undefined') uiSettings.liquidTime = true;
+        if(typeof uiSettings.liquidIcon === 'undefined') uiSettings.liquidIcon = true;
+        if(typeof uiSettings.customIconColor === 'undefined') uiSettings.customIconColor = false;
+        if(typeof uiSettings.iconBgOpacity === 'undefined') uiSettings.iconBgOpacity = 0.15;
+        if(!uiSettings.timeColor) uiSettings.timeColor = "#ffffff";
+        if(!uiSettings.iconBgColor) uiSettings.iconBgColor = "#ffffff";
+        if(!uiSettings.iconColor) uiSettings.iconColor = "#ffffff";
+        if(!uiSettings.iconBorderColor) uiSettings.iconBorderColor = "#ffffff";
+
+        // 2. 将数据应用到界面
         applyUISettings();
+
+        // 3. 动态回显普通的滑动条和数值
         Object.keys(uiSettings).forEach(key => {
             const displayId = `val-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
             const displayEl = document.getElementById(displayId);
             if(displayEl) displayEl.innerText = uiSettings[key];
             const input = document.querySelector(`input[oninput*="${key}"]`);
-            if(input) input.value = uiSettings[key];
+            if(input && input.type !== 'checkbox' && input.type !== 'color') input.value = uiSettings[key];
         });
+        
+        // 4. 单独回显所有的开关(Checkbox)和颜色拾取器(Color)
+        const liquidToggle = document.getElementById('ui-liquid-toggle');
+        if(liquidToggle) liquidToggle.checked = uiSettings.liquidTime;
+        
+        const timeColorPicker = document.getElementById('ui-time-color');
+        if(timeColorPicker) timeColorPicker.value = uiSettings.timeColor;
+        
+        const liquidIconToggle = document.getElementById('ui-liquid-icon-toggle');
+        if(liquidIconToggle) liquidIconToggle.checked = uiSettings.liquidIcon;
+
+        const customColorToggle = document.getElementById('ui-custom-color-toggle');
+        if(customColorToggle) customColorToggle.checked = uiSettings.customIconColor;
+
+        const iconBgPicker = document.getElementById('ui-icon-bg');
+        if(iconBgPicker) iconBgPicker.value = uiSettings.iconBgColor;
+
+        const iconColorPicker = document.getElementById('ui-icon-color');
+        if(iconColorPicker) iconColorPicker.value = uiSettings.iconColor;
+
+        const iconBorderPicker = document.getElementById('ui-icon-border');
+        if(iconBorderPicker) iconBorderPicker.value = uiSettings.iconBorderColor;
+
+        // 5. 回显底部的自定义 CSS 文本框
         if(document.getElementById('css-bubble-input')) document.getElementById('css-bubble-input').value = uiSettings.cssBubble || "";
         if(document.getElementById('css-inputbar-input')) document.getElementById('css-inputbar-input').value = uiSettings.cssInputBar || "";
         if(document.getElementById('css-layout-input')) document.getElementById('css-layout-input').value = uiSettings.cssLayout || "";
+        
+        // 6. 环境感知开关回显
         if(typeof globalAPI.enableEnvSense === 'undefined') globalAPI.enableEnvSense = true;
         const envToggleEl = document.getElementById('global-env-toggle');
         if(envToggleEl) envToggleEl.checked = globalAPI.enableEnvSense;
-
-
     }
+
+    function toggleEnvSense() {
+        globalAPI.enableEnvSense = document.getElementById('global-env-toggle').checked;
+        localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+    }
+
+
     function toggleEnvSense() {
         globalAPI.enableEnvSense = document.getElementById('global-env-toggle').checked;
         localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
