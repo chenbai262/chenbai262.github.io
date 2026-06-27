@@ -25,6 +25,8 @@
     --ui-bubble-opacity: 1;
     --ui-grid-gap: 15px;
     --ui-dock-height: 90px;
+    --ui-time-size: 72px; /* 👈 新增：液态时间组件的基础数字大小 */
+    --ui-time-height: 140px; /* 👈 新增：液态时间组件的外框高度 */
 
     /* ！！！缺失的深色模式核心变量补回 ！！！ */
     --bg-base: #121212;
@@ -330,30 +332,52 @@
         #os-home { padding: 68px 20px 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; height: 100%; align-content: start; background: transparent !important; }
         .widget { background: rgba(255,255,255,0.15); border-radius: 22px; padding: 15px; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
-        /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号) --- */
+                /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号/动态大小) --- */
         .widget-liquid-time {
-            grid-column: span 4; /* 中号尺寸，占满一排 */
-            height: 140px;
+            grid-column: span 4; 
+            height: var(--ui-time-height, 140px); /* 支持动态高度 */
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: transparent; /* 纯透明底 */
-            border: 0.5px solid rgba(255, 255, 255, 0.15); /* 极细清透边框 */
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03); /* 微弱的内部边缘高光 */
+            background: transparent; 
+            border: 0.5px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03); 
             border-radius: 28px;
             z-index: 1;
+            transition: height 0.3s ease; /* 调节大小的过渡动画 */
         }
 
         /* 核心黑科技：液态玻璃质感数字字体 */
         .liquid-time-text {
-            font-size: 72px;
-            font-weight: 200; /* 细字体更能体现高级玻璃感 */
+            font-size: var(--ui-time-size, 72px); /* 支持动态字体大小 */
+            font-weight: 200; 
             letter-spacing: 2px;
             line-height: 1;
             margin-bottom: 5px;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            transition: font-size 0.3s ease; /* 调节大小的过渡动画 */
+            /* ... 下方保持原有的渐变、动画和阴影属性 ... */
+            background: linear-gradient(110deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 75%, rgba(255,255,255,0.9) 100%);
+            background-size: 200% auto;
+            color: transparent; 
+            -webkit-background-clip: text; 
+            background-clip: text;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15)) drop-shadow(0 -1px 1px rgba(255,255,255,0.3));
+            animation: textLiquidShine 6s linear infinite;
+        }
+
+        /* 响应式调整逻辑（小屏下同样遵循比例） */
+        @media screen and (max-height: 800px) {
+            .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.8) !important; }
+            .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.8) !important; }
+        }
+        @media screen and (max-height: 650px) {
+            .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.65) !important; }
+            .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.65) !important; }
+        }
+
             
             /* 流动高光渐变色 */
             background: linear-gradient(
@@ -1593,6 +1617,15 @@ input:checked + .slider:before {
                 <span class="setting-label">自定义时间颜色</span>
                 <input type="color" id="ui-time-color" value="#ffffff" onchange="updateUIParam('timeColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
             </div>
+
+<!-- 🌟👇新增：时间组件大小自由调节控制条 -->
+            <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
+                <span class="setting-label">时间尺寸: <span id="val-time-size">72</span>px</span>
+                <input type="range" min="40" max="150" step="2" value="72" class="setting-input" oninput="updateUIParam('timeSize', this.value)">
+            </div>
+            <!-- 🌟👆新增结束 -->
+
+
             
             <!-- 🌟新插入：图标与组件玻璃特效开关 -->
             <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
@@ -3131,30 +3164,48 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
                     addMessageToUI('system', `${activeChar.name} 将状态更新为：[ ${newStatus} ]`, false, null, `[系统交互：${activeChar.name} 成功更新了个人状态]`);
                 }
 
-                             // 🌟 拦截并更新角色的绝密状态面板 (高容错版)
+                                             // 🌟 拦截并更新角色的绝密状态面板 (终极高容错版)
                 else if (msgs[i].startsWith('[PANEL:') && msgs[i].endsWith(']')) {
-                    // 强制去掉内部换行符，防止渲染断层
+                    // 1. 强制去掉换行符
                     const dataStr = msgs[i].substring(7, msgs[i].length - 1).replace(/\n/g, ' '); 
-                    const parts = dataStr.split('|');
                     
-                    // 去除 parts.length >= 7 的死板限制，有几个算几个！
-                    activeChar.detailStatus = {
-                        genital: parts[0] ? parts[0].trim() : '保密',
-                        physio: parts[1] ? parts[1].trim() : '保密',
-                        music: parts[2] ? parts[2].trim() : '保密',
-                        web: parts[3] ? parts[3].trim() : '保密',
-                        voice: parts[4] ? parts[4].trim() : '保密',
-                        outfit: parts[5] ? parts[5].trim() : '保密',
-                        loc: parts[6] ? parts[6].trim() : '保密'
+                    // 2. 兼容中英文竖线 (AI极爱用中文竖线导致分割失败)
+                    let parts = dataStr.split(/\||｜/);
+                    
+                    // 3. 剥离AI喜欢自作主张加的前缀 (例如 "衣着状态：睡衣" -> "睡衣")
+                    const cleanPart = (index) => {
+                        if (!parts[index] || !parts[index].trim()) return '保密';
+                        return parts[index].replace(/^.*?[:：]/, '').trim();
                     };
+
+                    activeChar.detailStatus = {
+                        genital: cleanPart(0),
+                        physio: cleanPart(1),
+                        music: cleanPart(2),
+                        web: cleanPart(3),
+                        voice: cleanPart(4),
+                        outfit: cleanPart(5),
+                        loc: cleanPart(6)
+                    };
+
+                    // 4. 极致容错：如果 AI 连竖线都懒得加，就把整段话当成真实心声，其他标未知
+                    if (parts.length === 1 && dataStr.trim() !== "") {
+                        activeChar.detailStatus = {
+                            genital: '未知', physio: '未知', music: '未知', web: '未知',
+                            voice: dataStr.replace(/^.*?[:：]/, '').trim(), 
+                            outfit: '未知', loc: '未知'
+                        };
+                    }
+
                     saveAllCharacters(); // 保存入库
                     
-                    // 静默刷新 UI（如果用户正好开着面板，就能看到文字在跳动更新）
+                    // 静默刷新 UI
                     const panelOverlay = document.getElementById('char-status-panel-overlay');
                     if(panelOverlay && panelOverlay.style.display === 'flex') {
                         updateCharStatusPanelUI(); 
                     }
                 }
+
 
 
 
@@ -3604,8 +3655,15 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
             });
         });
     });
-    // --- 全局美化参数逻辑 ---
-    let uiSettings = { iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, iconColor: "#ffffff", iconBorderColor: "#ffffff" };
+        // --- 全局美化参数逻辑 ---
+    let uiSettings = { 
+        iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, 
+        cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
+        liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
+        iconColor: "#ffffff", iconBorderColor: "#ffffff",
+        timeSize: 72 // 👈 加上这个默认值
+    };
+
 
     function hexToRgba(hex, opacity) {
         hex = hex.replace('#', '');
@@ -3701,8 +3759,10 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
         const saved = localStorage.getItem('ai_os_ui_settings');
         if(saved) uiSettings = Object.assign(uiSettings, JSON.parse(saved));
         
-        // 1. 兼容旧数据，防止新加的功能取不到值报错
+                // 1. 兼容旧数据，防止新加的功能取不到值报错
         if(typeof uiSettings.liquidTime === 'undefined') uiSettings.liquidTime = true;
+        if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 72; // 👈 加上这行防御空数据
+
         if(typeof uiSettings.liquidIcon === 'undefined') uiSettings.liquidIcon = true;
         if(typeof uiSettings.customIconColor === 'undefined') uiSettings.customIconColor = false;
         if(typeof uiSettings.iconBgOpacity === 'undefined') uiSettings.iconBgOpacity = 0.15;
