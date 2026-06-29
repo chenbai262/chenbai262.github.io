@@ -65,13 +65,7 @@
     transition: all 0.2s ease;
 }
 
-/* 修复：保留短信特有的尖角，但其余圆角随变量动 */
-.msg.char { 
-    border-top-left-radius: 1px !important; /* 尖角保留，增加辨识度 */
-}
-.msg.user { 
-    border-top-right-radius: 1px !important; /* 尖角保留 */
-}
+
 
 /* 提示交互样式：保存成功后的 Toast */
 .beauty-toast {
@@ -1415,6 +1409,65 @@ input:checked + .slider:before {
         .moments-comment-bar input { flex: 1; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: var(--text-main); outline: none; font-size: 15px; }
         .moments-comment-bar button { background: #07c160; color: #fff; border: none; border-radius: 8px; padding: 0 18px; font-weight: bold; font-size: 15px; cursor: pointer; }
         .moments-comment-bar button:active { transform: scale(0.95); }
+
+
+
+                                      /* ============ 极度圆润、无尾巴、防包裹版气泡 ============ */
+
+/* 彻底隐藏任何可能由旧代码生成的三角小尾巴 */
+html body #chat-app #chat-container .msg::before,
+html body #chat-app #chat-container .msg::after {
+    display: none !important;
+}
+
+/* 1. 强制缩小所有聊天条目的整体间距（极限压缩） */
+html body #chat-app #chat-container .msg-wrapper {
+    margin-bottom: 4px !important; 
+    gap: 6px !important; 
+}
+
+/* 2. 强制接管气泡基础样式（极度圆润，全方位 26px 弧度无死角） */
+html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+    box-shadow: none !important;
+    border-radius: 26px !important; 
+    padding: 10px 16px !important; 
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    font-weight: 400 !important;
+}
+
+/* 角色气泡：高级浅灰，黑字 */
+html body #chat-app #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+    background: #F4F4F4 !important;
+    color: #111111 !important;
+}
+
+/* 用户气泡：深邃纯黑，白字 */
+html body #chat-app #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+    background: #151515 !important;
+    color: #FFFFFF !important;
+}
+
+/* 系统提示文字极致简化且压缩间距 */
+html body #chat-app .ins-sys-msg {
+    background: #FAFAFA !important;
+    color: #888 !important;
+    border: 1px solid #EEEEEE !important;
+    box-shadow: none !important;
+    margin: 6px auto !important; 
+}
+
+/* 气泡下方时间标签收缩 */
+html body #chat-app .msg-time {
+    color: #AAAAAA !important;
+    font-weight: 500 !important;
+    margin-top: 2px !important; 
+    font-size: 9px !important;
+}
+
 
 
 
