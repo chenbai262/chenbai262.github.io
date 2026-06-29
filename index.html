@@ -96,6 +96,7 @@
     height: 100%; align-content: start; background: transparent !important; 
 }
 
+
 /* Dock 栏高度引用 */
 .dock { 
     position: absolute; bottom: 35px; left: 15px; right: 15px; 
@@ -328,11 +329,35 @@
         .home-bar { width: 130px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 10px; transition: background 0.4s ease; }
 
 
-        /* --- 主屏幕 OS Home --- */
-        #os-home { padding: 68px 20px 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; height: 100%; align-content: start; background: transparent !important; }
+                  /* --- 主屏幕 OS Home 及分页布局 --- */
+        #os-home { 
+            display: flex; overflow-x: auto; overflow-y: hidden; 
+            scroll-snap-type: x mandatory; scrollbar-width: none; 
+            height: 100%; width: 100%; background: transparent !important; 
+            scroll-behavior: smooth;
+        }
+        #os-home::-webkit-scrollbar { display: none; }
+        
+               .home-page { 
+            min-width: 100%; flex-shrink: 0; scroll-snap-align: center; 
+            /* 👇 修改这里：顶部留白从 68px 改为 45px，整体往上挪 */
+            padding: 45px 20px 140px; display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: var(--ui-grid-gap) !important; align-content: start; 
+        }
+
+        
+        /* 页面指示器 (小圆点) */
+        .page-dots {
+            position: absolute; bottom: 135px; left: 0; width: 100%; 
+            display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none;
+        }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
+        .dot.active { background: #fff; width: 14px; border-radius: 4px; }
+
         .widget { background: rgba(255,255,255,0.15); border-radius: 22px; padding: 15px; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
-                /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号/动态大小) --- */
+        /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号/动态大小) --- */
         .widget-liquid-time {
             grid-column: span 4; 
             height: var(--ui-time-height, 140px); /* 支持动态高度 */
@@ -358,26 +383,6 @@
             margin-bottom: 5px;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             transition: font-size 0.3s ease; /* 调节大小的过渡动画 */
-            /* ... 下方保持原有的渐变、动画和阴影属性 ... */
-            background: linear-gradient(110deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 75%, rgba(255,255,255,0.9) 100%);
-            background-size: 200% auto;
-            color: transparent; 
-            -webkit-background-clip: text; 
-            background-clip: text;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15)) drop-shadow(0 -1px 1px rgba(255,255,255,0.3));
-            animation: textLiquidShine 6s linear infinite;
-        }
-
-        /* 响应式调整逻辑（小屏下同样遵循比例） */
-        @media screen and (max-height: 800px) {
-            .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.8) !important; }
-            .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.8) !important; }
-        }
-        @media screen and (max-height: 650px) {
-            .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.65) !important; }
-            .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.65) !important; }
-        }
-
             
             /* 流动高光渐变色 */
             background: linear-gradient(
@@ -389,11 +394,9 @@
                 rgba(255,255,255,0.9) 100%
             );
             background-size: 200% auto;
-            color: transparent; /* 隐藏原生文字颜色 */
-            -webkit-background-clip: text; /* 将背景裁剪到文字上 */
+            color: transparent; 
+            -webkit-background-clip: text; 
             background-clip: text;
-            
-            /* 玻璃厚度与折射阴影 */
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15)) drop-shadow(0 -1px 1px rgba(255,255,255,0.3));
             animation: textLiquidShine 6s linear infinite;
         }
@@ -410,6 +413,7 @@
 
         @keyframes textLiquidShine { to { background-position: 200% center; } }
         @keyframes blink { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0.2; } }
+        
         /* 纯色时间模式附加样式 */
         :root { --ui-time-color: #ffffff; }
         .liquid-time-text.solid-color {
@@ -424,6 +428,50 @@
         .liquid-time-text.solid-color + .liquid-date-text {
             color: var(--ui-time-color, #ffffff) !important;
             opacity: 0.9;
+        }
+
+        /* 响应式调整逻辑（小屏下同样遵循比例） */
+            /* --- 响应式紧凑布局：当屏幕高度小于 800px 时触发 --- */
+@media screen and (max-height: 800px) {
+    :root {
+        --ui-grid-gap: 10px;        /* 缩小网格间距 */
+        --ui-icon-scale: 0.88;      /* 图标整体缩小 12% */
+    }
+    
+    /* 缩小顶部液态时间小组件的高度 */
+    .widget-liquid-time { 
+        height: 110px !important; 
+    }
+    .liquid-time-text { 
+        font-size: 54px !important; 
+    }
+
+    /* 👇 核心修复：把外框 #os-home 改成了 .home-page，顶部进一步往上挪，并保证底部留白防遮挡 */
+    .home-page { 
+        padding: 35px 15px 120px !important; 
+    }
+
+    /* 缩小备忘录高度防止溢出 */
+    .widget-memo {
+        min-height: 110px !important;
+        padding: 12px !important;
+    }
+    .memo-list {
+        max-height: 100px !important;
+    }
+}
+        
+    
+    /* 缩小顶部液态时间小组件的高度 */
+    .widget-liquid-time { 
+        height: 110px !important; 
+    }
+    .liquid-time-text { 
+        font-size: 54px !important; 
+    }
+        @media screen and (max-height: 650px) {
+            .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.65) !important; }
+            .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.65) !important; }
         }
 
         /* 纯色扁平图标与组件模式附加样式 */
@@ -463,11 +511,6 @@
             color: var(--ui-icon-color, #ffffff) !important;
         }
 
-
-
-
-
-
         .widget-calendar { grid-column: span 2; display: flex; flex-direction: column; justify-content: space-between; background: rgba(189, 203, 210, 0.3); }
         .widget-weather { grid-column: span 2; display: flex; flex-direction: column; justify-content: center; background: rgba(255, 255, 255, 0.12); color: var(--text-main); border: 0.5px solid rgba(255, 255, 255, 0.2); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3); }
 
@@ -481,9 +524,7 @@
         .memo-checkbox.checked { background: var(--accent); }
         .memo-checkbox.checked::after { content: '✓'; color: #000; font-size: 12px; font-weight: bold; }
         .memo-text { flex: 1; font-size: 13px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
-
-
-        
+    
         
         /* 核心修改：极致简约清冷、清透液态粉灰玻璃图标 */
         .app-icon { 
@@ -613,6 +654,116 @@
         .sticker-item:active { transform: scale(0.95); }
         .sticker-add { display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.05); border: 1px dashed var(--text-sub); border-radius: 12px; font-size: 28px; color: var(--text-sub); cursor: pointer; aspect-ratio: 1; transition: transform 0.1s;}
         .sticker-add:active { transform: scale(0.95); }
+
+                                        
+                                                /* --- 聊天底部更多功能面板 (+) --- */
+        #tools-panel { 
+            display: none; position: absolute; bottom: 100%; left: 0; right: 0; 
+            background: var(--bg-glass); border-top: 0.5px solid var(--border-color); 
+            padding: 20px 25px; z-index: 5; grid-template-columns: repeat(4, 1fr); gap: 15px; 
+            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
+        }
+        .tool-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+        .tool-icon-wrap { 
+            width: 55px; height: 55px; border-radius: 16px; background: var(--bg-panel); 
+            display: flex; justify-content: center; align-items: center; font-size: 24px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 0.5px solid var(--border-color); 
+            transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .tool-item:active .tool-icon-wrap { transform: scale(0.85); background: var(--input-bg); }
+        .tool-item span { font-size: 11px; color: var(--text-sub); font-weight: 500;}
+
+
+
+
+
+
+                                        
+
+                                                                /* --- 小宠物分享可爱便签 --- */
+        .msg.pet-share-bubble { background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; font-weight: normal; backdrop-filter: none; opacity: 1; margin: 10px 5px; }
+
+        .pet-share-note {
+            position: relative;
+            background: #fffdf4; 
+            width: 210px;
+            padding: 22px 16px 15px;
+            border-radius: 4px 4px 12px 12px;
+            box-shadow: 2px 5px 15px rgba(0,0,0,0.15), inset 0 0 20px rgba(220, 190, 140, 0.15);
+            color: #635248;
+            transform: rotate(-3deg);
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            font-family: -apple-system, BlinkMacSystemFont, "Comic Sans MS", sans-serif;
+        }
+        .pet-share-note:active { transform: rotate(0deg) scale(0.96); }
+
+        .note-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(4deg);
+            width: 75px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        .note-title {
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 12px;
+            color: #d88c8c;
+            letter-spacing: 1px;
+        }
+
+        .note-shape {
+            font-size: 38px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #444;
+            font-weight: bold;
+            letter-spacing: -2px;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .note-stats {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1.5px dashed #e4cda7;
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .note-footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 14px;
+            color: #a4968c;
+            font-style: italic;
+        }
+
+
+
+
+
+
+                                        
 
         /* 新增/优化的专属交互气泡 (转账与文件) */
         .msg.transfer-bubble { background: rgba(243, 156, 18, 0.85) !important; color: #fff !important; border-radius: 12px !important; padding: 12px 18px !important; display: flex !important; align-items: center; gap: 12px; font-weight: normal; border: none !important; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3) !important;}
@@ -929,16 +1080,36 @@ input:checked + .slider:before {
         
         .heart-typing { color: var(--accent); font-size: 12px; margin-bottom: 10px; display: none; z-index: 10; position: relative; }
 
-           /* ============ 界面缩放大小 (类似微信字体) ============ */
+                   /* ============ 界面缩放大小 (类似微信字体) ============ */
         :root { --ui-zoom: 1; }
-                                                /* 增加超级权重，强制锁死字体大小、不透明、无毛玻璃 */
-        html body #chat-app #chat-container .msg { 
+        
+        /* 增加超级权重，强制锁死字体大小，但【坚决排除】表情包、宠物便签、图片 */
+        html body #chat-app #chat-container .msg:not(.sticker-bubble):not(.pet-share-bubble):not(.image-bubble) { 
             font-size: calc(16px * var(--ui-zoom)) !important; 
             padding: calc(12px * var(--ui-zoom)) calc(16px * var(--ui-zoom)) !important;
             opacity: 1 !important; 
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
         }
+
+        /* 给发送的图片彻底脱掉气泡外壳 */
+        .msg.image-bubble {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .image-bubble img.chat-upload-img {
+            max-width: 220px; /* 限制图片最大宽度，更像原生聊天 */
+            border-radius: 16px;
+            display: block;
+            margin: 0;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
 
 
         /* ========================================== */
@@ -992,6 +1163,113 @@ input:checked + .slider:before {
         .csp-val { 
             font-weight: 400; color: var(--text-main); word-break: break-word; opacity: 0.95;
         }
+
+
+                    /* ========================================== */
+        /* --- 小宠物 App (拓麻歌子风格) CSS --- */
+        /* ========================================== */
+        .pet-machine {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; background: #e0e0e0; border-top-left-radius: 40px; border-top-right-radius: 40px;
+            box-shadow: inset 0 10px 25px rgba(255,255,255,0.8), inset 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        :root.light-mode .pet-machine { background: #d0d0d0; }
+        
+        .pet-screen {
+            width: 100%; max-width: 320px; aspect-ratio: 1; background: #9ea790; /* 经典绿灰液晶屏色 */
+            border: 6px solid #444; border-radius: 15px; box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; padding: 12px; position: relative; overflow: hidden;
+            font-family: "Courier New", Courier, monospace; color: #111; font-weight: bold;
+        }
+        
+        .pet-status-bar { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        .pet-stat { display: flex; align-items: center; gap: 4px; }
+        .pet-bar-bg { width: 40px; height: 8px; border: 1px solid #111; padding: 1px; }
+        .pet-bar-fill { height: 100%; background: #111; width: 50%; transition: width 0.3s; }
+        
+        .pet-scene {
+            flex: 1; border-top: 2px dashed rgba(17,17,17,0.3); border-bottom: 2px dashed rgba(17,17,17,0.3);
+            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 25px;
+            position: relative;
+        }
+        
+        /* 黑白字符风的宠物主体 */
+        .pet-entity {
+            font-size: 45px; line-height: 1; letter-spacing: -2px; transition: transform 0.2s;
+            animation: petBreathe 1.5s infinite alternate ease-in-out; white-space: pre; color: #111;
+        }
+        
+        .pet-exp-container { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-top: 10px; }
+        .pet-exp-container .pet-bar-bg { flex: 1; margin-left: 10px; }
+                       /* 优化：小宠物气泡自适应大小 */
+                /* 优化：小宠物气泡自适应大小 */
+        .pet-bubble {
+            position: absolute;
+            bottom: 100px; /* 往上挪一点防遮挡 */
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            width: fit-content;
+            max-width: 90%;
+            height: auto; /* 👈 高度随文字自动撑开 */
+            max-height: 180px; /* 限制最高高度 */
+            overflow-y: auto; /* 字太多可以滑动 */
+            text-align: left;
+            display: none;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            z-index: 100;
+            animation: bounceIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        /* 隐藏气泡内部的滚动条 */
+        .pet-bubble::-webkit-scrollbar { display: none; }
+        
+        .pet-bubble::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: #000 transparent transparent transparent;
+        }
+        @keyframes bounceIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* 更新：缩小按钮以容纳5个按钮 */
+        .pet-controls { display: flex; justify-content: space-around; width: 100%; max-width: 340px; margin-top: 30px; gap: 6px; flex-wrap: wrap; }
+        .pet-btn {
+            width: 58px; height: 58px; background: #cc5555; border-radius: 50%; 
+            border: 3px solid #882222; box-shadow: 0 5px 0 #882222, 0 8px 10px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #fff; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.1s;
+            font-family: -apple-system, sans-serif; flex-shrink: 0;
+        }
+        .pet-btn i { font-size: 18px; margin-bottom: 2px; }
+        .pet-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #882222, 0 2px 4px rgba(0,0,0,0.3); }
+
+        /* 动画组 */
+        .pet-anim-eat { animation: petEat 0.4s 3 !important; }
+        .pet-anim-jump { animation: petJump 0.5s 2 !important; }
+        .pet-anim-walk { animation: petWalk 2s 1 !important; }
+
+        @keyframes petBreathe { 0% { transform: scaleY(0.95); } 100% { transform: scaleY(1.02); } }
+        @keyframes petEat { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.3); } }
+        @keyframes petJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-40px); } }
+        @keyframes petWalk { 0% { transform: translateX(0); } 25% { transform: translateX(-50px); } 75% { transform: translateX(50px); } 100% { transform: translateX(0); } }
+
+
+        /* 悬浮提示文本 */
+        .pet-exp-text {
+            position: absolute; top: 15px; font-size: 16px; font-weight: bold; opacity: 0; color: #111;
+            transition: all 0.3s; pointer-events: none; text-shadow: 1px 1px 0 #9ea790;
+        }
+        .pet-exp-text.show { opacity: 1; transform: translateY(-20px); }
+
+
+
+
+            
 
 
 
@@ -1076,112 +1354,147 @@ input:checked + .slider:before {
                 </div>
             </div>
 
-                        <div id="os-home">
+                                      <!-- 支持滑动的多页桌面 -->
+            <div id="os-home" onscroll="updatePageDots()">
                 
-                <!-- 👑 新增：iOS26 液态玻璃时间小组件 -->
-                <div class="widget-liquid-time" data-drag-id="liquid-time">
-                    <div class="liquid-time-text" id="lq-time">00<span>:</span>00</div>
-                    <div class="liquid-date-text" id="lq-date">1月1日 星期一</div>
-                </div>
-
-                <div class="widget widget-calendar glass-effect" data-drag-id="sys-calendar">
-                    <div style="color: var(--theme-dark); font-weight: 600; font-size: 14px;" id="cal-day">星期一</div>
-                    <div style="font-size: 42px; font-weight: 300;" id="cal-date">26</div>
-                </div>
-                
-                <div class="widget widget-weather glass-effect" data-drag-id="sys-weather">
-                    <i class="fas fa-cloud-sun" style="font-size: 28px;"></i>
-                    <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
-                    <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
-                </div>
-
-                <!-- 双人同步备忘录小组件 -->
-                <div class="widget widget-memo glass-effect">
-                    <div class="memo-header">
-                        <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
-                        <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
+                <!-- ============ 第一页 ============ -->
+                <div class="home-page" id="page-1">
+                    
+                    <div class="widget-liquid-time" data-drag-id="liquid-time">
+                        <div class="liquid-time-text" id="lq-time">00<span>:</span>00</div>
+                        <div class="liquid-date-text" id="lq-date">1月1日 星期一</div>
                     </div>
-                    <div id="memo-list" class="memo-list scrollable"></div>
-                </div>
 
-
-
-
-
-
-                <!-- 极简液态玻璃，莫兰迪粉灰主色调，微弱透明折射背景 -->
-                <div class="app-container" onclick="openApp('memory-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(195, 180, 190, 0.1) 100%);"><i class="fas fa-book"></i></div><div class="app-label">记忆书</div></div>
-                <div class="app-container" onclick="openApp('music-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
-                
-                <!-- 新增：修改为调起本地相册文件 -->
-                <div class="app-container" onclick="changeHomeWallpaper()"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
-                
-                <div class="app-container" onclick="openApp('pomodoro-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 215, 0.4) 0%, rgba(190, 185, 195, 0.1) 100%);"><i class="fas fa-stopwatch"></i></div><div class="app-label">番茄钟</div></div>
-
-                <div class="app-container" onclick="openApp('worldbook-app')">
-                    <div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);">
-                        <i class="fas fa-book-open"></i>
+                    <div class="widget widget-calendar glass-effect" data-drag-id="sys-calendar">
+                        <div style="color: var(--theme-dark); font-weight: 600; font-size: 14px;" id="cal-day">星期一</div>
+                        <div style="font-size: 42px; font-weight: 300;" id="cal-date">26</div>
                     </div>
-                    <div class="app-label">世界书</div>
-                </div>
-
-
-<div class="app-container" onclick="openApp('beautify-app')">
-    <div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);">
-        <i class="fas fa-paint-brush"></i>
-    </div>
-    <div class="app-label">美化中心</div>
-</div>
-
-
-
-
-                <!-- 小恐龙游戏图标 -->
-                <div class="app-container" onclick="openApp('dino-app')">
-                    <div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);">
-                        <i class="fas fa-dragon"></i>
+                    
+                    <div class="widget widget-weather glass-effect" data-drag-id="sys-weather">
+                        <i class="fas fa-cloud-sun" style="font-size: 28px;"></i>
+                        <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
+                        <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
                     </div>
-                    <div class="app-label">断网恐龙</div>
-                </div>
 
-                <!-- 谈心 App 图标 -->
-                <div class="app-container" onclick="openApp('heart-chat-app')">
-                    <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 182, 193, 0.4) 0%, rgba(255, 218, 185, 0.1) 100%);">
-                        <i class="fas fa-feather-alt"></i>
+                    <div class="widget widget-memo glass-effect" data-drag-id="sys-memo">
+                        <div class="memo-header">
+                            <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
+                            <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
+                        </div>
+                        <div id="memo-list" class="memo-list scrollable"></div>
                     </div>
-                    <div class="app-label">谈心</div>
+
+                    <div class="app-container" onclick="openApp('memory-app')" data-drag-id="sys-memory"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(195, 180, 190, 0.1) 100%);"><i class="fas fa-book"></i></div><div class="app-label">记忆书</div></div>
+                    <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
+                    <div class="app-container" onclick="changeHomeWallpaper()" data-drag-id="sys-wallpaper"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
+                    <div class="app-container" onclick="openApp('pomodoro-app')" data-drag-id="sys-pomo"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 215, 0.4) 0%, rgba(190, 185, 195, 0.1) 100%);"><i class="fas fa-stopwatch"></i></div><div class="app-label">番茄钟</div></div>
+                    <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
+                    <div class="app-container" onclick="openApp('beautify-app')" data-drag-id="sys-beauty"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);"><i class="fas fa-paint-brush"></i></div><div class="app-label">美化中心</div></div>
+                    <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
+                    <div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 182, 193, 0.4) 0%, rgba(255, 218, 185, 0.1) 100%);"><i class="fas fa-feather-alt"></i></div><div class="app-label">谈心</div></div>
                 </div>
 
-
-
-                <div class="dock glass-effect">
-                    <!-- Dock 栏图标 (深邃冷灰色调分布) -->
-                    <div class="app-container" onclick="openApp('chat-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(220, 210, 215, 0.4) 0%, rgba(195, 185, 195, 0.1) 100%);"><i class="fas fa-comment"></i></div></div>
-                    <div class="app-container" onclick="openApp('contacts-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(205, 195, 205, 0.4) 0%, rgba(180, 170, 180, 0.1) 100%);"><i class="fas fa-address-book"></i></div></div>
-                    <div class="app-container" onclick="openApp('persona-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(200, 185, 195, 0.1) 100%);"><i class="fas fa-id-card"></i></div></div>
-                    <div class="app-container" onclick="openApp('settings-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 195, 200, 0.4) 0%, rgba(175, 170, 180, 0.1) 100%);"><i class="fas fa-user-cog"></i></div></div>
-                </div>
-            </div>
-
-            <div id="pomodoro-app" class="app-view">
-                <div class="pomodoro-header glass-effect">
-                    <i class="fas fa-chevron-left" onclick="goBack()" style="cursor:pointer; font-size:20px; color: var(--accent);"></i>
-                    <span>番茄专注</span>
-                    <i style="width:20px;"></i>
-                </div>
-                <div class="pomodoro-content">
-                    <div class="pomodoro-circle">
-                        <span id="pomodoro-time">25:00</span>
-                        <span id="pomodoro-status">准备专注</span>
-                    </div>
-                    <div class="pomodoro-controls">
-                        <div class="pomo-btn primary" id="pomo-start-btn" onclick="startPomodoro()">开始</div>
-                        <div class="pomo-btn" onclick="resetPomodoro()">重置</div>
+                <!-- ============ 第二页 ============ -->
+                <div class="home-page" id="page-2">
+                    <div class="app-container" onclick="openApp('pet-app')" data-drag-id="sys-pet">
+                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 225, 180, 0.4) 0%, rgba(255, 190, 160, 0.1) 100%);">
+                            <i class="fas fa-paw" style="color: rgba(255,255,255,0.95);"></i>
+                        </div>
+                        <div class="app-label">小宠物</div>
                     </div>
                 </div>
             </div>
 
+            <!-- 滑动页面指示器 -->
+            <div class="page-dots" id="home-page-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+            </div>
+
+            <!-- 底部 Dock 栏必须移出滑动区，固定在底部 -->
+            <div class="dock glass-effect">
+                <div class="app-container" onclick="openApp('chat-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(220, 210, 215, 0.4) 0%, rgba(195, 185, 195, 0.1) 100%);"><i class="fas fa-comment"></i></div></div>
+                <div class="app-container" onclick="openApp('contacts-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(205, 195, 205, 0.4) 0%, rgba(180, 170, 180, 0.1) 100%);"><i class="fas fa-address-book"></i></div></div>
+                <div class="app-container" onclick="openApp('persona-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(200, 185, 195, 0.1) 100%);"><i class="fas fa-id-card"></i></div></div>
+                <div class="app-container" onclick="openApp('settings-app')"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 195, 200, 0.4) 0%, rgba(175, 170, 180, 0.1) 100%);"><i class="fas fa-user-cog"></i></div></div>
+            </div>
+
+                                                <!-- 小宠物 App 界面 (拓麻歌子风格) -->
+            <div id="pet-app" class="app-view">
+                <div class="settings-header glass-effect">
+                    <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                    Tamagotchi
+                </div>
                 
+                <!-- 游戏机外壳 -->
+                <div class="pet-machine">
+                    <!-- 屏幕 -->
+                    <div class="pet-screen">
+                        <!-- 顶部状态栏 -->
+                        <div class="pet-status-bar">
+                            <div class="pet-stat">LV.<span id="pet-lv">1</span></div>
+                            <!-- 新增：金币显示 -->
+                            <div class="pet-stat" style="color: #4b4b4b; font-weight: 900;">💰<span id="pet-coins" style="margin-left: 2px;">0</span></div>
+                        </div>
+                        
+                        <div class="pet-status-bar" style="margin-bottom: 10px;">
+                            <div class="pet-stat">饱食 <div class="pet-bar-bg"><div class="pet-bar-fill" id="pet-hunger-bar"></div></div></div>
+                            <div class="pet-stat">心情 <div class="pet-bar-bg"><div class="pet-bar-fill" id="pet-mood-bar"></div></div></div>
+                        </div>
+                        
+                        <!-- 场景与宠物主体 -->
+                        <div class="pet-scene" id="pet-scene">
+                            <!-- 经验值/金币 浮动提示 -->
+                            <div class="pet-exp-text" id="pet-exp-text"></div>
+                            
+                            <!-- 新增：AI 聊天气泡 -->
+                            <div id="pet-bubble" class="pet-bubble" onclick="startPetChat()">点我聊天赚金币~</div>
+                            
+                            <!-- 宠物字符实体 (新增点击事件) -->
+                            <div class="pet-entity" id="pet-entity" onclick="showPetBubble()">(='x'=)</div>
+                        </div>
+                        
+                        <!-- 底部经验条 -->
+                        <div class="pet-exp-container">
+                            <span>EXP</span>
+                            <div class="pet-bar-bg" style="width: 100px;"><div class="pet-bar-fill" id="pet-exp-bar"></div></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 掌机实体交互按钮 (已清理重复) -->
+                    <div class="pet-controls">
+                        <div class="pet-btn" onclick="interactPet('feed')">
+                            <i class="fas fa-hamburger" style="margin-bottom: 2px;"></i>
+                            <div style="font-size: 11px;">喂食</div>
+                            <div style="font-size: 9px; opacity: 0.8; font-weight: normal;">-10💰</div>
+                        </div>
+                        <div class="pet-btn" onclick="interactPet('play')">
+                            <i class="fas fa-baseball-ball" style="margin-bottom: 2px;"></i>
+                            <div style="font-size: 11px;">玩耍</div>
+                        </div>
+                        <div class="pet-btn" onclick="interactPet('explore')">
+                            <i class="fas fa-map-marked-alt" style="margin-bottom: 2px;"></i>
+                            <div style="font-size: 11px;">外出</div>
+                        </div>
+                        
+                        <!-- 分享给角色按钮 -->
+                        <div class="pet-btn" style="background:#4a90e2; border-color:#2a6092; box-shadow: 0 5px 0 #2a6092;" onclick="sharePetToChat()">
+                            <i class="fas fa-share-square" style="margin-bottom: 2px;"></i>
+                            <div style="font-size: 11px;">分享</div>
+                        </div>
+
+                        <!-- 设定按钮 -->
+                        <div class="pet-btn" style="background:#5c6b73; border-color:#3a464c; box-shadow: 0 5px 0 #3a464c;" onclick="editPet()">
+                            <i class="fas fa-cog" style="margin-bottom: 2px;"></i>
+                            <div style="font-size: 11px;">设定</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+             
 
 
 
@@ -1216,44 +1529,67 @@ input:checked + .slider:before {
                 </div>
                 <div class="chat-body scrollable" id="chat-container"></div>
                 <div class="typing-indicator" id="typing-indicator">对方正在输入...</div>
-                
-                <div class="chat-input-area glass-effect">
+
+                                          <div class="chat-input-area glass-effect">
                     <div class="quote-status-bar" id="quote-bar">
                         <span id="quote-text-preview">正在引用消息...</span>
                         <i class="fas fa-times-circle" style="cursor:pointer; font-size:16px;" onclick="cancelQuote()"></i>
                     </div>
+                    
+                    <!-- 表情面板 -->
                     <div id="sticker-panel" class="glass-effect"></div>
                     
-                   <!-- 新增：发送文件按钮 -->
-<i class="fas fa-folder-open chat-icon-btn" onclick="document.getElementById('chat-file-upload-input').click()" title="发文件"></i>
-
-<i class="fas fa-smile chat-icon-btn" onclick="toggleStickerPanel()" title="表情包"></i>
-<i class="fas fa-yen-sign chat-icon-btn" onclick="sendTransfer()" title="转账"></i>
-<!-- 新增：更新状态按钮 -->
-<i class="fas fa-quote-right chat-icon-btn" onclick="updateUserStatus()" title="更新我的状态"></i>
+                                        <!-- 隐藏的图片选择器 -->
+                    <input type="file" id="chat-image-upload-input" accept="image/*" style="display:none;" onchange="handleChatImageUpload(event)">
+                    
+                    <!-- 新增：(+) 号更多功能面板 -->
+                    <div id="tools-panel">
+                        <div class="tool-item" onclick="document.getElementById('chat-image-upload-input').click(); toggleToolsPanel();">
+                            <div class="tool-icon-wrap"><i class="fas fa-image" style="color: #9b59b6;"></i></div>
+                            <span>发图片</span>
+                        </div>
+                        <div class="tool-item" onclick="document.getElementById('chat-file-upload-input').click(); toggleToolsPanel();">
+                            <div class="tool-icon-wrap"><i class="fas fa-folder-open" style="color: #4a90e2;"></i></div>
+                            <span>发文件</span>
+                        </div>
+                        <div class="tool-item" onclick="sendTransfer(); toggleToolsPanel();">
+                            <div class="tool-icon-wrap"><i class="fas fa-yen-sign" style="color: #f39c12;"></i></div>
+                            <span>转账</span>
+                        </div>
+                        <div class="tool-item" onclick="updateUserStatus(); toggleToolsPanel();">
+                            <div class="tool-icon-wrap"><i class="fas fa-quote-right" style="color: #27ae60;"></i></div>
+                            <span>改状态</span>
+                        </div>
+                    </div>
 
                     
-                    <input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)">
+                    <!-- 左侧功能按钮 -->
+                    <i class="fas fa-plus-circle chat-icon-btn" onclick="toggleToolsPanel()" title="更多功能"></i>
+                    <i class="fas fa-smile chat-icon-btn" onclick="toggleStickerPanel()" title="表情包"></i>
+                    
+                    <!-- 聊天输入框 -->
+                    <input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels()">
 
-<!-- 1. 副按钮：只把消息上屏，但不触发AI回复 -->
-<i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 5px;" onclick="sendMessage()" title="仅发送消息"></i>
-
-<!-- 2. 总按钮：点击后，AI 读取上述的所有消息并生成回复 -->
-<i class="fas fa-robot" style="color: var(--accent); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 10px;" onclick="triggerAIResponse()" title="让 AI 回复"></i>
-
+                    <!-- 右侧发送按钮 -->
+                    <i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 5px;" onclick="sendMessage()" title="仅发送消息"></i>
+                    <i class="fas fa-robot" style="color: var(--accent); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 10px;" onclick="triggerAIResponse()" title="让 AI 回复"></i>
                 </div>
-            </div>
+            </div> <!-- 🚨就是这个闭合标签！它负责把聊天APP关上，千万不能漏🚨 -->
 
+            <!-- 角色工坊 App -->
             <div id="settings-app" class="app-view scrollable">
                 <div class="settings-header glass-effect">
-    <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
-    角色工坊
-</div>
+                    <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                    角色工坊
+                </div>
 
                 <div class="char-list-container" id="char-list"></div>
                 <div class="settings-content">
                     <div class="settings-group-title">外观与灵魂 (Soul & UI)</div>
                     <div class="settings-group">
+
+                
+                                                
                         
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
                             <span class="setting-label">显示灵动岛 (音乐悬浮窗)</span>
@@ -1326,6 +1662,8 @@ input:checked + .slider:before {
 
 
                         <div class="setting-item"><span class="setting-label">角色昵称/备注</span><input type="text" id="cfg-name" class="setting-input"></div>
+                          <div class="setting-item"><span class="setting-label">双击头像动作(如:捏了捏、摸了摸)</span><input type="text" id="cfg-nudge" class="setting-input" placeholder="默认: 拍了拍"></div>
+
                                                 <div class="setting-item" style="flex-direction: row; align-items: center; justify-content: space-between;">
                             <span class="setting-label">角色头像 (点击更换)</span>
                             <input type="file" id="cfg-avatar-upload" accept="image/*" style="display:none;" onchange="handleCharAvatarUpload(event)">
@@ -1411,6 +1749,30 @@ input:checked + .slider:before {
 
 
                         </div>
+
+ <!-- 👇 新增：流式输出开关 -->
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                            <span class="setting-label">流式输出 (打字机效果)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="global-stream-toggle" checked onchange="toggleStreamOutput()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                                                  <!-- 新增深度视觉读图模式 -->
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; background: rgba(135,192,202,0.1); border: 1px solid var(--accent);">
+                            <span class="setting-label" style="color: var(--accent);"><i class="fas fa-eye"></i> 深度视觉读图 (Vision)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="global-vision-toggle" checked onchange="toggleVisionMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-sub); margin: 5px 20px 10px;">开启后，AI 将能精准识别发送的图片。<br>⚠️ 必须确保你上方填写的模型支持视觉(如 gpt-4o, gemini-1.5-pro, Qwen2-VL)，否则会导致回复失败！</p>
+
+
+
+
+
 <div class="setting-item">
     <span class="setting-label" style="display:flex; justify-content:space-between;">
         <span>创造性 (Temperature)</span>
@@ -1911,8 +2273,7 @@ input:checked + .slider:before {
         });
     }
 
-    // --- 数据结构 ---
-        let globalAPI = { 
+    let globalAPI = { 
         apiType: 'siliconflow', 
         url: 'https://api.siliconflow.cn/v1', 
         key: '', 
@@ -1927,10 +2288,10 @@ input:checked + .slider:before {
         portraitLock: false,
         enableIsland: true,
         uiZoom: 1,
-        enableStatusBar: true,  // <-- 新增
-        enableHomeBar: true     // <-- 新增
+         enableStatusBar: true,  
+        enableHomeBar: true,     
+        enableStream: true      // <-- 新增：流式输出开关
     };
-  
 
     let globalUser = { name: "我", avatar: "https://ui-avatars.com/api/?name=Me&background=BDCBD2&color=fff", persona: "" };
     let characters = [];
@@ -1948,12 +2309,14 @@ input:checked + .slider:before {
         { text: "和 AI 一起规划明天", done: false }
     ];
 
-    const defaultChar = {
+        const defaultChar = {
         id: 1, name: "莫兰迪", avatar: "https://ui-avatars.com/api/?name=M&background=87C0CA&color=fff",
         chatBg: "", charColor: "#66889E", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff",
         prompt: "你是一个温柔、冷静的同伴，喜欢用简洁唯美的语言交流。",
-        useActionDesc: false 
+        useActionDesc: false,
+        nudgeAction: "拍了拍" // <--- 新增
     };
+
 
     function generateId() { return new Date().getTime(); }
     function cleanBaseUrl(url) { return url.trim().replace(/\/chat\/completions\/?$/, '').replace(/\/models\/?$/, '').replace(/\/$/, ''); }
@@ -1990,6 +2353,20 @@ input:checked + .slider:before {
         localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
     }
 
+    function toggleStreamOutput() {
+        globalAPI.enableStream = document.getElementById('global-stream-toggle').checked;
+        localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+    }
+
+        function toggleVisionMode() {
+        globalAPI.enableVision = document.getElementById('global-vision-toggle').checked;
+        localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+    }
+
+
+
+
+
     function applyUIBarsState() {
         const statusBar = document.getElementById('sys-status-bar');
         const homeBarLine = document.querySelector('.home-bar');
@@ -2022,6 +2399,20 @@ input:checked + .slider:before {
         if(hbToggle) hbToggle.checked = globalAPI.enableHomeBar;
         
         applyUIBarsState();
+
+
+ // 👇 把刚才那段加在这里：
+        // --- 恢复流式输出开关 ---
+        if(typeof globalAPI.enableStream === 'undefined') globalAPI.enableStream = true;
+        const streamToggle = document.getElementById('global-stream-toggle');
+        if(streamToggle) streamToggle.checked = globalAPI.enableStream;
+        // 👆 添加结束
+
+                // --- 恢复视觉读图开关 ---
+        if(typeof globalAPI.enableVision === 'undefined') globalAPI.enableVision = true;
+        const visionToggle = document.getElementById('global-vision-toggle');
+        if(visionToggle) visionToggle.checked = globalAPI.enableVision;
+
 
 
 
@@ -2150,6 +2541,43 @@ input:checked + .slider:before {
         e.target.value = ''; 
     }
 
+        // --- 新增：处理聊天框发送图片 ---
+    function handleChatImageUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width, height = img.height;
+                const maxDim = 1024; // 压缩至1024px，省流量且防止API报错
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) { height *= maxDim / width; width = maxDim; }
+                    else { width *= maxDim / height; height = maxDim; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const base64Url = canvas.toDataURL('image/jpeg', 0.8);
+
+                const imgId = 'chat_img_' + Date.now();
+                await saveImageToDB(imgId, base64Url); // 存入本地数据库防撑爆内存
+
+                // 上屏显示
+                addMessageToUI('user', 'idb://' + imgId, true, null, 'idb://' + imgId, 'image');
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+
+
+
+    
+
     function handleChatFileUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -2247,10 +2675,10 @@ input:checked + .slider:before {
         } else goHome();
     }
     
-    function goHome() { 
+       function goHome() { 
         if (document.querySelector('.app-view.active') && document.querySelector('.app-view.active').id === 'chat-app') forceSyncChatCache();
         navStack = []; 
-        document.getElementById('os-home').style.display = 'grid'; 
+        document.getElementById('os-home').style.display = '';  // 👈 重点：置空即可！恢复 CSS 原本样式
         document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active')); 
     }
 
@@ -2554,7 +2982,8 @@ input:checked + .slider:before {
         if(typeof char.charTextColor === 'undefined') char.charTextColor = "#ffffff";
         if(typeof char.userTextColor === 'undefined') char.userTextColor = "#ffffff";
 
-        document.getElementById('cfg-name').value = char.name; 
+        document.getElementById('cfg-name').value = char.name;
+         document.getElementById('cfg-nudge').value = char.nudgeAction || "拍了拍"; // <--- 新增这行
         document.getElementById('cfg-avatar').value = char.avatar; 
         document.getElementById('cfg-bg').value = char.chatBg; 
 
@@ -2584,13 +3013,16 @@ document.getElementById('chat-status').innerText = char.status || "在线";
 
 
         document.getElementById('memory-book-title').innerText = `${char.name} 的专属记忆书`;
-        
-        let styleEl = document.getElementById('dynamic-char-style'); 
+                let styleEl = document.getElementById('dynamic-char-style'); 
         if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'dynamic-char-style'; document.head.appendChild(styleEl); }
         styleEl.innerHTML = `
-            .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble) { background: ${char.charColor} !important; color: ${char.charTextColor} !important; } 
-            .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble) { background: ${char.userColor} !important; color: ${char.userTextColor} !important; }
+            .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble) { background: ${char.charColor} !important; color: ${char.charTextColor} !important; border-color: transparent !important; } 
+            .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble) { background: ${char.userColor} !important; color: ${char.userTextColor} !important; border-color: transparent !important; }
         `;
+
+        
+        
+        
         
         document.getElementById('chat-app').style.backgroundImage = char.chatBg ? `url('${char.chatBg}')` : 'var(--chat-bg)';
         loadChatHistory(); 
@@ -2678,11 +3110,13 @@ document.getElementById('chat-status').innerText = char.status || "在线";
 
 
 
- function createNewCharacter() { const newChar = { id: generateId(), name: "新角色", avatar: "https://ui-avatars.com/api/?name=New&background=random", chatBg: "", charColor: "#2c2c2e", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff", prompt: "这是一个新角色。", useActionDesc: false }; characters.push(newChar); saveAllCharacters(); loadCharacterState(newChar.id, true); }
+function createNewCharacter() { const newChar = { id: generateId(), name: "新角色", avatar: "https://ui-avatars.com/api/?name=New&background=random", chatBg: "", charColor: "#2c2c2e", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff", prompt: "这是一个新角色。", useActionDesc: false, nudgeAction: "拍了拍" }; characters.push(newChar); saveAllCharacters(); loadCharacterState(newChar.id, true); }
+
        async function saveActiveCharacter() { 
         try {
             const char = characters.find(c => c.id === activeCharId); 
-            char.name = document.getElementById('cfg-name').value; 
+            char.name = document.getElementById('cfg-name').value;
+             char.nudgeAction = document.getElementById('cfg-nudge').value || "拍了拍"; // <--- 🌟 加在这里！紧跟在 char.name 下面
             char.avatar = document.getElementById('cfg-avatar').value; 
             char.chatBg = document.getElementById('cfg-bg').value; 
             char.charColor = document.getElementById('cfg-char-color').value; 
@@ -2725,13 +3159,56 @@ document.getElementById('chat-status').innerText = char.status || "在线";
             if(c) c.scrollTop = c.scrollHeight;
         }); 
     }
-
-
+            // 面板交互逻辑
     function toggleStickerPanel() {
         const panel = document.getElementById('sticker-panel');
         if (panel.style.display === 'grid') panel.style.display = 'none';
-        else { panel.style.display = 'grid'; renderStickers(); }
+        else { panel.style.display = 'grid'; document.getElementById('tools-panel').style.display = 'none'; renderStickers(); }
     }
+
+    function toggleToolsPanel() {
+        const panel = document.getElementById('tools-panel');
+        if (panel.style.display === 'grid') panel.style.display = 'none';
+        else { panel.style.display = 'grid'; document.getElementById('sticker-panel').style.display = 'none'; }
+    }
+
+    function closeAllChatPanels() {
+        document.getElementById('sticker-panel').style.display = 'none';
+        document.getElementById('tools-panel').style.display = 'none';
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('user-input'); let text = input.value.trim();
+        if (!text) return; 
+        
+        closeAllChatPanels(); // 发送消息时自动收起面板
+        
+        const activeChar = characters.find(c => c.id === activeCharId);
+
+        if (text === '$开启' || text === '$关闭') {
+            activeChar.useActionDesc = (text === '$开启'); saveAllCharacters();
+            addMessageToUI('user', text); input.value = '';
+            addMessageToUI('system', `已${activeChar.useActionDesc ? '开启' : '关闭'}动作与心理描写。`); return;
+        }
+
+        let safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        let displayHtml = safeText;
+        
+        if(quotedMessageText) {
+            let safeQuote = quotedMessageText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            displayHtml = `<div class="msg-quote">“${safeQuote}”</div>` + safeText;
+            text = `【针对前文引用消息：“${quotedMessageText}”】的回复：` + text;
+            cancelQuote();
+        }
+
+        addMessageToUI('user', displayHtml, true, null, text, 'text'); 
+        input.value = ''; 
+    }
+
+
+
+    
+
     
     function renderStickers() {
         const panel = document.getElementById('sticker-panel');
@@ -2759,12 +3236,14 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         
     }
 
-    function triggerNudge(fromType) {
-        const charName = characters.find(c => c.id === activeCharId).name;
-        let text = fromType === 'user' ? `我拍了拍"${charName}"` : (fromType === 'char' ? `"${charName}"拍了拍我` : `我拍了拍自己`);
+            function triggerNudge(fromType) {
+        const char = characters.find(c => c.id === activeCharId);
+        const action = char.nudgeAction || "拍了拍"; // 动态读取自定义动作
+        let text = fromType === 'user' ? `我${action}"${char.name}"` : (fromType === 'char' ? `"${char.name}"${action}我` : `我${action}自己`);
         addMessageToUI('system', text);
-        
     }
+
+
 
     async function sendTransfer() {
         const amount = await sysPrompt("转账", "请输入转账金额：", "520.00");
@@ -2848,14 +3327,31 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         }, {passive: false});
         avatarDiv.addEventListener('dblclick', () => { if(role === 'char') triggerNudge('user'); if(role === 'user') triggerNudge('user_self'); });
 
-        const contentBox = document.createElement('div'); contentBox.className = 'msg-content-box';
+               const contentBox = document.createElement('div'); contentBox.className = 'msg-content-box';
         const div = document.createElement('div'); div.className = `msg ${role}`;
+        
+                // 1. 为特殊的聊天气泡添加样式
         if (msgType === 'sticker') div.classList.add('sticker-bubble');
         if (msgType === 'transfer') div.classList.add('transfer-bubble');
         if (msgType === 'file') div.classList.add('file-bubble');
+        if (msgType === 'pet-share') div.classList.add('pet-share-bubble');
+        
+        // 2. 渲染内容：区分图片与其他内容
+        if (msgType === 'image') {
+            div.classList.add('image-bubble');
+            div.innerHTML = `<img src="" class="chat-upload-img" alt="图片加载中...">`;
+            // 异步从数据库提取图片显示
+            getImageFromDB(content.replace('idb://', '')).then(base64 => {
+                if (base64) div.querySelector('img').src = base64;
+            });
+        } else {
+            // 普通文本或HTML渲染
+            if (isHtml) div.innerHTML = content; else div.innerText = content;
+        }
 
-        if (isHtml) div.innerHTML = content; else div.innerText = content;
-
+        
+        
+        // 注意：这里下面绝对不要再加 div.innerHTML = content 这类代码了！
         let touchTimer;
         div.addEventListener('touchstart', () => { touchTimer = setTimeout(() => { const idx = Array.from(container.children).indexOf(wrapper); if(idx !== -1 && messageHistory[idx]) openActionSheet(idx, messageHistory[idx]); }, 600); }, {passive: true});
         div.addEventListener('touchend', () => clearTimeout(touchTimer));
@@ -2913,6 +3409,19 @@ document.getElementById('chat-status').innerText = char.status || "在线";
         }
         // 👆 新增结束
 
+                // 👇 新增这段：告知 AI 宠物的存在并赋予控制权
+                let petInjectBlock = `\n\n【宠物联动系统】：
+用户当前养了一只名叫“${petData.name || '小宠物'}”的电子宠物。宠物的最新状态是：LV.${petData.level}，饱食度 ${petData.hunger}/100，心情 ${petData.mood}/100。
+如果用户和你聊到了宠物，你可以使用以下独立指令来在后台照顾它的宠物（会真实生效）：
+喂食：$$PET_ACTION:feed$$
+玩耍：$$PET_ACTION:play$$
+带出门：$$PET_ACTION:explore$$
+这会产生真实的交互反馈，请在回复时自然地表现出你正在和宠物互动的样子。`;
+
+
+
+        
+
 
 
         let builtInRules = `\n\n【系统内置要求】：\n1. 具有真实的“活人感”，绝不要OOC。\n2. 【核心机制】：必须是真实的短信聊天格式。绝对不要长篇大论，拒绝句式糅杂和废话连篇。每次回复控制在一到两句简短的话内，像真人用手机打字一样。结合用户行为(如发表情或转账)给出情绪反应。`;
@@ -2950,80 +3459,150 @@ document.getElementById('chat-status').innerText = char.status || "在线";
 
 
 // 👇 插入到 let apiMessages = ... 的上一行
-        let detailStatusRules = `\n\n【绝密指令：实时状态面板】
-为了维持沉浸感，你必须在每一次回复的末尾，强制输出一段隐藏代码来更新你的私密状态。
-格式严格如下（使用竖线 | 分隔，不要换行，不要遗漏任何一项）：
-$$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址|真实心声|衣着状态|当前地点$$
-示例：$$PANEL:微微湿润|心跳加速，体温上升|Lana Del Rey - Video Games|www.amazon.com/lingerie|他怎么还不主动一点呢...|黑色丝质吊带裙，肩带滑落|卧室柔软的大床上$$`;
+                let detailStatusRules = `\n\n【核心指令：实时状态面板更新】
+为了维持沉浸感，你必须在每一次回复的末尾，强制输出一段隐藏代码来实时更新你的当前状态。
+警告：绝对不允许出现“保密”、“无”、“未知”等敷衍字眼！必须根据每聊的一条新剧情，实时推演并更新所有的具体细节，一定要让用户看到！
+格式必须且只能是下面这样（包含 $$PANEL: 和结尾的 $$，中间严格使用竖线 | 分隔7个属性，绝对不要换行，不要用逗号！）：
+$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着状态|当前地点$$
+示例：$$PANEL:微微湿润|心跳加速，体温上升|Lana Del Rey - Video Games|www.amazon.com|他怎么还不主动一点呢...|黑色丝质吊带裙，肩带滑落|卧室柔软的大床上$$`;
 
-        // ⚠️ 把原来的 let apiMessages = [...] 替换为带有 detailStatusRules 的这行：
-        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + statusInjectBlock + builtInRules + detailStatusRules }];
+        // ----------------- 🌟 完美的图片读取与多模态合并逻辑 🌟 -----------------
+        let rawHistory = [];
+        const historySlice = messageHistory.slice(-(globalAPI.contextLength || 25));
+        let hasImageInContext = false;
 
- 
-
-        const rawHistory = messageHistory.map(m => {
+        for (const m of historySlice) {
             if (m.role === 'system' || m.msgType === 'system' || m.msgType === 'transfer-claimed') {
-                return { role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` };
+                rawHistory.push({ role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` });
+            } else if (m.msgType === 'image' && m.rawApiContent && m.rawApiContent.startsWith('idb://')) {
+                if (globalAPI.enableVision !== false) {
+                    // 🚨 核心提取：从本地数据库真正把图片的 Base64 数据提取出来！
+                    const base64Data = await getImageFromDB(m.rawApiContent.replace('idb://', ''));
+                    if (base64Data) {
+                        hasImageInContext = true;
+                        rawHistory.push({
+                            role: m.role === 'user' ? 'user' : 'assistant',
+                            content: [{ type: "image_url", image_url: { url: base64Data } }]
+                        });
+                    } else {
+                        rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: "[图片已过期或损坏]" });
+                    }
+                } else {
+                    rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: "[发送了一张图片，但未开启深度读图模式]" });
+                }
+            } else {
+                let textContent = m.rawApiContent || m.content;
+                // 🚨 强力清洗：清除因为之前的 bug 残留在你聊天记录里的坏数据
+                if (typeof textContent === 'string' && textContent.includes('[object Object]')) {
+                    textContent = textContent.replace(/\[object Object\]/g, '');
+                }
+                rawHistory.push({ 
+                    role: m.role === 'user' ? 'user' : 'assistant', 
+                    content: m.isHtml && !m.rawApiContent ? "[特殊多媒体]" : textContent 
+                });
             }
-            return { 
-                role: m.role === 'user' ? 'user' : 'assistant', 
-                content: m.isHtml && !m.rawApiContent ? "[图片]" : (m.rawApiContent || m.content) 
-            };
-        }).slice(-(globalAPI.contextLength || 25));
+        }
 
         let mergedHistory = [];
         for (const msg of rawHistory) {
             if (mergedHistory.length > 0 && mergedHistory[mergedHistory.length - 1].role === msg.role) {
-                mergedHistory[mergedHistory.length - 1].content += "\n\n" + msg.content;
+                let lastMsg = mergedHistory[mergedHistory.length - 1];
+                if (Array.isArray(lastMsg.content) || Array.isArray(msg.content)) {
+                    let prevArray = Array.isArray(lastMsg.content) ? lastMsg.content : [{ type: "text", text: lastMsg.content }];
+                    let currArray = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: msg.content }];
+                    lastMsg.content = prevArray.concat(currArray);
+                } else {
+                    lastMsg.content += "\n\n" + msg.content;
+                }
             } else {
                 mergedHistory.push({ role: msg.role, content: msg.content });
             }
         }
 
+        // 强迫症级别的格式规范化：如果上下文中有图片，强制把所有的 content 转化为标准 Array 格式
+        if (hasImageInContext) {
+            builtInRules += `\n\n【视觉感知模式已激活】：用户刚才给你发送了图片。请你务必化身为精准的视觉识别引擎，睁大眼睛仔细观察图片里的每一个细节（是什么物品、什么动物、什么场景），准确识别后给出你的真实反应，绝对不准胡编乱造和产生幻觉！`;
+            
+            mergedHistory.forEach(msg => {
+                if (typeof msg.content === 'string') {
+                    msg.content = [{ type: "text", text: msg.content }];
+                } else if (Array.isArray(msg.content)) {
+                    // 二次清洗，过滤掉任何可能的脏数据
+                    msg.content = msg.content.filter(item => {
+                        if (item.type === 'text' && !item.text) return false;
+                        if (item.type === 'text' && typeof item.text !== 'string') item.text = String(item.text);
+                        return true;
+                    });
+                }
+            });
+        }
+        // --------------------------------------------------------------
+
+        // 必须在组装完 builtInRules 之后再声明 apiMessages
+        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + statusInjectBlock + petInjectBlock + builtInRules + detailStatusRules }];
+
         apiMessages = apiMessages.concat(mergedHistory);
+
         if (apiMessages.length === 1 || apiMessages[apiMessages.length - 1].role === 'assistant') {
-            apiMessages.push({ role: "user", content: "继续" });
+            if (hasImageInContext) {
+                apiMessages.push({ role: "user", content: [{ type: "text", text: "继续" }] });
+            } else {
+                apiMessages.push({ role: "user", content: "继续" });
+            }
         }
 
         try {
-                       const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 300000); // 延长至5分钟，防止长思考模型超时报错
+
+            const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 300000); // 延长至5分钟，防止长思考模型超时报错
+            const isStream = globalAPI.enableStream !== false; // 判断开关状态
 
             const res = await fetch(`${url}/chat/completions`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
-                body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, max_tokens: 1500, temperature: parseFloat(globalAPI.temperature), stream: true }),
+                body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, max_tokens: 1500, temperature: parseFloat(globalAPI.temperature), stream: isStream }),
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder("utf-8");
             let fullReply = "";
-            let buffer = ""; 
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop(); 
-                for (const line of lines) {
-                    if (line.trim().startsWith('data: ')) {
-                        const dataStr = line.replace('data: ', '').trim();
-                        if (dataStr === '[DONE]') continue;
-                        try {
-                            const json = JSON.parse(dataStr);
-                            if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
-                                fullReply += json.choices[0].delta.content;
-                            }
-                        } catch(e) {}
+            if (isStream) {
+                // 流式处理 (旧有逻辑)
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = ""; 
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); 
+                    for (const line of lines) {
+                        if (line.trim().startsWith('data: ')) {
+                            const dataStr = line.replace('data: ', '').trim();
+                            if (dataStr === '[DONE]') continue;
+                            try {
+                                const json = JSON.parse(dataStr);
+                                if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
+                                    fullReply += json.choices[0].delta.content;
+                                }
+                            } catch(e) {}
+                        }
                     }
+                }
+            } else {
+                // 非流式处理 (一次性拿回所有结果)
+                const data = await res.json();
+                if (data.choices && data.choices[0].message && data.choices[0].message.content) {
+                    fullReply = data.choices[0].message.content;
                 }
             }
 
-                      let reply = fullReply || "（空白）";
+            let reply = fullReply || "（空白）";
 
             // --- 👑 终极高容错拦截指令正则表达式 (修复未转义的$、防丢失$$结尾、防中文冒号、兼容大小写与换行) ---
+
             reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
             reply = reply.replace(/\$\$\s*NUDGE(?:\$\$|$)/gi, () => `[MSG][NUDGE][MSG]`);
             reply = reply.replace(/\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
@@ -3037,6 +3616,10 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
 
             // 捕获 AI 详细状态面板更新指令 (高强度容错，哪怕AI没写完闭合符号也能拦截，绝不漏出脏数据)
             reply = reply.replace(/\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/gi, (match, panelData) => `[MSG][PANEL:${panelData}][MSG]`);
+            // 捕获 AI 操作宠物指令
+            reply = reply.replace(/\$\$\s*PET_ACTION(?:[:：\s]*)(feed|play|explore)(?:\$\$|$)/gi, (match, action) => `[MSG][PET_ACTION:${action}][MSG]`);
+
+            
 
 
 
@@ -3164,20 +3747,33 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
                     addMessageToUI('system', `${activeChar.name} 将状态更新为：[ ${newStatus} ]`, false, null, `[系统交互：${activeChar.name} 成功更新了个人状态]`);
                 }
 
-                                             // 🌟 拦截并更新角色的绝密状态面板 (终极高容错版)
+                                             
+                               // 🌟 拦截并更新角色的绝密状态面板 (终极高容错版)
                 else if (msgs[i].startsWith('[PANEL:') && msgs[i].endsWith(']')) {
-                    // 1. 强制去掉换行符
-                    const dataStr = msgs[i].substring(7, msgs[i].length - 1).replace(/\n/g, ' '); 
-                    
-                    // 2. 兼容中英文竖线 (AI极爱用中文竖线导致分割失败)
-                    let parts = dataStr.split(/\||｜/);
-                    
-                    // 3. 剥离AI喜欢自作主张加的前缀 (例如 "衣着状态：睡衣" -> "睡衣")
+                    // 1. 获取内部原始数据
+                    let rawData = msgs[i].substring(7, msgs[i].length - 1).trim();
+
+                    // 2. 暴力容错格式化：AI经常不听话用错分隔符
+                    if (!rawData.includes('|') && !rawData.includes('｜')) {
+                        // 如果没找到竖线，尝试把换行、中文逗号、英文逗号、顿号全部强行替换成竖线
+                        rawData = rawData.replace(/[\n,，、]/g, '|');
+                    }
+                    // 强制干掉剩余的换行符，防止破坏 UI
+                    rawData = rawData.replace(/\n/g, ' ');
+
+                    // 3. 按竖线安全分割
+                    let parts = rawData.split(/\||｜/);
+
+                    // 4. 清理函数：剥离 AI 自己发明的“标签前缀” (如 "真实心声: 好想他" -> "好想他")
                     const cleanPart = (index) => {
-                        if (!parts[index] || !parts[index].trim()) return '保密';
-                        return parts[index].replace(/^.*?[:：]/, '').trim();
+                        if (!parts[index] || !parts[index].trim()) return '尚未获取';
+                        let val = parts[index].replace(/^.*?[:：]/, '').trim();
+                        // 拦截 AI 自己写的敷衍词
+                        if (val === '保密' || val === '无' || val === '') return '无明显变化';
+                        return val;
                     };
 
+                    // 5. 组装数据 (确保按照 Prompt 中定义的 7 项顺序流入正确的位置)
                     activeChar.detailStatus = {
                         genital: cleanPart(0),
                         physio: cleanPart(1),
@@ -3188,23 +3784,40 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
                         loc: cleanPart(6)
                     };
 
-                    // 4. 极致容错：如果 AI 连竖线都懒得加，就把整段话当成真实心声，其他标未知
-                    if (parts.length === 1 && dataStr.trim() !== "") {
+                    // 6. 极端情况兜底：如果 AI 偷懒只写了一两句话，把这段话塞进心声里，其余留空
+                    if (parts.length <= 2) {
+                        let singleVal = rawData.replace(/^.*?[:：]/, '').trim();
                         activeChar.detailStatus = {
-                            genital: '未知', physio: '未知', music: '未知', web: '未知',
-                            voice: dataStr.replace(/^.*?[:：]/, '').trim(), 
-                            outfit: '未知', loc: '未知'
+                            genital: '尚未获取', physio: '尚未获取', music: '尚未获取', web: '尚未获取',
+                            voice: (singleVal === '保密' || !singleVal ? '无明显变化' : singleVal),
+                            outfit: '尚未获取', loc: '尚未获取'
                         };
                     }
 
-                    saveAllCharacters(); // 保存入库
-                    
-                    // 静默刷新 UI
+                    saveAllCharacters(); // 保存状态入库
+
+                    // 静默刷新打开的面板
                     const panelOverlay = document.getElementById('char-status-panel-overlay');
-                    if(panelOverlay && panelOverlay.style.display === 'flex') {
-                        updateCharStatusPanelUI(); 
+                    if (panelOverlay && panelOverlay.style.display === 'flex') {
+                        updateCharStatusPanelUI();
                     }
                 }
+
+
+
+                                // 执行 AI 宠物操作
+                else if (msgs[i].startsWith('[PET_ACTION:') && msgs[i].endsWith(']')) {
+                    const action = msgs[i].substring(12, msgs[i].length - 1).toLowerCase();
+                    const actionName = action === 'feed' ? '喂食' : (action === 'play' ? '玩耍' : '带出门兜风');
+                    
+                    // 让 AI 在后台静默执行操作并获得结果
+                    const resultMsg = interactPet(action, 'ai');
+                    
+                    // 把结果发在聊天框告诉用户
+                    addMessageToUI('system', `${activeChar.name} 刚刚给你的宠物进行了 [${actionName}] 操作！\n结果: ${resultMsg}`, false, null, `[系统交互：AI对宠物进行了${actionName}]`);
+                }
+
+
 
 
 
@@ -3861,7 +4474,7 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
         }
     }
 
-    function toggleMemo(idx, source) {
+        function toggleMemo(idx, source) {
         if(!sharedMemo[idx]) return;
         sharedMemo[idx].done = !sharedMemo[idx].done;
         saveMemo();
@@ -3869,10 +4482,10 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
         if(source === 'user' && typeof activeCharId !== 'undefined') {
             const state = sharedMemo[idx].done ? "打勾完成了" : "取消了完成";
             addMessageToUI('system', `我刚才在备忘录里${state}事项：[${sharedMemo[idx].text}]`, false, null, `[系统交互：我在桌面备忘录里${state}事项：${sharedMemo[idx].text}]`);
-            clearTimeout(aiReplyTimer); 
-            aiReplyTimer = setTimeout(triggerAIResponse, 2000); 
+            // 已取消自动回复，改为等待用户手动唤醒 AI
         }
     }
+
 
     async function editMemo(idx) {
         const newText = await sysPrompt("编辑备忘录", "修改内容：", sharedMemo[idx].text);
@@ -4289,6 +4902,27 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
     // ==========================================
     // 主屏幕 APP 与小组件长按自由拖拽排序 (究极稳定版)
     // ==========================================
+
+
+        // 监听滑动，更新指示器
+    function updatePageDots() {
+        const home = document.getElementById('os-home');
+        if(!home) return;
+        const pageIndex = Math.round(home.scrollLeft / home.clientWidth);
+        const dots = document.querySelectorAll('#home-page-dots .dot');
+        dots.forEach((dot, i) => { dot.classList.toggle('active', i === pageIndex); });
+    }
+
+
+
+
+
+
+
+
+
+
+
     function initHomeDragAndDrop() {
         const container = document.getElementById('os-home');
         if (!container) return;
@@ -4485,6 +5119,265 @@ $$PANEL:生殖器官状态|生理状态|正在听的音乐|正在浏览的网址
             // (已取消自动回复，改为等待用户手动触发或发下一条消息时 AI 再察觉)
         }
     }
+
+    // ==========================================
+    // 桌面宠物系统 (黑白拓麻歌子 + AI聊天 + 养成)
+    // ==========================================
+    let petData = JSON.parse(localStorage.getItem('ai_os_pet')) || {};
+
+    // 默认数据填充（兼容旧用户）
+    if(typeof petData.coins === 'undefined') {
+        petData = {
+             name: "小宠物", // <--- 新增默认名字
+            level: petData.level || 1, 
+            exp: petData.exp || 0, 
+            hunger: petData.hunger || 50, 
+            mood: petData.mood || 50,
+            coins: 50, 
+            coinsEarnedToday: 0, 
+            lastCoinDate: new Date().toDateString(),
+            prompt: "你是一只呆萌的电子宠物，只会用简短可爱的语言或颜文字回复。像小动物一样撒娇，不要发长篇大论。",
+            customShape: ""
+        };
+    }
+
+    function getExpLimit(level) { return level * 100; } 
+
+    function savePet() {
+        localStorage.setItem('ai_os_pet', JSON.stringify(petData));
+        updatePetUI();
+    }
+
+    function updatePetUI() {
+        const elLv = document.getElementById('pet-lv');
+        if (!elLv) return;
+
+        elLv.innerText = petData.level;
+        document.getElementById('pet-coins').innerText = petData.coins;
+        document.getElementById('pet-hunger-bar').style.width = Math.min(100, Math.max(0, petData.hunger)) + '%';
+        document.getElementById('pet-mood-bar').style.width = Math.min(100, Math.max(0, petData.mood)) + '%';
+        
+        let limit = getExpLimit(petData.level);
+        document.getElementById('pet-exp-bar').style.width = Math.min(100, (petData.exp / limit) * 100) + '%';
+
+        // 形态变化（支持自定义）
+        const entity = document.getElementById('pet-entity');
+        if (petData.customShape && petData.customShape.trim() !== "") {
+            entity.innerText = petData.customShape;
+        } else {
+            if (petData.level < 5) entity.innerText = "(='x'=)";
+            else if (petData.level < 10) entity.innerText = "(=ΦωΦ=)";
+            else entity.innerText = "(=✧ω✧=)";
+        }
+    }
+
+    // 每天重置金币获取上限
+    function checkCoinReset() {
+        let today = new Date().toDateString();
+        if (petData.lastCoinDate !== today) {
+            petData.coinsEarnedToday = 0;
+            petData.lastCoinDate = today;
+        }
+    }
+
+        function interactPet(action, source = 'user') {
+        const entity = document.getElementById('pet-entity');
+        let expGained = 0; let msg = ""; let resultLog = "";
+
+        // 如果是用户点击，才触发动画，AI后台操作不触发前台动画以防报错
+        if(source === 'user') {
+            entity.classList.remove('pet-anim-eat', 'pet-anim-jump', 'pet-anim-walk');
+            void entity.offsetWidth; 
+        }
+
+        if (action === 'feed') {
+            if (source === 'user' && petData.coins < 10) return sysAlert("提示", "金币不足！(需要10金币)\n请点击小宠物聊天赚取金币。");
+            if (petData.hunger >= 100) {
+                return source === 'user' ? sysAlert("提示", "宠物已经吃饱了！再吃要撑坏了。") : "宠物已经吃饱了，拒绝了喂食。";
+            }
+            if (source === 'user') petData.coins -= 10;
+            petData.hunger = Math.min(100, petData.hunger + 30);
+            petData.mood = Math.min(100, petData.mood + 5);
+            expGained = 10; 
+            if(source === 'user') entity.classList.add('pet-anim-eat'); 
+            msg = "+10 EXP"; resultLog = "喂食成功，饱食度增加了。";
+            
+        } else if (action === 'play') {
+            if (petData.hunger <= 10) {
+                return source === 'user' ? sysAlert("提示", "宠物饿得没力气玩耍...") : "宠物饿得没力气玩耍，拒绝了互动。";
+            }
+            petData.hunger = Math.max(0, petData.hunger - 15);
+            petData.mood = Math.min(100, petData.mood + 25);
+            expGained = 20; 
+            if(source === 'user') entity.classList.add('pet-anim-jump'); 
+            msg = "+20 EXP"; resultLog = "玩耍很开心，心情大好！";
+            
+        } else if (action === 'explore') {
+            if (petData.hunger <= 30) {
+                return source === 'user' ? sysAlert("提示", "外出消耗大，先喂点东西吧！") : "宠物太饿了，不愿出门。";
+            }
+            petData.hunger = Math.max(0, petData.hunger - 30);
+            let moodChange = Math.random() > 0.5 ? 20 : -10; 
+            petData.mood = Math.min(100, Math.max(0, petData.mood + moodChange));
+            expGained = 40; 
+            if(source === 'user') entity.classList.add('pet-anim-walk'); 
+            msg = moodChange > 0 ? "+40 EXP (奇遇)" : "+40 EXP (遇雨)";
+            resultLog = moodChange > 0 ? "外出遇到了好事，心情变好了！" : "外出遇到了坏天气，心情有点低落。";
+        }
+
+        petData.exp += expGained;
+        
+        if (source === 'user') {
+            const expText = document.getElementById('pet-exp-text');
+            expText.innerText = msg;
+            expText.classList.add('show');
+            setTimeout(() => expText.classList.remove('show'), 800);
+        }
+
+        checkPetLevelUp(); savePet();
+        return resultLog; // 专门返回给 AI 的后台结果
+    }
+
+        // 新增：分享宠物到主聊天框 (可爱便签版)
+        function sharePetToChat() {
+        const petShape = petData.customShape || document.getElementById('pet-entity').innerText;
+        const petName = petData.name || "小宠物";
+        
+        // 发送给 AI 看到的底层核心记忆文本，加上了名字！
+        const rawText = `[向你展示了名叫“${petName}”的电子宠物，形态：${petShape}，等级：LV.${petData.level}，饱食度：${petData.hunger}/100，心情值：${petData.mood}/100。快和它打个招呼或者喂它吧！]`;
+        
+        // 用户端显示的可爱 UI 便签
+        const html = `
+            <div class="pet-share-note">
+                <div class="note-tape"></div>
+                <div class="note-title">${petName} ฅ^•ﻌ•^ฅ</div>
+                <div class="note-shape">${petShape}</div>
+                <div class="note-stats">
+                    <div class="stat-line"><span>✨ 等级</span><span style="color:#d88c8c; font-size:13px;">LV.${petData.level}</span></div>
+                    <div class="stat-line"><span>🍼 饱食度</span><span>${petData.hunger} / 100</span></div>
+                    <div class="stat-line"><span>💖 心情值</span><span>${petData.mood} / 100</span></div>
+                </div>
+                <div class="note-footer">"快来和我玩呀~"</div>
+            </div>
+        `;
+        
+                openApp('chat-app'); 
+        addMessageToUI('user', html, true, null, rawText, 'pet-share'); 
+        // 已取消自动回复，改为等待用户手动唤醒 AI
+    }
+
+
+
+
+
+    // 触发气泡
+    function showPetBubble() {
+        const bubble = document.getElementById('pet-bubble');
+        bubble.innerText = "点我聊天赚金币~";
+        bubble.style.display = 'block';
+        setTimeout(()=> { 
+            if(bubble.innerText === "点我聊天赚金币~") bubble.style.display = 'none'; 
+        }, 3000);
+    }
+
+    // 与宠物对话 (AI 接入)
+    async function startPetChat() {
+        const bubble = document.getElementById('pet-bubble');
+        const userMsg = await sysPrompt("互动聊天", "和你的小宠物说点什么：");
+        if (!userMsg) return;
+
+        bubble.style.display = 'block';
+        bubble.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 回复中...`;
+
+        checkCoinReset();
+        let earned = 0;
+        if (petData.coinsEarnedToday < 200) {
+            earned = 20; // 每次聊天赚 20 金币
+            petData.coins += earned;
+            petData.coinsEarnedToday += earned;
+            savePet();
+        }
+
+        try {
+            const url = cleanBaseUrl(globalAPI.url);
+            if(!url || !globalAPI.key) {
+                bubble.innerText = "主人没配置 API，本宝宝不会说话喵...";
+                return;
+            }
+
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ 
+                    model: globalAPI.model, 
+                    messages: [
+                        { role: "system", content: petData.prompt },
+                        { role: "user", content: userMsg }
+                    ], 
+                    max_tokens: 150, 
+                    temperature: 0.8
+                })
+            });
+            const data = await res.json();
+            let reply = data.choices[0].message.content;
+            
+            bubble.innerText = reply;
+            
+            // 显示获得的金币动画
+            if (earned > 0) {
+                const expText = document.getElementById('pet-exp-text');
+                expText.innerText = `+${earned}💰`;
+                expText.style.color = '#cc5555'; // 金币颜色
+                expText.classList.add('show');
+                setTimeout(() => {
+                    expText.classList.remove('show');
+                    expText.style.color = '#111'; // 动画结束重置颜色
+                }, 1000);
+            }
+
+            setTimeout(()=> { bubble.style.display = 'none'; }, 6000);
+
+        } catch (e) {
+            bubble.innerText = "网络断开惹...";
+            setTimeout(()=> { bubble.style.display = 'none'; }, 2000);
+        }
+    }
+
+        // 编辑宠物设定
+    async function editPet() {
+        const newName = await sysPrompt("宠物名字", "给你的小动物起个名字吧：", petData.name || "小宠物");
+        if (newName !== null) petData.name = newName.trim() || "小宠物";
+
+        const newShape = await sysPrompt("外形设定", "请输入小动物的外形 (支持字符画/颜文字)：\n(若置空则随等级自动进化)", petData.customShape);
+        if (newShape !== null) petData.customShape = newShape.trim();
+
+        const newPrompt = await sysPrompt("性格设定", "告诉 AI 它的身份和说话方式：", petData.prompt);
+        if (newPrompt !== null) petData.prompt = newPrompt.trim();
+
+        savePet();
+        sysAlert("设定保存", "小动物的设定已更新！名字、外形和性格已生效。");
+    }
+
+
+    function checkPetLevelUp() {
+        let limit = getExpLimit(petData.level);
+        if (petData.exp >= limit) {
+            petData.level++;
+            petData.exp -= limit;
+            setTimeout(() => sysAlert("✨ 升级了！", "你的宠物成长到了 LV." + petData.level), 800);
+        }
+    }
+
+    // --- 拦截并刷新 App ---
+    const _originalOpenAppExt = openApp;
+    openApp = function(appId) {
+        _originalOpenAppExt(appId);
+        if(appId === 'status-app' && typeof renderStatusAppChars === 'function') renderStatusAppChars();
+        if(appId === 'pet-app') updatePetUI();
+    };
+
+    
+    
 
 
 
