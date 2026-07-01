@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI 沉浸社交 OS (完全进化版)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+    
+
         /* --- 全局与主题配色 (深度 iOS 毛玻璃化) --- */
        /* --- 1. 全局美化动态变量 --- */
 :root {
@@ -113,6 +119,66 @@
             --chat-overlay: rgba(255, 255, 255, 0.3);
             --modal-bg: rgba(255, 255, 255, 0.95);
         }
+
+        /* --- 新增的三种主题配色 --- */
+        
+        /* 1. 原先的莫兰迪配色 */
+        :root.morandi-mode {
+            --theme-light: #BDCBD2;
+            --theme-mid: #87C0CA;
+            --theme-dark: #66889E;
+            --accent: #87C0CA;
+            --bg-base: #1C1C1E;
+            --bg-panel: rgba(44, 44, 46, 0.7);
+            --bg-glass: rgba(28, 28, 30, 0.55);
+            --bg-glass-header: rgba(28, 28, 30, 0.75);
+            --text-main: #F2F2F7;
+            --text-sub: #AEAEB2;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.08);
+            --chat-bg: #121212;
+            --chat-overlay: rgba(0, 0, 0, 0.4);
+            --modal-bg: rgba(28, 28, 30, 0.95);
+        }
+
+        /* 2. 黑白灰高级配色 */
+        :root.monochrome-mode {
+            --theme-light: #D4D4D4;
+            --theme-mid: #888888;
+            --theme-dark: #333333;
+            --accent: #E0E0E0;
+            --bg-base: #0D0D0D;
+            --bg-panel: rgba(30, 30, 30, 0.8);
+            --bg-glass: rgba(20, 20, 20, 0.6);
+            --bg-glass-header: rgba(20, 20, 20, 0.85);
+            --text-main: #F5F5F5;
+            --text-sub: #9E9E9E;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --chat-bg: #111111;
+            --chat-overlay: rgba(0, 0, 0, 0.6);
+            --modal-bg: rgba(15, 15, 15, 0.98);
+        }
+
+        /* 3. 水蓝色 (清透护眼) */
+        :root.aqua-mode {
+            --theme-light: #D0E7F5;
+            --theme-mid: #B0C4DE;
+            --theme-dark: #89ABE3;
+            --accent: #89ABE3;
+            --bg-base: #E8F1F8;
+            --bg-panel: rgba(255, 255, 255, 0.85);
+            --bg-glass: rgba(208, 231, 245, 0.5);
+            --bg-glass-header: rgba(208, 231, 245, 0.8);
+            --text-main: #1A2C3F;
+            --text-sub: #5E758C;
+            --border-color: rgba(137, 171, 227, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --chat-bg: #D0E7F5;
+            --chat-overlay: rgba(255, 255, 255, 0.4);
+            --modal-bg: rgba(232, 241, 248, 0.95);
+        }
+
 
 /* --- 响应式紧凑布局：当屏幕高度小于 800px 时触发 --- */
 @media screen and (max-height: 800px) {
@@ -1866,9 +1932,13 @@ html body #chat-app .msg-time {
                         <div class="setting-item">
                             <span class="setting-label">主题模式 (全局)</span>
                             <select id="global-theme" class="setting-select" style="margin-top:8px;" onchange="toggleTheme()">
-                                <option value="dark">深色模式 (Dark)</option>
-                                <option value="light">浅色模式 (Light)</option>
-                            </select>
+    <option value="dark">深色模式 (Dark)</option>
+    <option value="light">浅色模式 (Light)</option>
+    <option value="morandi">莫兰迪配色 (Morandi)</option>
+    <option value="monochrome">黑白灰高级 (Monochrome)</option>
+    <option value="aqua">水蓝色 (Aqua)</option>
+</select>
+
                         </div>
                         <div class="setting-item">
                             <span class="setting-label">界面与字体大小</span>
@@ -2590,25 +2660,80 @@ if(narrationToggle) narrationToggle.checked = globalAPI.enableNarration;
         }
     }
 
-    async function toggleFullScreen() {
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        async function toggleFullScreen() {
+        // 检测是否是 iOS 设备 以及 是否已经处于桌面全屏模式 (PWA)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+        // 如果已经在 iOS 桌面全屏模式下了，直接提示
+        if (isIOS && isStandalone) {
+            sysAlert("提示", "宝宝，当前已经是最高级别的沉浸全屏模式啦。");
+            return;
+        }
+
+        // 兼容多浏览器的全屏状态检测
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+        if (!isFullscreen) {
             try {
-                if (document.documentElement.requestFullscreen) { await document.documentElement.requestFullscreen(); }
-                else if (document.documentElement.webkitRequestFullscreen) { await document.documentElement.webkitRequestFullscreen(); }
+                const docEl = document.documentElement;
+                // 安卓 / PC 端标准全屏请求
+                if (docEl.requestFullscreen) {
+                    await docEl.requestFullscreen();
+                } else if (docEl.webkitRequestFullscreen) {
+                    await docEl.webkitRequestFullscreen();
+                } else if (docEl.mozRequestFullScreen) {
+                    await docEl.mozRequestFullScreen();
+                } else if (docEl.msRequestFullscreen) {
+                    await docEl.msRequestFullscreen();
+                } else {
+                    // 如果 API 都不存在，极大可能就是 iOS Safari
+                    if (isIOS) {
+                        sysAlert("iOS 全屏指南", "iPhone 浏览器不支持直接全屏。\n\n💡 请点击浏览器底部中间的『分享』按钮，选择『添加到主屏幕』。\n\n然后在手机桌面打开，就能获得完美的沉浸式全屏体验啦！");
+                    } else {
+                        sysAlert("提示", "当前浏览器不支持自动全屏。");
+                    }
+                    return; // 拦截后续竖屏锁定逻辑
+                }
                 setTimeout(applyPortraitLock, 200); 
-            } catch (err) { console.log("全屏请求失败", err); }
+            } catch (err) { 
+                console.log("全屏请求失败", err);
+                if (isIOS) {
+                    sysAlert("iOS 全屏指南", "iPhone 限制了网页直接全屏。\n\n💡 请点击底部『分享』按钮，选择『添加到主屏幕』来获得沉浸体验！");
+                }
+            }
         } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); 
+            // 退出全屏兼容逻辑
+            try {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); 
+            } catch(err) {}
         }
     }
-    function toggleTheme() {
+
+        function toggleTheme() {
         globalAPI.theme = document.getElementById('global-theme').value;
+        
+        // 移除所有特定的主题类
+        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode');
+        
+        // 根据选择追加对应主题
         if (globalAPI.theme === 'light') document.documentElement.classList.add('light-mode');
-        else document.documentElement.classList.remove('light-mode');
+        else if (globalAPI.theme === 'morandi') document.documentElement.classList.add('morandi-mode');
+        else if (globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
+        else if (globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
+        
         localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
     }
+
 
     // ！！！新增的控制函数 ！！！
     function toggleUIZoom() {
@@ -3012,7 +3137,13 @@ if(narrationToggle) narrationToggle.checked = globalAPI.enableNarration;
         }
 
         if (globalAPI.wallpaperMode) applyStatusBarColor(globalAPI.wallpaperMode);
+                 // 恢复加载主题
+        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode');
         if(globalAPI.theme === 'light') document.documentElement.classList.add('light-mode');
+        else if(globalAPI.theme === 'morandi') document.documentElement.classList.add('morandi-mode');
+        else if(globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
+        else if(globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
+document.documentElement.classList.add('light-mode');
 
 
 
