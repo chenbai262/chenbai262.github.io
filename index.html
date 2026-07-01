@@ -2263,17 +2263,20 @@ html body #chat-app .msg-time {
                         <div class="del-btn" onclick="deleteActiveCharacter()"><i class="fas fa-trash"></i></div>
                     </div>
 
-                                                <!-- 👇 新增：聊天记录备份与恢复 👇 -->
-                    <div class="settings-group-title">当前角色聊天记录备份</div>
+                                                <!-- 👇 修改后的：角色完整数据备份与恢复 👇 -->
+                    <div class="settings-group-title">角色完整数据搬家 (设定 + 记录)</div>
                     <div class="settings-group">
                         <div class="btn-row" style="margin: 15px;">
-                            <div class="save-btn" style="flex: 1; background: #66889E; color: #fff; padding: 12px; font-size: 14px;" onclick="exportChatHistory()"><i class="fas fa-file-export"></i> 导出聊天记录</div>
-                            <div class="save-btn" style="flex: 1; background: #87C0CA; color: #000; padding: 12px; font-size: 14px;" onclick="triggerImportChat()"><i class="fas fa-file-import"></i> 导入聊天记录</div>
-                            <input type="file" id="chat-import-input" accept=".json" style="display:none;" onchange="importChatHistory(event)">
+                            <div class="save-btn" style="flex: 1; background: #66889E; color: #fff; padding: 12px; font-size: 14px;" onclick="exportCharacterData()"><i class="fas fa-file-export"></i> 导出完整数据</div>
+                            <div class="save-btn" style="flex: 1; background: #87C0CA; color: #000; padding: 12px; font-size: 14px;" onclick="triggerImportCharacter()"><i class="fas fa-file-import"></i> 导入角色包</div>
+                            <input type="file" id="character-import-input" accept=".json" style="display:none;" onchange="importCharacterData(event)">
                         </div>
-                        <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px;">将当前角色的对话记录导出，换浏览器或设备后可重新导入恢复。</p>
+                        <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px; padding: 0 10px;">将当前角色的各项设定、聊天记录、记忆书打包导出。换浏览器后可导入为新角色或覆盖现有角色。</p>
                     </div>
-                    <!-- 👆 新增结束 👆 -->
+                    <!-- 👆 替换结束 👆 -->
+
+
+
 
 
                             
@@ -7405,54 +7408,104 @@ function shareXToChat(idx) {
 }
 
 
+
 // ==========================================
-// 新增：聊天记录备份与恢复逻辑
+// 核心：角色完整数据打包备份与恢复逻辑
 // ==========================================
-function exportChatHistory() {
-    const data = localStorage.getItem(`ai_os_chat_${activeCharId}`);
-    if (!data || data === '[]') {
-        sysAlert("提示", "当前角色没有聊天记录可以导出。");
-        return;
-    }
+function exportCharacterData() {
     const char = characters.find(c => c.id === activeCharId);
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(data);
+    if (!char) return;
+
+    // 提取该角色身上的所有附属数据
+    const chatHistory = JSON.parse(localStorage.getItem(`ai_os_chat_${activeCharId}`) || '[]');
+    const memories = JSON.parse(localStorage.getItem(`ai_os_memories_${activeCharId}`) || '[]');
+    const heartHistory = JSON.parse(localStorage.getItem(`ai_os_heart_${activeCharId}`) || '[]');
+
+    // 组装打包数据
+    const exportData = {
+        version: "2.0",
+        type: "character_backup",
+        character: char,
+        chat: chatHistory,
+        memories: memories,
+        heart: heartHistory
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `AI_OS_${char.name}_聊天记录备份.json`);
+    downloadAnchorNode.setAttribute("download", `AI_OS_角色数据包_${char.name}.json`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 }
 
-function triggerImportChat() {
-    document.getElementById('chat-import-input').click();
+function triggerImportCharacter() {
+    document.getElementById('character-import-input').click();
 }
 
-function importChatHistory(e) {
+function importCharacterData(e) {
     const file = e.target.files[0];
     if(!file) return;
     const reader = new FileReader();
     reader.onload = async function(event) {
         try {
             const imported = JSON.parse(event.target.result);
+            
+            // 兼容之前可能导出的纯数组格式聊天记录
             if (Array.isArray(imported)) {
-                const confirmMerge = await sysConfirm("导入确认", "导入将覆盖当前角色的聊天记录，确定继续吗？");
+                const confirmMerge = await sysConfirm("导入确认", "检测到旧版聊天记录备份。导入将覆盖当前角色的聊天记录，确定继续吗？");
                 if (confirmMerge) {
                     messageHistory = imported;
                     localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
-                    loadChatHistory(); // 自动刷新聊天记录显示
-                    sysAlert("导入成功", "聊天记录已成功恢复！前往短信界面即可查看。");
+                    loadChatHistory();
+                    sysAlert("导入成功", "聊天记录已成功恢复！");
                 }
-            } else {
-                throw new Error("JSON格式错误");
+                return;
             }
+
+            // 严格格式校验
+            if (imported.type !== "character_backup" || !imported.character) {
+                throw new Error("文件格式错误，这不是一个有效的角色数据包");
+            }
+
+            const confirmAction = await sysConfirm("导入角色数据", `发现角色包【${imported.character.name}】的数据。\n\n你要覆盖当前正在编辑的角色，还是将其作为全新角色添加到列表中？\n\n【确定】直接覆盖当前角色\n【取消】作为新角色追加`);
+
+            let targetId;
+            if (confirmAction) {
+                // 选择覆盖当前角色
+                targetId = activeCharId;
+                const idx = characters.findIndex(c => c.id === targetId);
+                imported.character.id = targetId; // 锁定 ID 为当前
+                characters[idx] = imported.character;
+            } else {
+                // 选择追加为新角色
+                targetId = generateId();
+                imported.character.id = targetId; // 赋予新 ID，防止冲突
+                characters.push(imported.character);
+            }
+
+            saveAllCharacters();
+
+            // 恢复该角色绑定的各项记录
+            if (imported.chat) localStorage.setItem(`ai_os_chat_${targetId}`, JSON.stringify(imported.chat));
+            if (imported.memories) localStorage.setItem(`ai_os_memories_${targetId}`, JSON.stringify(imported.memories));
+            if (imported.heart) localStorage.setItem(`ai_os_heart_${targetId}`, JSON.stringify(imported.heart));
+
+            // 强制重新加载目标角色状态并刷新侧边栏
+            loadCharacterState(targetId, true);
+            
+            sysAlert("完美恢复", `角色【${imported.character.name}】的设定、气泡、聊天记录、记忆书等数据已满血复活！\n\n(注：使用超清模式上传的聊天背景因太大无法打包，如有需要请在新浏览器重新选一次背景图即可)`);
+
         } catch(err) {
-            sysAlert("导入失败", "文件格式损坏或不是有效的聊天记录文件！");
+            sysAlert("导入失败", "文件格式损坏或不是有效的角色备份包！");
+            console.error(err);
         }
     };
     reader.readAsText(file);
-    e.target.value = ''; // 清空选择，允许重复导入同一个文件
+    e.target.value = ''; // 清空选择，允许重新点同一个文件
 }
+
 
 
 
