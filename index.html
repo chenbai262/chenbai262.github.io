@@ -1748,6 +1748,37 @@ html body #chat-app .msg-time {
 .x-action-btn.view:active { color: #1d9bf0; }
 
 
+                                    /* ========================================== */
+        /* 健康监测 App 专属样式 */
+        /* ========================================== */
+        #health-app { background: var(--bg-base); min-height: 100vh; }
+        .health-card { background: var(--bg-panel); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 0.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .hg-box { background: var(--input-bg); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 0.5px solid var(--border-color); }
+        .hg-icon { font-size: 28px; margin-bottom: 8px; }
+        .hg-title { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; font-weight: 500;}
+        .hg-value { font-size: 15px; font-weight: bold; color: var(--text-main); }
+        
+        /* 动态心电图可视化 */
+        .ecg-panel { height: 90px; background: rgba(10, 20, 15, 0.6); border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; border: 1px solid rgba(0, 255, 100, 0.2); margin-bottom: 12px; backdrop-filter: blur(10px); }
+        :root.light-mode .ecg-panel { background: rgba(220, 240, 230, 0.6); border-color: rgba(0, 200, 100, 0.3); }
+        .ecg-line { width: 200%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100"><path d="M0,50 L40,50 L50,20 L60,80 L70,50 L200,50" fill="none" stroke="%232ecc71" stroke-width="2.5"/></svg>') repeat-x; animation: ecgMove 2.5s linear infinite; }
+        @keyframes ecgMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .bpm-display { position: absolute; top: 10px; right: 15px; color: #2ecc71; font-family: monospace; font-size: 28px; font-weight: bold; text-shadow: 0 0 8px rgba(46, 204, 113, 0.5); }
+        
+        /* 余生总结列表 */
+        .health-summary-list { display: flex; flex-direction: column; gap: 12px; }
+        .hsl-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding-bottom: 10px; border-bottom: 0.5px dashed var(--border-color); }
+        .hsl-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .hsl-label { color: var(--text-sub); }
+        .hsl-val { color: var(--accent); font-weight: bold; font-size: 15px; }
+
+        /* 气泡分享卡片脱掉底色 */
+        .msg.health-share-bubble { background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; margin: 10px 0 !important; cursor: default; }
+        html body #chat-app #chat-container .msg.health-share-bubble { font-size: 14px !important; padding: 0 !important; }
+
+
+
 
 
 
@@ -1936,6 +1967,15 @@ html body #chat-app .msg-time {
     </div>
     <div class="app-label">X (推特)</div>
 </div>
+
+                                           <!-- 👇新增：健康报告图标 -->
+                    <div class="app-container" onclick="openApp('health-app')" data-drag-id="sys-health">
+                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 99, 132, 0.4) 0%, rgba(255, 154, 158, 0.1) 100%);">
+                            <i class="fas fa-heartbeat" style="color: rgba(255,255,255,0.95);"></i>
+                        </div>
+                        <div class="app-label">健康监测</div>
+                    </div>
+
 
 
 
@@ -2793,6 +2833,27 @@ html body #chat-app .msg-time {
     
     <div id="x-feed" class="x-feed-container" style="padding-bottom: 80px;"></div>
 </div>
+
+                                   <!-- 健康监测 App -->
+            <div id="health-app" class="app-view scrollable">
+                <div class="settings-header glass-effect" style="position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);">
+                    <div style="display:flex; align-items:center;">
+                        <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                        <span style="font-size:18px; font-weight:bold; color:var(--text-main);" id="health-title-name">健康报告</span>
+                    </div>
+                    <div style="display:flex; gap: 15px; align-items:center;">
+                        <i class="fas fa-sync-alt" id="health-refresh-btn" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="generateHealthData()" title="重新体检扫描"></i>
+                        <i class="fas fa-share-square" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="shareHealthToChat()" title="将报告发给TA"></i>
+                    </div>
+                </div>
+                <div style="padding: 20px; padding-bottom: 80px;" id="health-content">
+                    <!-- 数据由 JS 动态生成 -->
+                </div>
+            </div>
+
+
+
+                       
 
 
 
@@ -4075,6 +4136,8 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         // 👇 新增这两行
         if (msgType === 'tieba-share') div.classList.add('tieba-share-bubble');
         if (msgType === 'x-share') div.classList.add('x-share-bubble');
+        if (msgType === 'health-share') div.classList.add('health-share-bubble');
+
 
 
         
@@ -7505,6 +7568,207 @@ function importCharacterData(e) {
     reader.readAsText(file);
     e.target.value = ''; // 清空选择，允许重新点同一个文件
 }
+
+
+
+// ==========================================
+// 健康监测 App 核心逻辑
+// ==========================================
+let healthDataStore = JSON.parse(localStorage.getItem('ai_os_health_data')) || {};
+
+function renderHealthApp() {
+    const char = characters.find(c => c.id === activeCharId);
+    document.getElementById('health-title-name').innerText = `${char.name} 的健康报告`;
+    
+    const data = healthDataStore[activeCharId];
+    const container = document.getElementById('health-content');
+    
+    if (!data) {
+        container.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:60px 20px; line-height: 1.8;">
+            <i class="fas fa-stethoscope" style="font-size: 50px; margin-bottom: 15px; opacity: 0.5;"></i><br>
+            尚未获取 ${char.name} 的生命体征数据<br>点击右上角的 <i class="fas fa-sync-alt" style="color:var(--accent);"></i> 按钮进行全身扫描。
+        </div>`;
+        return;
+    }
+
+    // 根据心率调整心电图动画速度 (BPM越高，动画越快)
+    let animDuration = 2.5;
+    if (data.heartRate > 100) animDuration = 1.0;
+    else if (data.heartRate > 80) animDuration = 1.8;
+    else if (data.heartRate < 60) animDuration = 3.5;
+
+    container.innerHTML = `
+        <div class="health-card">
+            <div style="font-size: 14px; font-weight: bold; margin-bottom: 10px; color: var(--text-main);"><i class="fas fa-wave-square" style="color:#2ecc71;"></i> 实时心率频率</div>
+            <div class="ecg-panel">
+                <div class="ecg-line" style="animation-duration: ${animDuration}s;"></div>
+                <div class="bpm-display"><i class="fas fa-heart" style="font-size:20px; animation: pulse ${60/data.heartRate}s infinite;"></i> ${data.heartRate}</div>
+            </div>
+            <div style="text-align:right; font-size: 13px; color: var(--text-sub); font-weight: 500;">心跳状态: <span style="color:var(--text-main);">${data.heartStatus}</span></div>
+        </div>
+
+        <div class="health-grid">
+            <div class="hg-box">
+                <div class="hg-icon" style="color: #ff6b6b;"><i class="fas fa-thermometer-half"></i></div>
+                <div class="hg-title">是否生病</div>
+                <div class="hg-value">${data.isSick}</div>
+            </div>
+            <div class="hg-box">
+                <div class="hg-icon" style="color: #4facfe;"><i class="fas fa-tint"></i></div>
+                <div class="hg-title">肾脏功能</div>
+                <div class="hg-value">${data.kidney}</div>
+            </div>
+            <div class="hg-box" style="grid-column: span 2;">
+                <div class="hg-icon" style="color: #f6d365;"><i class="fas fa-hamburger"></i></div>
+                <div class="hg-title">胃部及消化系统</div>
+                <div class="hg-value">${data.stomach}</div>
+            </div>
+        </div>
+
+        <div class="health-card">
+            <div style="font-size: 14px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-hourglass-half" style="color: var(--accent);"></i> 生理年龄与余生大赏
+            </div>
+            <div class="health-summary-list">
+                <div class="hsl-item"><span class="hsl-label">检测生理年龄</span><span class="hsl-val">${data.age} 岁</span></div>
+                <div class="hsl-item"><span class="hsl-label">预计剩余寿命</span><span class="hsl-val">${data.lifeExpectancy} 年</span></div>
+                <div class="hsl-item"><span class="hsl-label">余生接吻次数预测</span><span class="hsl-val">${data.kisses} 次</span></div>
+                <div class="hsl-item"><span class="hsl-label">余生 DoI 次数预测</span><span class="hsl-val">${data.doI} 次</span></div>
+                <div class="hsl-item"><span class="hsl-label">余生旅行次数预测</span><span class="hsl-val">${data.travels} 次</span></div>
+                <div class="hsl-item"><span class="hsl-label">余生看电影预测</span><span class="hsl-val">${data.movies} 部</span></div>
+            </div>
+        </div>
+    `;
+}
+
+// 呼叫 AI 进行赛博体检
+async function generateHealthData() {
+    const char = characters.find(c => c.id === activeCharId);
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) return sysAlert("错误", "请先在角色工坊配置 API 密钥");
+
+    const btn = document.getElementById('health-refresh-btn');
+    if (btn.classList.contains('fa-spin')) return;
+    
+    const confirmScan = await sysConfirm("赛博体检", `即将调用 AI 对【${char.name}】进行全身生命体征扫描和余生推演。\n\n扫描结果将受到你们近期的聊天记录影响。`);
+    if (!confirmScan) return;
+
+    btn.classList.add('fa-spin');
+    document.getElementById('health-content').style.opacity = '0.5';
+
+    // 提取近期聊天记录，用于AI判断心情和身体状况
+    const recentLogs = messageHistory.filter(m => m.role !== 'system').slice(-8).map(m => `${m.role === 'user' ? '我' : char.name}: ${m.rawApiContent || m.content}`).join('\n');
+
+    const prompt = `你现在是一台高级赛博医疗扫描仪。请根据角色【${char.name}】的设定（${char.prompt}）以及最近和我（用户）的聊天记录，分析出TA目前的身体健康数据和余生预测。
+
+【输出要求】
+必须且只能输出严格的 JSON 字符串，绝对不要包含任何 markdown 标记 (如 \`\`\`json) 或其他废话。格式必须如下：
+{
+  "heartRate": 85, 
+  "heartStatus": "心跳平稳 / 小鹿乱撞 / 极速狂飙",
+  "isSick": "非常健康 / 轻微感冒 / 疲劳发热",
+  "kidney": "功能强健 / 稍微透支 / 虚弱",
+  "stomach": "消化良好 / 略微胃痛 / 饿肚子中",
+  "age": 22, 
+  "lifeExpectancy": 65, 
+  "kisses": 1250, 
+  "travels": 30, 
+  "doI": 520, 
+  "movies": 800 
+}
+
+注意：heartRate, age, lifeExpectancy, kisses, travels, doI, movies 必须是数字(Number)。如果聊天记录中表现得害羞或激动，请调高心率和修改心跳状态！
+
+近期聊天记录参考：
+${recentLogs || "暂无"}`;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ 
+                model: globalAPI.model, 
+                messages: [{role: "user", content: prompt}], 
+                temperature: 0.8 
+            }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        
+        // 净化 JSON
+        const firstBrace = reply.indexOf('{');
+        const lastBrace = reply.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+            reply = reply.substring(firstBrace, lastBrace + 1);
+        } else {
+            throw new Error("模型未返回合法的 JSON");
+        }
+        
+        const newData = JSON.parse(reply);
+        
+        // 存入本地
+        healthDataStore[activeCharId] = newData;
+        localStorage.setItem('ai_os_health_data', JSON.stringify(healthDataStore));
+        renderHealthApp();
+        sysAlert("扫描完成", "生命体征与余生推演已更新！");
+
+    } catch(e) {
+        console.error("体检失败:", e);
+        sysAlert("扫描中断", "AI 返回数据格式错误或网络超时，请重试。\n" + e.message);
+    } finally {
+        btn.classList.remove('fa-spin');
+        document.getElementById('health-content').style.opacity = '1';
+    }
+}
+
+// 分享体检报告给角色
+function shareHealthToChat() {
+    const data = healthDataStore[activeCharId];
+    if (!data) return sysAlert("提示", "请先进行体检扫描！");
+    
+    // 生成美观的分享卡片 HTML
+    const html = `
+        <div class="x-share-card" style="background: rgba(30, 45, 40, 0.75); border-color: rgba(46, 204, 113, 0.4);">
+            <div class="xs-header" style="color: #2ecc71;">
+                <i class="fas fa-stethoscope" style="font-size: 20px;"></i>
+                <div style="font-weight: bold; font-size: 15px;">全息健康扫描报告</div>
+            </div>
+            <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                <div><span style="opacity:0.7">当前心跳:</span> <strong style="color:#fff">${data.heartRate} BPM</strong> (${data.heartStatus})</div>
+                <div><span style="opacity:0.7">身体状况:</span> <span style="color:#fff">${data.isSick}</span></div>
+                <div style="margin-top: 5px; border-top: 0.5px dashed rgba(255,255,255,0.2); padding-top: 5px;">
+                    <span style="opacity:0.7">余生大赏预测:</span><br>
+                    还能活 ${data.lifeExpectancy} 年，预计接吻 ${data.kisses} 次，做爱 ${data.doI} 次...
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 隐藏的 AI 提示词（给 AI 看的）
+    const rawText = `[向你发送了你刚刚的赛博体检报告。你的心率是：${data.heartRate} BPM（${data.heartStatus}），身体状况：${data.isSick}，肾功能：${data.kidney}。系统预测你还能活 ${data.lifeExpectancy} 年，在这余生里你还会接吻 ${data.kisses} 次，做爱 ${data.doI} 次。请针对这份带有私密预测的体检报告给出你的真实反应（可以害羞、吐槽、或者顺着余生预测调情）]`;
+    
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'health-share');
+    
+    // 延迟唤醒 AI
+    setTimeout(() => triggerAIResponse(), 300);
+}
+
+// 拦截 App 打开事件，刷新健康报告渲染
+const _originalOpenAppHealth = openApp;
+openApp = function(appId) {
+    _originalOpenAppHealth(appId);
+    if (appId === 'health-app') renderHealthApp();
+};
+
+
 
 
 
