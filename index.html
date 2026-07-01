@@ -1150,7 +1150,7 @@ input:checked + .slider:before {
         :root { --ui-zoom: 1; }
         
         /* 增加超级权重，强制锁死字体大小，但【坚决排除】表情包、宠物便签、图片 */
-        html body #chat-app #chat-container .msg:not(.sticker-bubble):not(.pet-share-bubble):not(.image-bubble) { 
+       html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)  { 
             font-size: calc(16px * var(--ui-zoom)) !important; 
             padding: calc(12px * var(--ui-zoom)) calc(16px * var(--ui-zoom)) !important;
             opacity: 1 !important; 
@@ -1179,7 +1179,7 @@ input:checked + .slider:before {
         }
                      
                       /* 增加超级权重，强制锁死字体大小，但【坚决排除】表情包、宠物便签、图片、音乐卡片 */
-        html body #chat-app #chat-container .msg:not(.sticker-bubble):not(.pet-share-bubble):not(.image-bubble):not(.music-share-bubble) { 
+        html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
             font-size: calc(16px * var(--ui-zoom)) !important; 
             padding: calc(12px * var(--ui-zoom)) calc(16px * var(--ui-zoom)) !important;
             opacity: 1 !important; 
@@ -1188,15 +1188,58 @@ input:checked + .slider:before {
         }
             
                                /* 1. 彻底把气泡外壳隐形脱掉，实现完全独立 */
-        .msg.music-share-bubble { 
-            background: transparent !important; 
-            box-shadow: none !important; 
-            padding: 0 !important; 
-            border: none !important; 
-            backdrop-filter: none !important; 
-            -webkit-backdrop-filter: none !important;
-            margin: 10px 0 !important;
-            cursor: default;
+.msg.music-share-bubble, .msg.tieba-share-bubble, .msg.x-share-bubble { 
+    background: transparent !important; 
+    box-shadow: none !important; 
+    padding: 0 !important; 
+    border: none !important; 
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important;
+    margin: 10px 0 !important;
+    cursor: default;
+}
+
+/* 贴吧与X独立分享卡片 */
+.tieba-share-card, .x-share-card {
+    background: rgba(40, 40, 45, 0.45);
+    backdrop-filter: blur(35px) saturate(180%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    border-radius: 24px; 
+    padding: 16px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2); 
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    width: 250px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+:root.light-mode .tieba-share-card, :root.light-mode .x-share-card {
+    background: rgba(255, 255, 255, 0.65);
+    border: 0.5px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), inset 0 1px 2px #fff;
+    color: #000;
+}
+
+.tieba-share-card .ts-header { font-size: 13px; color: var(--accent); font-weight: bold; display: flex; align-items: center; gap: 6px; }
+.tieba-share-card .ts-title { font-size: 15px; font-weight: bold; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+:root.light-mode .tieba-share-card .ts-title { text-shadow: none; }
+.tieba-share-card .ts-content { font-size: 13px; opacity: 0.85; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-weight: 500;}
+.tieba-share-card .ts-footer { font-size: 11px; opacity: 0.7; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; display: flex; align-items: center; gap: 6px;}
+:root.light-mode .tieba-share-card .ts-footer { border-top: 0.5px solid rgba(0,0,0,0.1); }
+
+.x-share-card .xs-header { display: flex; align-items: center; gap: 10px; }
+.x-share-card .xs-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 0.5px solid rgba(255,255,255,0.1);}
+:root.light-mode .x-share-card .xs-avatar { border: 0.5px solid rgba(0,0,0,0.1); }
+.x-share-card .xs-name { font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.2);}
+:root.light-mode .x-share-card .xs-name { text-shadow: none; }
+.x-share-card .xs-handle { font-size: 11px; opacity: 0.7; font-weight: 500;}
+.x-share-card .xs-content { font-size: 14px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; font-weight: 500;}
+.x-share-card .xs-img { margin-top: 2px; font-size: 12px; color: var(--accent); font-style: italic; font-weight: bold;}
+.x-share-card .xs-footer { font-size: 12px; opacity: 0.8; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; display: flex; gap: 18px; font-weight: bold;}
+:root.light-mode .x-share-card .xs-footer { border-top: 0.5px solid rgba(0,0,0,0.1); }
+
         }
 
         /* 2. 真正的 iOS 独立播放器卡片 - 拟态/液态高级毛玻璃 */
@@ -1501,7 +1544,7 @@ html body #chat-app #chat-container .msg-wrapper {
 }
 
 /* 2. 强制接管气泡基础样式（极度圆润，全方位 26px 弧度无死角） */
-html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
     box-shadow: none !important;
     border-radius: 26px !important; 
     padding: 10px 16px !important; 
@@ -1514,16 +1557,17 @@ html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble)
 }
 
 /* 角色气泡：高级浅灰，黑字 */
-html body #chat-app #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+html body #chat-app #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
     background: #F4F4F4 !important;
     color: #111111 !important;
 }
 
 /* 用户气泡：深邃纯黑，白字 */
-html body #chat-app #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble) {
+html body #chat-app #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
     background: #151515 !important;
     color: #FFFFFF !important;
 }
+
 
 /* 系统提示文字极致简化且压缩间距 */
 html body #chat-app .ins-sys-msg {
@@ -3666,16 +3710,13 @@ document.getElementById('chat-status').innerText = char.status || "在线";
 
 
         document.getElementById('memory-book-title').innerText = `${char.name} 的专属记忆书`;
-                let styleEl = document.getElementById('dynamic-char-style'); 
+                        let styleEl = document.getElementById('dynamic-char-style'); 
         if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'dynamic-char-style'; document.head.appendChild(styleEl); }
-        styleEl.innerHTML = `
-            .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble) { background: ${char.charColor} !important; color: ${char.charTextColor} !important; border-color: transparent !important; } 
-            .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble) { background: ${char.userColor} !important; color: ${char.userTextColor} !important; border-color: transparent !important; }
-        `;
                 styleEl.innerHTML = `
-            .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble):not(.music-share-bubble) { background: ${char.charColor} !important; color: ${char.charTextColor} !important; border-color: transparent !important; } 
-            .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble):not(.music-share-bubble) { background: ${char.userColor} !important; color: ${char.userTextColor} !important; border-color: transparent !important; }
+            html body #chat-app #chat-container .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble):not(.music-share-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { background: ${char.charColor} !important; color: ${char.charTextColor} !important; border-color: transparent !important; } 
+            html body #chat-app #chat-container .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.file-bubble):not(.pet-share-bubble):not(.image-bubble):not(.music-share-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { background: ${char.userColor} !important; color: ${char.userTextColor} !important; border-color: transparent !important; }
         `;
+
 
 
         
@@ -4006,12 +4047,17 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
                const contentBox = document.createElement('div'); contentBox.className = 'msg-content-box';
         const div = document.createElement('div'); div.className = `msg ${role}`;
         
-                // 1. 为特殊的聊天气泡添加样式
+                        // 1. 为特殊的聊天气泡添加样式
         if (msgType === 'sticker') div.classList.add('sticker-bubble');
         if (msgType === 'transfer') div.classList.add('transfer-bubble');
         if (msgType === 'file') div.classList.add('file-bubble');
         if (msgType === 'pet-share') div.classList.add('pet-share-bubble');
         if (msgType === 'remote-action') div.classList.add('remote-action-bubble');
+        if (msgType === 'music-share') div.classList.add('music-share-bubble');
+        // 👇 新增这两行
+        if (msgType === 'tieba-share') div.classList.add('tieba-share-bubble');
+        if (msgType === 'x-share') div.classList.add('x-share-bubble');
+
 
         
         // 2. 渲染内容：区分图片与其他内容
@@ -6973,7 +7019,8 @@ function renderTiebaFeed() {
         return;
     }
     
-    feed.innerHTML = posts.map(p => `
+    // 👇在这里的底部栏增加了 分享按钮 (shareTiebaToChat)
+    feed.innerHTML = posts.map((p, idx) => `
         <div class="tieba-post">
             <div class="tieba-post-header">
                 <span class="tieba-post-author"><i class="fas fa-user-circle"></i> ${p.author}</span>
@@ -6984,6 +7031,7 @@ function renderTiebaFeed() {
             <div class="tieba-post-footer">
                 <span><i class="far fa-thumbs-up"></i> ${Math.floor(Math.random() * 200) + 1}</span>
                 <span><i class="far fa-comment-dots"></i> ${Math.floor(Math.random() * 50)}</span>
+                <span onclick="shareTiebaToChat(${idx})" style="color:var(--accent);"><i class="fas fa-share"></i> 分享</span>
             </div>
         </div>
     `).join('');
@@ -7167,6 +7215,7 @@ function renderXFeed() {
                     <div class="x-action-btn rt"><i class="fas fa-retweet"></i> ${rts}</div>
                     <div class="x-action-btn like"><i class="far fa-heart"></i> ${likes}</div>
                     <div class="x-action-btn view"><i class="far fa-chart-bar"></i> ${(views/1000).toFixed(1)}K</div>
+        <div class="x-action-btn share" onclick="shareXToChat(${idx})" style="color:var(--accent);"><i class="fas fa-share-square"></i></div>
                 </div>
             </div>
         </div>
@@ -7277,6 +7326,69 @@ openApp = function(appId) {
     _originalOpenAppX(appId);
     if(appId === 'x-app') renderXFeed();
 };
+
+// 贴吧分享卡片构造器
+function shareTiebaToChat(idx) {
+    const post = tiebaData[currentTiebaTab][idx];
+    if(!post) return;
+    
+    const html = `
+        <div class="tieba-share-card">
+            <div class="ts-header"><i class="fas fa-comments"></i> 贴吧社区分享</div>
+            <div class="ts-title">${post.title}</div>
+            <div class="ts-content">${post.content}</div>
+            <div class="ts-footer"><i class="fas fa-user-circle"></i> 发帖人: ${post.author}</div>
+        </div>
+    `;
+    
+    const rawText = `[向你分享了一条贴吧帖子：标题《${post.title}》，发帖人：${post.author}。内容：“${post.content.substring(0, 150)}”你可以对此发表你的看法。]`;
+    
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'tieba-share');
+    
+    // 延迟 300 毫秒后自动唤醒 AI 对此进行吐槽或点评
+    setTimeout(() => triggerAIResponse(), 300);
+}
+
+// X/Twitter分享卡片构造器
+function shareXToChat(idx) {
+    const post = xData[currentXTab][idx];
+    if(!post) return;
+    
+    let imgHtml = "";
+    if(post.hasImage && post.imageDesc) {
+        imgHtml = `<div class="xs-img"><i class="fas fa-image"></i> [附图: ${post.isNsfw ? '敏感内容(被折叠)' : post.imageDesc.substring(0,30)}]</div>`;
+    }
+    
+    const avatarSrc = post.avatar || 'https://ui-avatars.com/api/?name='+post.handle.replace('@','')+'&background=random';
+    
+    const html = `
+        <div class="x-share-card">
+            <div class="xs-header">
+                <img src="${avatarSrc}" class="xs-avatar">
+                <div>
+                    <div class="xs-name">${post.author}</div>
+                    <div class="xs-handle">${post.handle}</div>
+                </div>
+            </div>
+            <div class="xs-content">${post.content}</div>
+            ${imgHtml}
+            <div class="xs-footer">
+                <span><i class="fas fa-retweet"></i> ${post.rts || Math.floor(Math.random() * 2000) + 1}</span>
+                <span><i class="far fa-heart"></i> ${post.likes || Math.floor(Math.random() * 10000) + 10}</span>
+            </div>
+        </div>
+    `;
+    
+    const rawText = `[向你分享了一条X(推特)动态，作者：${post.author} (${post.handle})。内容：“${post.content.substring(0,150)}”你可以对此发表你的看法。]`;
+    
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'x-share');
+    
+    // 延迟 300 毫秒后自动唤醒 AI 进行交互
+    setTimeout(() => triggerAIResponse(), 300);
+}
+
 
 
 
