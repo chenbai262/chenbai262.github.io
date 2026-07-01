@@ -2263,6 +2263,21 @@ html body #chat-app .msg-time {
                         <div class="del-btn" onclick="deleteActiveCharacter()"><i class="fas fa-trash"></i></div>
                     </div>
 
+                                                <!-- 👇 新增：聊天记录备份与恢复 👇 -->
+                    <div class="settings-group-title">当前角色聊天记录备份</div>
+                    <div class="settings-group">
+                        <div class="btn-row" style="margin: 15px;">
+                            <div class="save-btn" style="flex: 1; background: #66889E; color: #fff; padding: 12px; font-size: 14px;" onclick="exportChatHistory()"><i class="fas fa-file-export"></i> 导出聊天记录</div>
+                            <div class="save-btn" style="flex: 1; background: #87C0CA; color: #000; padding: 12px; font-size: 14px;" onclick="triggerImportChat()"><i class="fas fa-file-import"></i> 导入聊天记录</div>
+                            <input type="file" id="chat-import-input" accept=".json" style="display:none;" onchange="importChatHistory(event)">
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px;">将当前角色的对话记录导出，换浏览器或设备后可重新导入恢复。</p>
+                    </div>
+                    <!-- 👆 新增结束 👆 -->
+
+
+                            
+
                     <div class="settings-group-title" style="margin-top: 30px;">AI 引擎设置</div>
                     <div class="settings-group">
                         <div class="setting-item">
@@ -7387,6 +7402,56 @@ function shareXToChat(idx) {
     
     // 延迟 300 毫秒后自动唤醒 AI 进行交互
     setTimeout(() => triggerAIResponse(), 300);
+}
+
+
+// ==========================================
+// 新增：聊天记录备份与恢复逻辑
+// ==========================================
+function exportChatHistory() {
+    const data = localStorage.getItem(`ai_os_chat_${activeCharId}`);
+    if (!data || data === '[]') {
+        sysAlert("提示", "当前角色没有聊天记录可以导出。");
+        return;
+    }
+    const char = characters.find(c => c.id === activeCharId);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(data);
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `AI_OS_${char.name}_聊天记录备份.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function triggerImportChat() {
+    document.getElementById('chat-import-input').click();
+}
+
+function importChatHistory(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        try {
+            const imported = JSON.parse(event.target.result);
+            if (Array.isArray(imported)) {
+                const confirmMerge = await sysConfirm("导入确认", "导入将覆盖当前角色的聊天记录，确定继续吗？");
+                if (confirmMerge) {
+                    messageHistory = imported;
+                    localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+                    loadChatHistory(); // 自动刷新聊天记录显示
+                    sysAlert("导入成功", "聊天记录已成功恢复！前往短信界面即可查看。");
+                }
+            } else {
+                throw new Error("JSON格式错误");
+            }
+        } catch(err) {
+            sysAlert("导入失败", "文件格式损坏或不是有效的聊天记录文件！");
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // 清空选择，允许重复导入同一个文件
 }
 
 
