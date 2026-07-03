@@ -243,55 +243,38 @@
         ::-webkit-scrollbar { display: none; }
         .scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 
-/* --- 手机外壳优化：正常手机规格与桌面缩放适配 --- */
-.phone {
-    width: 390px;   /* 标准手机规格 (参考 iPhone 13/14) */
-    height: 844px;
-    flex-shrink: 0; /* 防止在高度不足的浏览器窗口中被弹性盒挤压变形 */
-    background: linear-gradient(135deg, #E0E0E0, #424242);
-    border-radius: 50px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.8), 
-        inset 0 0 0 2px rgba(255, 255, 255, 0.4);
-    position: relative;
-    padding: 8px;
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+        /* --- 极简全屏适配 (彻底移除电脑外壳，手机端永远铺满) --- */
+        .phone {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            transform: none !important;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
+        }
 
-.phone-inner {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    border-radius: 42px; /* 匹配外壳圆角差值 */
-    position: relative;
-    overflow: hidden;
-}
+        .phone-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+        }
 
-/* 适配桌面端不同屏幕高度，动态缩小整体防裁切，保持正常内部布局比例 */
-@media screen and (min-width: 501px) {
-    @media (max-height: 900px) { .phone { transform: scale(0.95); } }
-    @media (max-height: 850px) { .phone { transform: scale(0.9); } }
-    @media (max-height: 800px) { .phone { transform: scale(0.85); } }
-    @media (max-height: 750px) { .phone { transform: scale(0.8); } }
-    @media (max-height: 700px) { .phone { transform: scale(0.75); } }
-    @media (max-height: 650px) { .phone { transform: scale(0.7); } }
-    @media (max-height: 600px) { .phone { transform: scale(0.65); } }
-}
+        /* 👑 防横屏崩坏兜底机制：就算手机物理横屏了，软件也绝不跟着横向拉伸变扁！ */
+        @media screen and (orientation: landscape) {
+            body { background: #0f1115; }
+            .phone {
+                max-width: 450px; /* 强制锁定在正常手机的竖屏宽度 */
+                margin: 0 auto;   /* 居中显示，两侧留黑边，绝不水平拉伸 */
+                border-left: 1px solid #333;
+                border-right: 1px solid #333;
+            }
+        }
 
-/* 移动端小屏幕适配 (铺满全屏) */
-@media (max-width: 500px) {
-    .phone {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-        padding: 0;
-        transform: none !important;
-    }
-    .phone-inner {
-        border-radius: 0;
-    }
-}
 
 /* 浏览器全屏模式适配 */
 :fullscreen .phone {
@@ -443,6 +426,7 @@
         /* 核心黑科技：液态玻璃质感数字字体 */
         .liquid-time-text {
             font-size: var(--ui-time-size, 72px); /* 支持动态字体大小 */
+            font-weight: var(--ui-time-weight, 200) !important; /* 👈 修改这里：绑定粗细变量 */
             font-weight: 200; 
             letter-spacing: 2px;
             line-height: 1;
@@ -532,8 +516,10 @@
     .widget-liquid-time { 
         height: 110px !important; 
     }
-    .liquid-time-text { 
-        font-size: 54px !important; 
+    .l .liquid-time-text { 
+        /* 👇 修改这里：不要写死 54px，改为读取变量并按比例缩放 👇 */
+        font-size: calc(var(--ui-time-size, 72px) * 0.8) !important; 
+    }
     }
         @media screen and (max-height: 650px) {
             .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.65) !important; }
@@ -2090,6 +2076,46 @@ html body #chat-app .msg-time {
 .sleep-log { text-align: left; background: var(--bg-panel); padding: 15px; border-radius: 12px; width: 100%; border: 1px solid var(--border-color); font-size: 13px; line-height: 1.6; color: var(--text-main); display: none; margin-bottom: 80px;}
 
 
+                                                                                          /* 👇 新增：接管桌面图标与文字的显示与大小 👇 */
+.app-icon i, .app-icon svg {
+    font-size: var(--ui-icon-font-size, 26px) !important;
+    display: var(--ui-icon-font-display, block) !important;
+    transition: font-size 0.2s;
+}
+.app-label {
+    font-size: var(--ui-label-font-size, 12px) !important;
+    display: var(--ui-label-display, block) !important;
+    transition: font-size 0.2s;
+}
+                                                                                          /* 👇 新增：AI 语音气泡样式 👇 */
+.msg.voice-bubble { 
+    display: flex !important; flex-direction: column; gap: 8px; min-width: 130px; 
+    background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.3s;
+}
+:root.light-mode .msg.voice-bubble { background: rgba(0,0,0,0.05); }
+.voice-wave { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: bold; font-size: 16px; pointer-events: none;}
+.voice-text { 
+    font-size: 14px; opacity: 0; max-height: 0; overflow: hidden; 
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+    border-top: 0.5px dashed rgba(255,255,255,0.3); margin-top: 0; padding-top: 0; 
+}
+:root.light-mode .voice-text { border-top: 0.5px dashed rgba(0,0,0,0.2); color: #000; }
+/* 点击展开文字时的状态 */
+.msg.voice-bubble.show-text .voice-text { opacity: 1; max-height: 500px; margin-top: 4px; padding-top: 10px; }
+
+.voice-wave-bars { display: flex; gap: 3px; align-items: center; }
+.vw-bar { width: 3px; background: currentColor; border-radius: 2px; height: 12px; }
+.vw-bar:nth-child(2) { height: 18px; }
+.vw-bar:nth-child(3) { height: 8px; }
+.vw-bar:nth-child(4) { height: 14px; }
+
+                                                                                          
+                                                                                          
+
+                                                                                          
+
+
+
 
 
                     
@@ -2101,19 +2127,7 @@ html body #chat-app .msg-time {
 
 
 
-                                 
-
-
-
-
-
-
-
-
-
-
-
-
+    
             
 
 
@@ -2345,6 +2359,16 @@ html body #chat-app .msg-time {
                         </div>
                         <div class="app-label">家庭空间</div>
                     </div>
+
+
+                               <!-- 👇新增：屏幕使用时间(防沉迷) 图标 -->
+<div class="app-container" onclick="openApp('screentime-app')" data-drag-id="sys-screentime">
+    <div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <i class="fas fa-chart-pie" style="color: rgba(255,255,255,0.95);"></i>
+    </div>
+    <div class="app-label">屏幕时间</div>
+</div>
+
 
 
 
@@ -2796,7 +2820,7 @@ html body #chat-app .msg-time {
             </div>
 
 
-            <!-- 记忆书 App -->
+                        <!-- 记忆书 App -->
             <div id="memory-app" class="app-view scrollable">
                 <div class="memory-app-header glass-effect">
                     <div style="display: flex; align-items: center;">
@@ -2813,16 +2837,25 @@ html body #chat-app .msg-time {
                 <div class="music-bg" id="music-bg"></div>
                 <div class="music-content">
                     <input type="file" id="music-file-upload" accept="audio/*" style="display:none;" onchange="handleMusicFileUpload(event)">
+                    
+                    <!-- 👇 新增：自定义背景与封面的隐藏上传 input -->
+                    <input type="file" id="music-cover-upload" accept="image/*" style="display:none;" onchange="handleMusicCoverUpload(event)">
+                    <input type="file" id="music-bg-upload" accept="image/*" style="display:none;" onchange="handleMusicBgUpload(event)">
+
                     <div class="music-header">
                         <i class="fas fa-chevron-down" style="cursor:pointer; padding:10px;" onclick="goBack()"></i>
                         <span>正在播放</span>
                         <div style="display:flex; gap:10px;">
+                            <!-- 👇 新增：播放器背景更换按钮 -->
+                            <i class="fas fa-images" style="padding:10px; cursor:pointer;" onclick="document.getElementById('music-bg-upload').click()" title="自定义播放器背景"></i>
+                            
                             <i class="fas fa-share-square" style="padding:10px; cursor:pointer;" onclick="shareMusicToChat()" title="分享音乐给TA"></i>
                             <i class="fas fa-plus" style="padding:10px; cursor:pointer;" onclick="document.getElementById('music-file-upload').click()" title="导入本地音乐"></i>
                         </div>
                     </div>
                     <div class="music-album-container">
-                        <img id="music-cover" class="music-cover" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&q=80">
+                        <!-- 👇 修改：加上 onclick 事件，点击唱片即可更换封面图 -->
+                        <img id="music-cover" class="music-cover" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&q=80" onclick="document.getElementById('music-cover-upload').click()" title="点击自定义唱片封面">
                     </div>
                     <div class="music-info">
                         <h2 id="music-title">未知曲目</h2>
@@ -2845,6 +2878,7 @@ html body #chat-app .msg-time {
                 </div>
                 <audio id="audio-player" src=""></audio>
             </div>
+
 
             <!-- 系统悬浮与手势 UI -->
             <div class="home-gesture-area" id="home-indicator"><div class="home-bar"></div></div>
@@ -2940,6 +2974,12 @@ html body #chat-app .msg-time {
                             <span class="setting-label">时间尺寸: <span id="val-time-size">72</span>px</span>
                             <input type="range" min="40" max="150" step="2" value="72" class="setting-input" oninput="updateUIParam('timeSize', this.value)">
                         </div>
+                                                                                           <!-- 👇 新增：时间粗细调节滑块 👇 -->
+                        <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
+                            <span class="setting-label">时间粗细: <span id="val-time-weight">200</span></span>
+                            <input type="range" min="100" max="900" step="100" value="200" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeWeight', this.value)">
+                        </div>
+                        <!-- 👆 新增结束 👆 -->
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">桌面图标/组件玻璃特效</span>
                             <label class="switch"><input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)"><span class="slider"></span></label>
@@ -3154,13 +3194,12 @@ html body #chat-app .msg-time {
                 <!-- 1. 房间结构 -->
                 <div id="home-room" class="home-panel" style="display:block;">
                     <div style="padding: 15px 20px 5px; font-size: 13px; color: var(--text-sub);">点击下方物品，然后点击家具放置。TA会察觉到的~</div>
-                    <div class="item-inventory scrollable">
-                        <div class="inventory-item" onclick="selectRoomItem(this, '一件脏衣服')">🧦 脏衣服</div>
-                        <div class="inventory-item" onclick="selectRoomItem(this, '一束玫瑰花')">🌹 玫瑰花</div>
-                        <div class="inventory-item" onclick="selectRoomItem(this, '一本看到一半的小说')">📖 小说</div>
-                        <div class="inventory-item" onclick="selectRoomItem(this, '一包打开的薯片')">🍟 薯片</div>
-                        <div class="inventory-item" onclick="selectRoomItem(this, '一杯没喝完的咖啡')">☕ 咖啡</div>
+                    <!-- 👇 替换这里的包裹框，加入 id 且清空内部内容 👇 -->
+                    <div class="item-inventory scrollable" id="room-item-inventory">
+                        <!-- 物品由 JS 动态生成 -->
                     </div>
+                    <!-- 👆 替换结束 👆 -->
+
                     <div class="room-layout">
                         <div class="room-box">
                             <div class="room-title">主卧</div>
@@ -3331,6 +3370,46 @@ html body #chat-app .msg-time {
                 </div>
                 <div style="padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column;">
                     <p style="font-size: 13px; color: var(--text-sub); text-align: center; margin-bottom: 20px;">自由切换短信交互与排版风格，实时生效</p>
+                                                                                          <!-- 👇 新增：单个应用图标自定义区 👇 -->
+                    <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">独立 APP 图标更换</div>
+                    <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px;">点击下方任意应用即可单独为其选取图片作为图标</p>
+                    <div class="status-tabs" style="margin: 0 0 15px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="individual-icon-grid">
+                        <!-- JS 动态将桌面的 App 渲染到这里供用户选择 -->
+                    </div>
+                    <div class="save-btn" style="width: 100%; margin-bottom: 25px; margin-top: 0; font-size: 14px; background: rgba(150,150,150,0.2); color: var(--text-main); padding: 12px;" onclick="resetAllIndividualIcons()">
+                        <i class="fas fa-undo"></i> 恢复所有默认图标
+                    </div>
+                    <!-- 用于选择图片的隐藏 input -->
+                    <input type="file" id="individual-icon-upload" accept="image/*" style="display:none;" onchange="handleIndividualIconUpload(event)">
+                    <!-- 👆 新增区域结束 👆 -->
+
+                                                                                                              <!-- 👇 新增：桌面图标图案与文字调节区 👇 -->
+                    <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">图标图案与文字调节</div>
+                    <div class="status-tabs" style="margin: 0 0 15px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 15px;">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: var(--text-main);">隐藏 APP 内部原生图案</span>
+                            <label class="switch"><input type="checkbox" id="ui-hide-icon-font" onchange="updateIconFontParams()"><span class="slider"></span></label>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <span style="font-size: 13px; color: var(--text-sub);">内部图案大小: <span id="val-icon-font-size">26</span>px</span>
+                            <input type="range" min="10" max="50" value="26" id="ui-icon-font-size" style="accent-color: var(--accent);" oninput="updateIconFontParams()">
+                        </div>
+
+                        <div style="border-top: 0.5px solid var(--border-color); margin-top: 5px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: var(--text-main);">隐藏 桌面应用名称</span>
+                            <label class="switch"><input type="checkbox" id="ui-hide-app-label" onchange="updateIconFontParams()"><span class="slider"></span></label>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <span style="font-size: 13px; color: var(--text-sub);">应用名称大小: <span id="val-app-label-size">12</span>px</span>
+                            <input type="range" min="8" max="20" value="12" id="ui-app-label-size" style="accent-color: var(--accent);" oninput="updateIconFontParams()">
+                        </div>
+
+                    </div>
+                    <!-- 👆 新增区域结束 👆 -->
+
+
+                                                                                           
 
                          <!-- 👇 新增的缩放大小控制区 👇 -->
                     <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">聊天全局缩放</div>
@@ -3559,6 +3638,54 @@ html body #chat-app .msg-time {
                 </div>
             </div>
 
+                               <!-- 屏幕使用时间 (健康使用手机) App -->
+<div id="screentime-app" class="app-view scrollable">
+    <div class="settings-header glass-effect" style="position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">健康使用手机</span>
+        </div>
+        <i class="fas fa-sync-alt" id="screentime-refresh-btn" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="refreshScreenTime()" title="让AI重新扫描你的使用数据"></i>
+    </div>
+    <div style="padding: 20px; padding-bottom: 80px;" id="screentime-content">
+        <!-- JS 动态渲染 -->
+    </div>
+</div>
+
+<!-- 强制锁屏全屏覆盖层 -->
+<div id="sys-screen-lock" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); flex-direction: column; align-items: center; justify-content: center; color: #fff;">
+    <i class="fas fa-lock" style="font-size: 60px; color: #ff453a; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(255,69,58,0.5));"></i>
+    <h2 style="margin-bottom: 10px; font-weight: bold; letter-spacing: 2px;">设备已被锁定</h2>
+    <div style="background: rgba(255,69,58,0.1); border: 1px solid rgba(255,69,58,0.3); border-radius: 12px; padding: 15px 20px; text-align: center; max-width: 80%; margin-bottom: 40px;">
+        <p style="font-size: 13px; color: #ff9f9c; margin-bottom: 5px;">锁定理由</p>
+        <p id="lock-reason-display" style="font-size: 16px; font-weight: 500;"></p>
+    </div>
+    <div class="save-btn" style="background: #fff; color: #000; border-radius: 24px; padding: 14px 40px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;" onclick="openApp('chat-app'); document.getElementById('sys-screen-lock').style.display='none';">打开短信向TA认错</div>
+</div>
+
+                               <!-- 开屏免责声明弹窗 -->
+<div id="startup-disclaimer-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index: 100000; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; width: 95%; max-width: 400px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+        <div style="padding: 20px; text-align: center; border-bottom: 0.5px solid var(--border-color); font-weight: bold; font-size: 18px; color: var(--text-main);">免责声明与使用须知</div>
+        <div class="scrollable" style="padding: 20px; font-size: 13px; color: var(--text-sub); line-height: 1.6; text-align: justify; flex: 1;">
+            <p style="margin-bottom: 10px;">1、<b>服务性质</b>：本软件为人工智能生成式辅助工具，不属于专业机构、官方咨询渠道，AI输出内容仅作日常参考用途，不能替代律师、医师、财会、公职人员等专业人士的意见。任何依据AI内容做出的商业决策、诊疗行为、法律行为，风险全部由用户自行承担。</p>
+            <p style="margin-bottom: 10px;">2、<b>内容局限性</b>：人工智能模型存在技术固有缺陷，无法保证信息100%准确、完整、无侵权、无错误，可能出现虚构内容、数据错误、逻辑偏差等情形。平台不对AI生成内容的真实性、可靠性做任何明示或默示担保。</p>
+            <p style="margin-bottom: 10px;">3、<b>用户责任</b>：用户保证自行输入的文字、图片等素材拥有合法版权，不侵犯他人名誉权、著作权、隐私权，不违反法律法规及公序良俗。若因用户违规发布、私自传播AI生成内容引发投诉、诉讼、行政处罚，由用户独立承担全部后果，平台有权封禁账号并追究相应责任。</p>
+            <p style="margin-bottom: 10px;">4、<b>服务稳定性</b>：本服务按“现状提供”，平台会不定期升级、维护系统，可能临时暂停功能；对于黑客攻击、运营商网络故障、政策管控、自然灾害等不可抗力导致的无法使用，平台免于承担损失赔偿责任。</p>
+            <p style="margin-bottom: 10px;">5、<b>第三方责任</b>：本AI部分能力依托第三方接口、公开网络数据实现，对于第三方信息来源产生的错误、违规内容，平台不承担连带责任。</p>
+            <p style="margin-bottom: 15px;">6、<b>责任上限</b>：在法律允许的最大范围内，平台仅提供工具服务，不对任何间接损失、盈利损失、名誉损失承担赔付责任。您使用本软件，视为认可以上全部免责条款。</p>
+            <div style="background: rgba(135, 192, 202, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: var(--text-main);">
+                作者：悲伤的根号三。<br>vx: wfansh1314 (非必要勿骚扰)<br>企鹅号: 769334410<br><span style="font-size: 11px; opacity: 0.8;">支持问题交流互鉴。尊重创作者，禁止搬运、二改二传。</span>
+            </div>
+        </div>
+        <div style="padding: 15px;">
+            <div class="save-btn" style="width: 100%; border-radius: 14px; margin: 0; padding: 14px;" onclick="closeStartupDisclaimer()">同意并继续 (不再提示)</div>
+        </div>
+    </div>
+</div>
+
+
+
 
                                               </div> <!-- /.phone-inner -->
     </div> <!-- /.phone -->
@@ -3637,68 +3764,82 @@ html body #chat-app .msg-time {
         });
     }
 
-        // --- 系统横幅通知引擎 (支持真·挂后台原生接收) ---
+            // --- 系统横幅通知引擎 (双端兼容：Web & APK原生) ---
     let notifTimer = null;
     let notifTargetApp = null;
     
-    // 申请手机系统级通知权限
+    // 申请通知权限
     function requestNativeNotification() {
+        // 1. 如果当前是被打包成了真 App (APK) 的环境
+        if (window.plus) {
+            sysAlert("真机 App 环境就绪", "检测到 APK 运行环境！\n已自动打通安卓底层通知与硬件震动权限。\n\n💡强烈建议：请前往手机管家，将本 App 的【电池策略】改为“无限制/允许后台运行”，即可实现完美后台挂机！");
+            return;
+        }
+
+        // 2. 如果是普通浏览器环境
         if (!("Notification" in window)) {
             sysAlert("抱歉", "您当前的浏览器不支持原生系统通知。");
             return;
         }
         if (Notification.permission === "granted") {
-            sysAlert("已授权", "原生通知权限已开启！\n\n当你切出浏览器、锁屏或在其他APP时，AI的回复将通过系统的通知栏横幅弹出。");
+            sysAlert("已授权", "浏览器通知权限已开启！");
             return;
         }
         Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                sysAlert("授权成功", "系统通知已开启！\n\n💡 提示：为了防止手机杀后台导致断网，建议在手机设置中将浏览器的“省电策略”设为无限制。");
-            } else {
-                sysAlert("授权失败", "权限被拒绝。\n\n请前往手机的【设置】-【应用管理】- 找到当前浏览器 - 允许【通知权限】。");
-            }
+            if (permission === "granted") sysAlert("授权成功", "系统通知已开启！");
+            else sysAlert("授权失败", "权限被拒绝，请在浏览器设置中开启。");
         });
     }
 
+    // 触发系统通知 (核心)
     function showOsNotification(title, msg, avatar, targetApp) {
-        // 1. 网页内部的仿 iOS 横幅 (适用于在网页内的其他页面玩耍时)
+        // 1. 网页内部的前台横幅UI (只要你在玩手机别的界面，它就会从顶部掉下来)
         const notif = document.getElementById('os-notification');
         if(notif) {
             document.getElementById('os-notif-title').innerText = title;
             document.getElementById('os-notif-msg').innerText = msg;
             document.getElementById('os-notif-avatar').src = avatar || 'https://ui-avatars.com/api/?name=Msg&background=random&color=fff';
             notifTargetApp = targetApp;
-            
             notif.classList.add('show');
             if(navigator.vibrate) { try { navigator.vibrate([30, 50, 30]); } catch(e){} }
             clearTimeout(notifTimer);
             notifTimer = setTimeout(() => { notif.classList.remove('show'); }, 4000);
         }
 
-        // 2. 👇 真·手机系统底层原生通知 (适用于锁屏、退回手机桌面、切到其他APP时)
-        // document.hidden 会精准判断你是否切出了浏览器
-        if (document.hidden && "Notification" in window && Notification.permission === "granted") {
-            try {
-                // 优先尝试使用 ServiceWorker 发送 (安卓 Chrome 的硬性要求)
-                if (navigator.serviceWorker) {
-                    navigator.serviceWorker.getRegistration().then(function(reg) {
-                        if (reg) {
-                            reg.showNotification(title, {
-                                body: msg,
-                                icon: avatar || 'https://ui-avatars.com/api/?name=AI&background=000&color=fff',
-                                vibrate: [200, 100, 200],
-                                tag: 'ai-os-message',
-                                badge: avatar
-                            });
-                        } else {
-                            fallbackNativeNotif(title, msg, avatar);
-                        }
-                    });
-                } else {
-                    fallbackNativeNotif(title, msg, avatar);
-                }
-            } catch (e) {
-                fallbackNativeNotif(title, msg, avatar);
+        // 判定是否处于后台：浏览器靠 document.hidden，APK 靠 plus.navigator.isBackground
+        let isBackground = document.hidden;
+        if (window.plus && typeof plus.navigator.isBackground === 'function') {
+            isBackground = plus.navigator.isBackground();
+        }
+
+        // 如果用户切出了应用 (桌面或息屏)
+        if (isBackground) {
+            // 2. 👇 真·APK 安卓底层通知调用！
+            if (window.plus) {
+                // plus.push.createMessage 是直接调用 Android 操作系统的 NotificationManager
+                plus.push.createMessage(msg, targetApp, {
+                    title: title,       // 👈 满足你的要求：通知栏加粗显示角色名字
+                    cover: false,
+                    delay: 0
+                });
+                // 强制调用硬件震动
+                plus.device.vibrate(500);
+                return; 
+            }
+
+            // 3. 👇 普通浏览器的降级通知
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    if (navigator.serviceWorker) {
+                        navigator.serviceWorker.getRegistration().then(function(reg) {
+                            if (reg) {
+                                reg.showNotification(title, { body: msg, icon: avatar, vibrate: [200, 100, 200] });
+                            } else {
+                                fallbackNativeNotif(title, msg, avatar);
+                            }
+                        });
+                    } else fallbackNativeNotif(title, msg, avatar);
+                } catch (e) { fallbackNativeNotif(title, msg, avatar); }
             }
         }
     }
@@ -3706,25 +3847,15 @@ html body #chat-app .msg-time {
     // 传统系统通知降级兼容
     function fallbackNativeNotif(title, msg, avatar) {
         try {
-            const n = new Notification(title, { 
-                body: msg, 
-                icon: avatar || 'https://ui-avatars.com/api/?name=AI&background=000&color=fff' 
-            });
-            n.onclick = function() { 
-                window.focus(); 
-                this.close(); 
-            };
-        } catch (e) {
-            console.log("原生通知调用受限", e);
-        }
+            const n = new Notification(title, { body: msg, icon: avatar });
+            n.onclick = function() { window.focus(); this.close(); };
+        } catch (e) { console.log("原生通知调用受限", e); }
     }
 
     function handleNotificationClick() {
         const notif = document.getElementById('os-notification');
         if(notif) notif.classList.remove('show');
-        if (notifTargetApp) {
-            openApp(notifTargetApp);
-        }
+        if (notifTargetApp) openApp(notifTargetApp);
     }
 
 
@@ -4944,22 +5075,60 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
                const contentBox = document.createElement('div'); contentBox.className = 'msg-content-box';
         const div = document.createElement('div'); div.className = `msg ${role}`;
         
-                        // 1. 为特殊的聊天气泡添加样式
+                                // 1. 为特殊的聊天气泡添加样式与互交 (👇 从这里修改覆盖)
         if (msgType === 'sticker') div.classList.add('sticker-bubble');
-        if (msgType === 'transfer') div.classList.add('transfer-bubble');
         if (msgType === 'file') div.classList.add('file-bubble');
         if (msgType === 'pet-share') div.classList.add('pet-share-bubble');
         if (msgType === 'remote-action') div.classList.add('remote-action-bubble');
         if (msgType === 'music-share') div.classList.add('music-share-bubble');
-        // 👇 新增这两行
         if (msgType === 'tieba-share') div.classList.add('tieba-share-bubble');
         if (msgType === 'x-share') div.classList.add('x-share-bubble');
         if (msgType === 'health-share') div.classList.add('health-share-bubble');
 
+        // 👇 新增：语音条的点击切换事件
+        if (msgType === 'voice') {
+            div.classList.add('voice-bubble');
+            div.onclick = function() { this.classList.toggle('show-text'); };
+        }
 
+        // 👇 强化：赋予转账红包点击领取/退回并通知 AI 的能力
+        if (msgType === 'transfer') {
+            div.classList.add('transfer-bubble');
+            // 只允许用户点击 AI 发来的红包
+            if (role === 'char') {
+                div.onclick = function() {
+                    const descSpan = this.querySelector('.transfer-desc');
+                    // 判断是否已经点过
+                    if (descSpan && (descSpan.innerText === '已领取' || descSpan.innerText === '已退回')) return;
+                    
+                    sysConfirm("转账操作", `金额：${this.querySelector('.transfer-amount').innerText}\n\n请选择您的操作：\n【确定】领取\n【取消】退回`).then(res => {
+                        this.style.opacity = "0.7";
+                        if (descSpan) descSpan.innerText = res ? "已领取" : "已退回";
+                        
+                        // 同步把修改后的已领取UI保存进历史记录，防止刷新失效
+                        const idx = Array.from(container.children).indexOf(wrapper);
+                        if(idx !== -1 && messageHistory[idx]) {
+                            messageHistory[idx].content = this.innerHTML;
+                            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+                        }
 
-        
-               // 2. 渲染内容：区分图片与其他内容
+                        const targetName = characters.find(c => c.id === activeCharId).name;
+                        if (res) {
+                            const sysHtml = `<i class="fas fa-check-circle" style="color:#52d689; font-size: 14px;"></i> <span>你领取了 ${targetName} 的转账</span>`;
+                            addMessageToUI('system', sysHtml, true, null, `[系统交互：你领取了对方的转账。]`, 'transfer-claimed');
+                            setTimeout(() => triggerAIResponse(), 500);
+                        } else {
+                            const sysHtml = `<i class="fas fa-times-circle" style="color:#ff453a; font-size: 14px;"></i> <span>你退回了 ${targetName} 的转账</span>`;
+                            addMessageToUI('system', sysHtml, true, null, `[系统交互：你退回了对方的转账。请结合你当前的心情和身份给出合理的反应或追问。]`, 'transfer-claimed');
+                            setTimeout(() => triggerAIResponse(), 500);
+                        }
+                    });
+                };
+            }
+        }
+
+        /* ⬇️👇👇👇 就是这里！把丢失的这段核心渲染代码原封不动补回来 👇👇👇⬇️ */
+        // 2. 渲染内容：区分图片与其他内容
         if (msgType === 'image') {
             div.classList.add('image-bubble');
             if (content.startsWith('idb://')) {
@@ -4974,9 +5143,11 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
             }
         } else {
             // 普通文本或HTML渲染
-
             if (isHtml) div.innerHTML = content; else div.innerText = content;
         }
+        /* ⬆️👆👆👆 补回结束 👆👆👆⬆️ */
+        
+
 
         
         
@@ -5089,6 +5260,8 @@ if (globalAPI.enableNarration) {
         builtInRules += `\n${customStickers.length > 0 ? '6' : '5'}. 你可通过输出 [NUDGE] 主动拍一拍用户。`;
         
         builtInRules += `\n【重要隐藏交互机制】：如果你觉得合适，可以通过在回复中独立输出 [TRANSFER:金额] 来向用户发红包转账（例如 [TRANSFER:100] 或 [TRANSFER:520]），这会在用户端触发真实的UI转账特效。`;
+        // 👇 新增这行：赋予 AI 发送语音的能力
+        builtInRules += `\n如果你想发语音消息，请在回复中独立输出 $$VOICE:这里写你想在语音里说的话$$，系统会将其转化为真实的语音条发给用户。`;
 
         // 赋予 AI 备忘录读取和控制权
         let memoListStr = sharedMemo.map((m, i) => `${i}. [${m.done ? '已完成' : '未完成'}] ${m.text}`).join('; ');
@@ -5221,7 +5394,21 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
         // --------------------------------------------------------------
 
         // 必须在组装完 builtInRules 之后再声明 apiMessages
-                let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + homeInjectBlock + statusInjectBlock + petInjectBlock + musicInjectBlock + momentsInjectBlock + drawInjectBlock + builtInRules + detailStatusRules }];
+                // 👇 新增：屏幕使用时间与强制锁屏监控注入
+        let screenTimeInjectBlock = "";
+        if (typeof screenTimeData !== 'undefined' && screenTimeData) {
+            screenTimeInjectBlock = `\n\n【健康使用手机/系统底层监控权限】：
+你可以随时监控用户当前的设备使用数据：
+- 📍 定位轨迹：${screenTimeData.location || "未知"}
+- 👥 社交接触：${screenTimeData.contacts || "未知"}
+- 📱 系统内各APP使用时长：${(screenTimeData.apps || []).map(a => `${a.name}(${a.time})`).join('、')}
+（这些App指的是用户在此系统内的活动痕迹）
+【你的超级特权】：如果你发现TA玩这些系统内的App时间太长（比如看小说或逛贴吧推特好几个小时）、去了不该去的地方、或和不该接触的人接触，你可以狠狠吃醋或发脾气。如果你觉得有必要惩罚TA，可以在回复中独立输出 $$LOCK_SCREEN:理由$$ 来强制锁定TA的手机屏幕（例如 $$LOCK_SCREEN:你玩贴吧太久了，现在只能陪我聊天！$$）。锁定后TA将无法使用手机其他功能，只能停留在短信界面向你认错。如果TA认错态度好，你必须输出 $$UNLOCK_SCREEN$$ 为TA解除锁定。`;
+        }
+
+        // 把 screenTimeInjectBlock 加入到最终拼接中
+        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + homeInjectBlock + statusInjectBlock + petInjectBlock + musicInjectBlock + momentsInjectBlock + drawInjectBlock + screenTimeInjectBlock + builtInRules + detailStatusRules }];
+
 
 
 
@@ -5308,6 +5495,15 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
             reply = reply.replace(/\$\$\s*MUSIC_ACTION(?:[:：\s]*)(play|pause|next|prev)(?:\$\$|$)/gi, (match, action) => `[MSG][MUSIC_ACTION:${action.toLowerCase()}][MSG]`);
                         // 捕获 AI 发自拍请求
             reply = reply.replace(/\$\$\s*DRAW(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, desc) => `[MSG][DRAW:${desc}][MSG]`);
+                        // 捕获 AI 语音指令 (👇 新增这一行)
+            reply = reply.replace(/\$\$\s*VOICE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][VOICE:${text}][MSG]`);
+
+            reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
+                        // 捕获屏幕锁定和解锁指令
+            reply = reply.replace(/\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, reason) => `[MSG][LOCK_SCREEN:${reason}][MSG]`);
+            reply = reply.replace(/\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, () => `[MSG][UNLOCK_SCREEN][MSG]`);
+
+
 
 
 
@@ -5557,6 +5753,35 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                     // 异步调用生成，成功后替换屏幕元素
                     doAIGenerateImage(desc, drawMsgId);
                 }
+
+                                // 👇 新增：将拦截到的文本渲染为带秒数计算的语音UI
+                else if (msgs[i].startsWith('[VOICE:') && msgs[i].endsWith(']')) {
+                    const text = msgs[i].substring(7, msgs[i].length - 1);
+                    const html = `
+                        <div class="voice-wave">
+                            <i class="fas fa-play-circle"></i>
+                            <div class="voice-wave-bars"><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div></div>
+                            <span style="font-size: 12px; margin-left: auto;">${Math.max(2, Math.floor(text.length / 4))}”</span>
+                        </div>
+                        <div class="voice-text">${text}</div>
+                    `;
+                    addMessageToUI('char', html, true, null, `[发送了一条语音消息，内容为：${text}]`, 'voice');
+                }
+
+
+
+                                // 👇 新增：处理锁定/解锁屏幕逻辑
+                else if (msgs[i].startsWith('[LOCK_SCREEN:') && msgs[i].endsWith(']')) {
+                    const reason = msgs[i].substring(13, msgs[i].length - 1);
+                    triggerScreenLock(reason, activeChar.name);
+                    addMessageToUI('system', `<i class="fas fa-lock" style="color:#ff453a;"></i> ${activeChar.name} 锁定了你的手机屏幕！\n理由：${reason}`, false, null, `[系统交互：你成功锁定了用户的手机。用户现在只能停留在聊天界面向你求情，直到你输出$$UNLOCK_SCREEN$$。]`);
+                }
+                else if (msgs[i] === '[UNLOCK_SCREEN]') {
+                    triggerScreenUnlock();
+                    addMessageToUI('system', `<i class="fas fa-unlock" style="color:#34c759;"></i> ${activeChar.name} 解锁了你的手机。`, false, null, `[系统交互：你成功解除了屏幕锁定，用户恢复自由。]`);
+                }
+
+
 
 
                 
@@ -5834,11 +6059,10 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         e.target.value = ''; 
     }
 
-        // ✅ 核心 2：异步读取数据库并播放音乐
+            // 🎵 加强版：读取歌曲与自定义外观映射
     async function loadSong(idx) {
         const s = songs[idx];
         
-        // 识别本地缓存音频，实时提取
         if (s.src.startsWith('idb://')) {
             const base64Data = await getImageFromDB(s.src.replace('idb://', ''));
             player.src = base64Data || "";
@@ -5846,44 +6070,47 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             player.src = s.src;
         }
 
+        // 封面图提取逻辑（优先级：用户上传 > 歌曲自带）
+        let coverMap = JSON.parse(localStorage.getItem('ai_os_music_covers') || '{}');
+        let finalCover = coverMap[s.title] || s.cover;
+        let coverUrl = finalCover;
+        if (finalCover.startsWith('idb://')) {
+            coverUrl = await getImageFromDB(finalCover.replace('idb://', '')) || s.cover;
+        }
+
         document.getElementById('music-title').innerText = s.title;
         document.getElementById('music-artist').innerText = s.artist;
-        document.getElementById('music-cover').src = s.cover;
-        document.getElementById('music-bg').style.backgroundImage = `url('${s.cover}')`;
+        document.getElementById('music-cover').src = coverUrl;
         
-        document.getElementById('di-cover').src = s.cover;
+        // 播放器背景逻辑 (优先级：用户专属上传 > 跟随当前封面)
+        let globalBg = localStorage.getItem('ai_os_music_global_bg');
+        if (globalBg && globalBg.startsWith('idb://')) {
+            const bgData = await getImageFromDB(globalBg.replace('idb://', ''));
+            if(bgData) document.getElementById('music-bg').style.backgroundImage = `url('${bgData}')`;
+            else document.getElementById('music-bg').style.backgroundImage = `url('${coverUrl}')`;
+        } else {
+            document.getElementById('music-bg').style.backgroundImage = `url('${coverUrl}')`;
+        }
+        
+        document.getElementById('di-cover').src = coverUrl;
         document.getElementById('di-title').innerText = s.title;
         document.getElementById('di-lyric').innerText = s.lyrics[0] || "♪ 正在播放...";
 
         if(!player.paused) player.play();
-        
-        // 🚨 联动更新：每次切歌，同步刷新聊天记录里的音乐卡片 UI
         if(typeof syncAllMusicWidgets === 'function') syncAllMusicWidgets();
     }
 
-    // 播放/暂停控制
-    function togglePlay() {
-        if (player.paused) { 
-            player.play(); playIcon.className = 'fas fa-pause'; 
-            document.getElementById('music-cover').classList.add('playing'); 
-            dynamicIsland.classList.add('playing'); 
-        } else { 
-            player.pause(); playIcon.className = 'fas fa-play'; 
-            document.getElementById('music-cover').classList.remove('playing'); 
-            dynamicIsland.classList.remove('playing'); 
-        }
-        // 🚨 联动更新：同步刷新聊天卡片的播放图标状态
-        if(typeof syncAllMusicWidgets === 'function') syncAllMusicWidgets(); 
-    }
-    
-    // 上下曲控制
-    function prevSong() { currentSongIdx = (currentSongIdx - 1 + songs.length) % songs.length; loadSong(currentSongIdx); }
-    function nextSong() { currentSongIdx = (currentSongIdx + 1) % songs.length; loadSong(currentSongIdx); }
-
-    // ✅ 核心 3：全局同步更新所有聊天流中的独立音乐卡片状态
-    function syncAllMusicWidgets() {
+    // 🎵 加强版：全局同步更新所有聊天流中的独立音乐卡片状态
+    async function syncAllMusicWidgets() {
         const isPlaying = !document.getElementById('audio-player').paused;
         const s = songs[currentSongIdx];
+        
+        let coverMap = JSON.parse(localStorage.getItem('ai_os_music_covers') || '{}');
+        let finalCover = coverMap[s.title] || s.cover;
+        if (finalCover.startsWith('idb://')) {
+            finalCover = await getImageFromDB(finalCover.replace('idb://', '')) || s.cover;
+        }
+
         document.querySelectorAll('.ios-music-widget').forEach(widget => {
             const wId = widget.id;
             const cover = document.getElementById(wId + '_cover');
@@ -5892,23 +6119,16 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             const playbtn = document.getElementById(wId + '_playbtn');
             
             if(cover) {
-                cover.src = s.cover;
+                cover.src = finalCover; // 同步注入自定义封面
                 if(isPlaying) cover.classList.add('playing'); else cover.classList.remove('playing');
             }
             if(title) title.innerText = s.title;
             if(artist) artist.innerText = s.artist;
-            if(playbtn) {
-                playbtn.className = `fas ${isPlaying ? 'fa-pause-circle' : 'fa-play-circle'} imw-btn imw-play-btn`;
-            }
+            if(playbtn) playbtn.className = `fas ${isPlaying ? 'fa-pause-circle' : 'fa-play-circle'} imw-btn imw-play-btn`;
         });
     }
 
-        // ✅ 聊天卡片内直接调用的专属控制函数 (阻止事件冒泡，防止长按菜单误触发)
-    function sysTogglePlay(e) { if(e) e.stopPropagation(); togglePlay(); }
-    function sysNextSong(e) { if(e) e.stopPropagation(); nextSong(); }
-    function sysPrevSong(e) { if(e) e.stopPropagation(); prevSong(); }
-
-    // ✅ 静默分享极具拟态质感的 iOS 独立音乐组件
+    // 🎵 加强版：极简分享音乐给TA的交互卡片生成 (抓取自定义图)
     function shareMusicToChat() {
         const s = songs[currentSongIdx];
         const isPlaying = !document.getElementById('audio-player').paused;
@@ -5916,11 +6136,13 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         const coverCls = isPlaying ? 'playing' : '';
         const widgetId = 'imw_' + Date.now();
         
-        // 生成独立的可交互组件！(带有 ios-music-widget 外壳)
+        // 直接从 DOM 取图，确保即使用了自定义图片也能完美发送到聊天框
+        const currentCoverSrc = document.getElementById('music-cover').src;
+
         const html = `
             <div class="ios-music-widget" id="${widgetId}">
                 <div class="imw-top">
-                    <img src="${s.cover}" class="imw-cover ${coverCls}" id="${widgetId}_cover">
+                    <img src="${currentCoverSrc}" class="imw-cover ${coverCls}" id="${widgetId}_cover">
                     <div class="imw-info">
                         <div class="imw-title" id="${widgetId}_title">${s.title}</div>
                         <div class="imw-artist" id="${widgetId}_artist">${s.artist}</div>
@@ -5937,12 +6159,12 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             </div>
         `;
         
-        // 告知 AI 音乐播放器的存在，并赋予控制提示
         const rawText = `[向你发送了一个互动音乐卡片，当前正在播放：《${s.title}》 - ${s.artist}。你可以使用 $$MUSIC_ACTION:play/pause/next/prev$$ 在后台控制这首音乐。]`;
 
         openApp('chat-app');
         addMessageToUI('user', html, true, null, rawText, 'music-share');
     }
+
 
 
     
@@ -6197,12 +6419,13 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
              // ==========================================
     // 🎨 全局美化中心核心逻辑 (带持久化修复 & 数据库扩容)
     // ==========================================
-    let uiSettings = { 
+        let uiSettings = { 
         iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, 
         cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
         liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
-        iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 72 
+        iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 72, timeWeight: 200 // 👈 新增 timeWeight
     };
+
 
     function hexToRgba(hex, opacity) {
         hex = hex.replace('#', '');
@@ -6232,6 +6455,9 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         root.style.setProperty('--ui-bubble-opacity', uiSettings.bubbleOpacity || 0.92);
         root.style.setProperty('--ui-time-size', `${uiSettings.timeSize}px`);
         root.style.setProperty('--ui-time-color', uiSettings.timeColor || '#ffffff');
+        // 👇 新增这一行：注入时间粗细的 CSS 变量 👇
+        root.style.setProperty('--ui-time-weight', uiSettings.timeWeight || 200);
+        
 
         // 2. 特效开关应用
         const timeTextEl = document.getElementById('lq-time');
@@ -6269,7 +6495,8 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
 
         // 容错处理
         if(typeof uiSettings.liquidTime === 'undefined') uiSettings.liquidTime = true;
-        if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 72; 
+        if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 72;
+         if(typeof uiSettings.timeWeight === 'undefined') uiSettings.timeWeight = 200; // 👈 新增这行容错
         if(typeof uiSettings.liquidIcon === 'undefined') uiSettings.liquidIcon = true;
         if(typeof uiSettings.customIconColor === 'undefined') uiSettings.customIconColor = false;
         if(typeof uiSettings.iconBgOpacity === 'undefined') uiSettings.iconBgOpacity = 0.15;
@@ -9363,6 +9590,548 @@ openApp = function(appId) {
         
         sysAlert("身份切换", `已无缝切换至身份：【${globalUser.name}】\n去聊天框发条消息试试吧！`);
     }
+
+
+        // ==========================================
+    // 🎨 独立应用图标更换引擎
+    // ==========================================
+    let individualIcons = JSON.parse(localStorage.getItem('ai_os_individual_icons')) || {};
+    let targetAppOnclick = null;
+
+    // 扫描并在系统中替换独立图标
+    function applyIndividualIcons() {
+        const containers = document.querySelectorAll('.app-container');
+        containers.forEach(container => {
+            const onClickStr = container.getAttribute('onclick');
+            if (!onClickStr || !individualIcons[onClickStr]) return;
+            
+            const customImg = individualIcons[onClickStr];
+            const iconDiv = container.querySelector('.app-icon');
+            const iTag = iconDiv ? iconDiv.querySelector('i') : null;
+            const svgTag = iconDiv ? iconDiv.querySelector('svg') : null;
+            
+            if (iconDiv && customImg) {
+                const setStyles = (url) => {
+                    iconDiv.style.setProperty('background-image', `url('${url}')`, 'important');
+                    iconDiv.style.setProperty('background-size', 'cover', 'important');
+                    iconDiv.style.setProperty('background-position', 'center', 'important');
+                    iconDiv.style.setProperty('background-blend-mode', 'normal', 'important');
+                    iconDiv.style.setProperty('background-color', 'transparent', 'important');
+                    if(iTag) iTag.style.setProperty('display', 'none', 'important');
+                    if(svgTag) svgTag.style.setProperty('display', 'none', 'important');
+                };
+
+                if (customImg.startsWith('idb://')) {
+                    getImageFromDB(customImg.replace('idb://', '')).then(r => {
+                        if(r) setStyles(r);
+                    });
+                } else {
+                    setStyles(customImg);
+                }
+            }
+        });
+    }
+
+    // 将系统里的 App 提取渲染到主题中心的面板中供用户修改
+    function renderIndividualIconSettings() {
+        // 只拿主屏幕和底部导航栏的APP
+        const containers = document.querySelectorAll('.phone-inner > .screen > #os-home .app-container, .phone-inner > .screen > .dock .app-container');
+        const grid = document.getElementById('individual-icon-grid');
+        if (!grid) return;
+        
+        let html = '';
+        let seen = new Set();
+        
+        containers.forEach(container => {
+            const onClickStr = container.getAttribute('onclick');
+            if (!onClickStr) return;
+            if (seen.has(onClickStr)) return;
+            seen.add(onClickStr);
+            
+            let label = container.querySelector('.app-label');
+            let name = label ? label.innerText : "";
+            if (!name) {
+                if (onClickStr.includes('chat-app')) name = "短信";
+                if (onClickStr.includes('contacts-app')) name = "通讯录";
+                if (onClickStr.includes('persona-app')) name = "我的人设";
+                if (onClickStr.includes('settings-app')) name = "角色工坊";
+            }
+            
+            const iconDiv = container.querySelector('.app-icon');
+            let originalIconHtml = iconDiv ? iconDiv.innerHTML : '';
+            const customImg = individualIcons[onClickStr];
+            let uid = 'icon_prev_' + Math.random().toString(36).substr(2,9);
+            
+            // 提取原本的内联底色以供占位
+            let bgStyle = iconDiv && iconDiv.getAttribute('style') ? iconDiv.getAttribute('style') : 'background: var(--input-bg);';
+            
+            html += `
+                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;" onclick="promptChangeIndividualIcon(\`${onClickStr.replace(/'/g, "\\'")}\`)">
+                    <div id="${uid}" class="app-icon" style="${bgStyle}; width: 45px; height: 45px; border-radius: 12px; position:relative; overflow:hidden;">
+                        ${customImg ? '' : originalIconHtml}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-main); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${name}</div>
+                </div>
+            `;
+            
+            if (customImg && customImg.startsWith('idb://')) {
+                getImageFromDB(customImg.replace('idb://', '')).then(r => {
+                    if (r) {
+                        const el = document.getElementById(uid);
+                        if (el) el.style.cssText = `background: url('${r}') center/cover no-repeat !important; width: 45px; height: 45px; border-radius: 12px;`;
+                    }
+                });
+            }
+        });
+        
+        grid.innerHTML = html;
+    }
+
+    // 唤醒文件上传
+    function promptChangeIndividualIcon(onClickStr) {
+        targetAppOnclick = onClickStr;
+        document.getElementById('individual-icon-upload').click();
+    }
+
+    // 图片处理：裁剪、压缩、存入数据库、渲染更新
+    async function handleIndividualIconUpload(e) {
+        const file = e.target.files[0];
+        if (!file || !targetAppOnclick) return;
+        
+        sysAlert("处理中", "正在为您生成专属 APP 图标...");
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.min(img.width, img.height);
+                if (size > 300) size = 300; 
+                canvas.width = size;
+                canvas.height = size;
+                
+                const ctx = canvas.getContext('2d');
+                // 居中智能裁切成正方形
+                const offsetX = (img.width - Math.min(img.width, img.height)) / 2;
+                const offsetY = (img.height - Math.min(img.width, img.height)) / 2;
+                
+                ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                
+                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+                const imgId = 'ind_icon_' + Date.now();
+                
+                await saveImageToDB(imgId, base64Url);
+                
+                individualIcons[targetAppOnclick] = 'idb://' + imgId;
+                localStorage.setItem('ai_os_individual_icons', JSON.stringify(individualIcons));
+                
+                applyIndividualIcons();
+                renderIndividualIconSettings(); // 刷新网格
+                
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                targetAppOnclick = null;
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = ''; 
+    }
+
+    // 清除数据重置所有
+    function resetAllIndividualIcons() {
+        sysConfirm("警告", "确定要清空自定义并恢复所有的 APP 默认图标吗？").then(confirm => {
+            if (confirm) {
+                localStorage.removeItem('ai_os_individual_icons');
+                location.reload();
+            }
+        });
+    }
+
+    // 拦截页面启动与 Theme-app 开启，执行渲染
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(applyIndividualIcons, 200); 
+    });
+
+    const _originalOpenAppThemeIcon = openApp;
+    openApp = function(appId) {
+        _originalOpenAppThemeIcon(appId);
+        if(appId === 'theme-app') {
+            renderIndividualIconSettings();
+        }
+    };
+
+
+        // ==========================================
+    // 🔠 APP 内部图案与文字调节引擎
+    // ==========================================
+    function updateIconFontParams() {
+        const hideFont = document.getElementById('ui-hide-icon-font').checked;
+        const fontSize = document.getElementById('ui-icon-font-size').value;
+        const hideLabel = document.getElementById('ui-hide-app-label').checked;
+        const labelSize = document.getElementById('ui-app-label-size').value;
+
+        // 动态回显数值
+        document.getElementById('val-icon-font-size').innerText = fontSize;
+        document.getElementById('val-app-label-size').innerText = labelSize;
+
+        // 实时应用到 CSS 变量
+        const root = document.documentElement;
+        root.style.setProperty('--ui-icon-font-display', hideFont ? 'none' : 'block');
+        root.style.setProperty('--ui-icon-font-size', fontSize + 'px');
+        root.style.setProperty('--ui-label-display', hideLabel ? 'none' : 'block');
+        root.style.setProperty('--ui-label-font-size', labelSize + 'px');
+
+        // 持久化保存
+        const iconConfig = { hideFont, fontSize, hideLabel, labelSize };
+        localStorage.setItem('ai_os_icon_text_config', JSON.stringify(iconConfig));
+    }
+
+    // 系统启动时恢复保存的文字与图标状态
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = JSON.parse(localStorage.getItem('ai_os_icon_text_config'));
+        if (saved) {
+            const root = document.documentElement;
+            root.style.setProperty('--ui-icon-font-display', saved.hideFont ? 'none' : 'block');
+            root.style.setProperty('--ui-icon-font-size', saved.fontSize + 'px');
+            root.style.setProperty('--ui-label-display', saved.hideLabel ? 'none' : 'block');
+            root.style.setProperty('--ui-label-font-size', saved.labelSize + 'px');
+
+            // 延迟一点以等待 DOM 渲染，然后同步给滑块和开关UI
+            setTimeout(() => {
+                const elHideFont = document.getElementById('ui-hide-icon-font');
+                if (elHideFont) {
+                    elHideFont.checked = saved.hideFont;
+                    document.getElementById('ui-icon-font-size').value = saved.fontSize;
+                    document.getElementById('ui-hide-app-label').checked = saved.hideLabel;
+                    document.getElementById('ui-app-label-size').value = saved.labelSize;
+                    
+                    document.getElementById('val-icon-font-size').innerText = saved.fontSize;
+                    document.getElementById('val-app-label-size').innerText = saved.labelSize;
+                }
+            }, 600);
+        }
+    });
+
+
+        // ==========================================
+    // 🏠 家庭空间：自定义放置物品引擎
+    // ==========================================
+    let customRoomItems = JSON.parse(localStorage.getItem('ai_os_custom_room_items')) || [];
+
+    function renderRoomItems() {
+        const inventory = document.getElementById('room-item-inventory');
+        if (!inventory) return;
+        let defaultItems = `
+            <div class="inventory-item" onclick="selectRoomItem(this, '一件脏衣服')">🧦 脏衣服</div>
+            <div class="inventory-item" onclick="selectRoomItem(this, '一束玫瑰花')">🌹 玫瑰花</div>
+            <div class="inventory-item" onclick="selectRoomItem(this, '一本看到一半的小说')">📖 小说</div>
+            <div class="inventory-item" onclick="selectRoomItem(this, '一包打开的薯片')">🍟 薯片</div>
+            <div class="inventory-item" onclick="selectRoomItem(this, '一杯没喝完的咖啡')">☕ 咖啡</div>
+        `;
+        let customHtml = customRoomItems.map((item, idx) => `
+            <div class="inventory-item" onclick="selectRoomItem(this, '${item}')" oncontextmenu="deleteCustomRoomItem(${idx}, event)" title="长按/右击删除">⭐ ${item}</div>
+        `).join('');
+        
+        // 渲染内置物品 + 自定义物品 + 添加按钮
+        inventory.innerHTML = defaultItems + customHtml + `
+            <div class="inventory-item" style="border: 1px dashed var(--accent); background: transparent; color: var(--accent);" onclick="promptAddCustomRoomItem()"><i class="fas fa-plus"></i> 自定义</div>
+        `;
+    }
+
+    async function promptAddCustomRoomItem() {
+        const itemName = await sysPrompt("自定义物品", "想把什么东西丢给TA？\n（例如：一件白衬衫、一把车钥匙、一张写着秘密的纸条）");
+        if (itemName && itemName.trim()) {
+            customRoomItems.push(itemName.trim());
+            localStorage.setItem('ai_os_custom_room_items', JSON.stringify(customRoomItems));
+            renderRoomItems();
+        }
+    }
+
+    async function deleteCustomRoomItem(idx, e) {
+        if (e) e.preventDefault();
+        const confirm = await sysConfirm("删除物品", "确定要删除这个自定义物品吗？");
+        if (confirm) {
+            customRoomItems.splice(idx, 1);
+            localStorage.setItem('ai_os_custom_room_items', JSON.stringify(customRoomItems));
+            renderRoomItems();
+        }
+    }
+
+    // 拦截操作：当打开家庭空间时，渲染并加载物品列表
+    const _originalOpenAppHomeItem = openApp;
+    openApp = function(appId) {
+        _originalOpenAppHomeItem(appId);
+        if(appId === 'home-app') renderRoomItems();
+    };
+
+
+    // ==========================================
+    // 🎵 音乐播放器：高自由度 UI 与图片换图引擎
+    // ==========================================
+    
+    // 1. 处理自定义全局播放器背景上传
+    async function handleMusicBgUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const maxDim = 1500;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) { h *= maxDim / w; w = maxDim; } else { w *= maxDim / h; h = maxDim; }
+                }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                const base64Url = canvas.toDataURL('image/jpeg', 0.85);
+                
+                // 存入超大容量私有图库
+                const imgId = 'music_bg_' + Date.now();
+                await saveImageToDB(imgId, base64Url);
+                localStorage.setItem('ai_os_music_global_bg', 'idb://' + imgId);
+                
+                document.getElementById('music-bg').style.backgroundImage = `url('${base64Url}')`;
+                sysAlert("更换成功", "播放器背景已永久替换！\n如需恢复默认（自动读取专辑封面），请前往系统美化中心重置。");
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    // 2. 处理独立唱片封面上传
+    async function handleMusicCoverUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.min(img.width, img.height);
+                if(size > 800) size = 800; // 锁定正方形高画质
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const offsetX = (img.width - size) / 2;
+                const offsetY = (img.height - size) / 2;
+                ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+                
+                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+                const imgId = 'music_cover_' + Date.now();
+                await saveImageToDB(imgId, base64Url);
+                
+                // 给当前歌曲锁定独立封面
+                let coverMap = JSON.parse(localStorage.getItem('ai_os_music_covers') || '{}');
+                coverMap[songs[currentSongIdx].title] = 'idb://' + imgId;
+                localStorage.setItem('ai_os_music_covers', JSON.stringify(coverMap));
+                
+                document.getElementById('music-cover').src = base64Url;
+                document.getElementById('di-cover').src = base64Url;
+                
+                // 如果用户没有锁死背景，换封面时联动更新毛玻璃背景
+                let globalBg = localStorage.getItem('ai_os_music_global_bg');
+                if (!globalBg) document.getElementById('music-bg').style.backgroundImage = `url('${base64Url}')`;
+                
+                if(typeof syncAllMusicWidgets === 'function') syncAllMusicWidgets();
+                sysAlert("封面已更换", "已成功为当前这首歌上传了专属唱片图！");
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+
+
+        // ==========================================
+    // 📱 健康使用手机 App & 全局防沉迷锁屏引擎
+    // ==========================================
+    let screenTimeData = JSON.parse(localStorage.getItem('ai_os_screentime')) || {
+        apps: [
+            {name: "X (推特)", time: "2小时 15分", color: "#000000"},
+            {name: "贴吧社区", time: "1小时 30分", color: "#0B84FF"},
+            {name: "小说阅读", time: "45分钟", color: "#ff9a9e"}
+        ],
+        location: "市中心咖啡馆",
+        contacts: "刚给同事发了消息"
+    };
+
+    let lockState = JSON.parse(localStorage.getItem('ai_os_lock_state')) || { locked: false, reason: "" };
+
+    function renderScreenTimeApp() {
+        const container = document.getElementById('screentime-content');
+        if(!container) return;
+
+        let appsHtml = screenTimeData.apps.map(a => `
+            <div style="display:flex; justify-content:space-between; margin-bottom: 10px; align-items:center;">
+                <span style="color:var(--text-main); font-size:14px;">
+                    <div style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${a.color}; margin-right:6px;"></div>${a.name}
+                </span>
+                <span style="color:var(--text-sub); font-size:14px; font-family:monospace;">${a.time}</span>
+            </div>
+        `).join('');
+
+        container.innerHTML = `
+            <div style="background: var(--bg-panel); border-radius: 16px; padding: 20px; border: 0.5px solid var(--border-color); margin-bottom: 15px;">
+                <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 16px;"><i class="fas fa-mobile-alt" style="color: var(--accent);"></i> 今日各系统应用使用时长</h3>
+                ${appsHtml}
+            </div>
+            <div style="background: var(--bg-panel); border-radius: 16px; padding: 20px; border: 0.5px solid var(--border-color); margin-bottom: 15px;">
+                <h3 style="color: var(--text-main); margin-bottom: 10px; font-size: 16px;"><i class="fas fa-map-marker-alt" style="color: #ff453a;"></i> 实时位置轨迹</h3>
+                <p style="color: var(--text-sub); font-size: 14px;">${screenTimeData.location}</p>
+            </div>
+            <div style="background: var(--bg-panel); border-radius: 16px; padding: 20px; border: 0.5px solid var(--border-color);">
+                <h3 style="color: var(--text-main); margin-bottom: 10px; font-size: 16px;"><i class="fas fa-users" style="color: #0B84FF;"></i> 社交接触与通讯</h3>
+                <p style="color: var(--text-sub); font-size: 14px; line-height: 1.5;">${screenTimeData.contacts}</p>
+            </div>
+            <div style="margin-top: 15px; text-align: center; color: var(--text-sub); font-size: 12px; opacity: 0.7;">
+                系统级防沉迷模块<br>TA 可随时调用底层接口查阅这些数据并对你实施锁定
+            </div>
+        `;
+    }
+
+    async function refreshScreenTime() {
+        const char = characters.find(c => c.id === activeCharId);
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) return sysAlert("错误", "请先在角色工坊配置 API 密钥");
+
+        const btn = document.getElementById('screentime-refresh-btn');
+        if (btn.classList.contains('fa-spin')) return;
+        btn.classList.add('fa-spin');
+
+        // 调用大模型随机生成具有戏剧性的手机使用记录，且【严格限定】在当前系统代码已有的 App 内！
+        const prompt = `你现在是一个手机底层的安全监控模块。请根据角色【${char.name}】的视角和用户平时的人设，随机生成用户今天的手机使用情况。
+要求输出严格的JSON，绝对不要包含任何 markdown 标记：
+{
+  "apps": [
+    {"name": "必须只能填这里面的应用", "time": "X小时X分钟", "color": "十六进制颜色代码"},
+    {"name": "必须只能填这里面的应用", "time": "X小时X分钟", "color": "十六进制颜色代码"}
+  ],
+  "location": "具体的物理位置(如: 某某网吧、公司、家里卧室、某个街道)",
+  "contacts": "最近的社交行为(如: 10分钟前给谁打了电话，可能是一些异性或亲友)"
+}
+【极度重要的应用限制】：apps数组里的"name"字段，绝对不能填抖音/微信，【必须且只能】从这个列表中选择：[贴吧社区, X (推特), 小说阅读, 断网恐龙, 朋友圈, 知乎, 小宠物, 音乐播放器]。
+请分配一些夸张的时间（比如看小说3小时），方便稍后让角色有理由吃醋或发脾气锁屏。`;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            const firstBrace = reply.indexOf('{');
+            const lastBrace = reply.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+            
+            screenTimeData = JSON.parse(reply);
+            localStorage.setItem('ai_os_screentime', JSON.stringify(screenTimeData));
+            renderScreenTimeApp();
+            sysAlert("刷新成功", "当前设备的底层运行数据已被 AI 重新评估更新！\n你可以去聊天框看看TA有没有发现你在系统里乱玩应用。");
+        } catch (e) {
+            sysAlert("刷新失败", "网络超时或数据格式出错。\n" + e.message);
+        } finally {
+            btn.classList.remove('fa-spin');
+        }
+    }
+
+    // 触发锁定
+    function triggerScreenLock(reason, charName) {
+        lockState = { locked: true, reason: reason };
+        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
+        document.getElementById('lock-reason-display').innerText = reason;
+        document.getElementById('sys-screen-lock').querySelector('h2').innerText = `已被 ${charName} 强制锁定`;
+        document.getElementById('sys-screen-lock').style.display = 'flex';
+        document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+    }
+
+    // 触发解锁
+    function triggerScreenUnlock() {
+        lockState = { locked: false, reason: "" };
+        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
+        document.getElementById('sys-screen-lock').style.display = 'none';
+    }
+
+    // 🚀 核心黑科技：重写并接管所有核心系统导航，实现完美的强制拦截
+    const __originalOpenAppScreenTime = openApp;
+    openApp = function(appId) {
+        if(lockState.locked && appId !== 'chat-app') {
+            document.getElementById('sys-screen-lock').style.display = 'flex';
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            return;
+        }
+        __originalOpenAppScreenTime(appId);
+        if(appId === 'screentime-app') renderScreenTimeApp();
+    };
+
+    const __originalGoBackScreenTime = goBack;
+    goBack = function() {
+        if(lockState.locked) {
+            document.getElementById('sys-screen-lock').style.display = 'flex';
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            return;
+        }
+        __originalGoBackScreenTime();
+    };
+
+    const __originalGoHomeScreenTime = goHome;
+    goHome = function() {
+        if(lockState.locked) {
+            document.getElementById('sys-screen-lock').style.display = 'flex';
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            return;
+        }
+        __originalGoHomeScreenTime();
+    };
+
+    // 开机自检：如果你昨天被锁了没解锁，今天开机照样被锁死
+    document.addEventListener('DOMContentLoaded', () => {
+        if(lockState && lockState.locked) {
+            const char = characters.find(c => c.id === activeCharId) || {name: "系统"};
+            document.getElementById('lock-reason-display').innerText = lockState.reason;
+            document.getElementById('sys-screen-lock').querySelector('h2').innerText = `已被 ${char.name} 强制锁定`;
+            document.getElementById('sys-screen-lock').style.display = 'flex';
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            document.getElementById('os-home').style.display = 'none';
+        }
+    });
+
+
+
+        // ==========================================
+    // 📢 开屏免责声明引擎
+    // ==========================================
+    function closeStartupDisclaimer() {
+        localStorage.setItem('ai_os_disclaimer_agreed', 'true');
+        document.getElementById('startup-disclaimer-modal').style.animation = 'toastFade 0.3s forwards';
+        setTimeout(() => {
+            document.getElementById('startup-disclaimer-modal').style.display = 'none';
+        }, 300);
+    }
+
+    // 在系统启动自检中加入弹窗判断
+    document.addEventListener('DOMContentLoaded', () => {
+        // 如果系统里没有找到用户同意过的记录，就弹出强制免责声明
+        if (!localStorage.getItem('ai_os_disclaimer_agreed')) {
+            const disclaimerModal = document.getElementById('startup-disclaimer-modal');
+            if(disclaimerModal) {
+                disclaimerModal.style.display = 'flex';
+            }
+        }
+    });
+
+
+
+
+
 
 
 
