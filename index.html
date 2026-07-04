@@ -1803,44 +1803,187 @@ html body #chat-app .msg-time {
         .tl-check { position: absolute; top: 15px; right: 15px; font-size: 20px; color: var(--accent); display: none; }
         .theme-layout-card.active .tl-check { display: block; }
 
-                /* ========================================== */
-        /* 1. WeChat 完完整整仿微信 (含顶部居中) */
+                                /* ========================================== */
+        /* 1. WeChat 完完整整仿微信 (纯色扁平化气泡) */
         /* ========================================== */
         html body #chat-app.layout-wechat { background: #EDEDED !important; }
         html body #chat-app.layout-wechat::before { display: none !important; }
-        html body #chat-app.layout-wechat .chat-header { background: #EDEDED !important; border-bottom: 1px solid #dcdcdc !important; position: relative !important; align-items: center !important; height: 90px !important; padding-bottom: 0 !important; }
+        html body #chat-app.layout-wechat .chat-header { background: #EDEDED !important; border-bottom: 0.5px solid #D8D8D8 !important; position: relative !important; align-items: center !important; height: 90px !important; padding-bottom: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
         
-        /* 微信头部居中魔法 */
+        /* 微信头部居中 */
         html body #chat-app.layout-wechat .chat-info { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
-        html body #chat-app.layout-wechat .chat-info h3 { font-size: 17px !important; font-weight: bold !important; color: #111 !important; }
-        html body #chat-app.layout-wechat .chat-info p { display: none !important; } /* 微信一般不显示在线状态 */
-        html body #chat-app.layout-wechat .chat-header-left i { color: #111 !important; margin-bottom: 0 !important; }
-        html body #chat-app.layout-wechat .fa-phone-alt { color: #111 !important; margin-bottom: 0 !important; }
+        html body #chat-app.layout-wechat .chat-info h3 { font-size: 17px !important; font-weight: 500 !important; color: #000 !important; letter-spacing: 0.5px; margin: 0 !important; }
+        html body #chat-app.layout-wechat .chat-info p { display: none !important; } 
+        html body #chat-app.layout-wechat .chat-header-left i { color: #181818 !important; margin-bottom: 0 !important; font-size: 20px !important; font-weight: 400 !important; }
+        html body #chat-app.layout-wechat .fa-phone-alt { color: #181818 !important; margin-bottom: 0 !important; display: none !important; }
+        
+        html body #chat-app.layout-wechat .msg-avatar { border-radius: 6px !important; width: 40px !important; height: 40px !important; border: none !important; margin-top: 0 !important;}
+        html body #chat-app.layout-wechat .msg-wrapper { gap: 12px !important; margin-bottom: 16px !important; align-items: flex-start !important; }
+        
+        /* 微信气泡核心重构：纯色扁平化 */
+        /* 对方气泡 - 纯净白 */
+        html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-radius: 8px !important; /* 微信标准的圆角大小 */
+            box-shadow: none !important; /* 去除所有阴影 */
+            border: none !important;
+            padding: 10px 14px !important;
+            text-align: left !important;
+            color: #111111 !important; /* 纯黑文字 */
+            font-size: 16px !important;
+            line-height: 1.5 !important;
+            position: relative !important;
+            overflow: visible !important; /* 允许显示小尾巴 */
+            margin-left: 6px !important;
+        }
 
-        html body #chat-app.layout-wechat .msg-avatar { border-radius: 6px !important; width: 42px !important; height: 42px !important; border: none !important;}
-        html body #chat-app.layout-wechat .msg-wrapper { gap: 12px !important; margin-bottom: 18px !important; }
-        
-        /* 微信气泡核心重排 */
-        html body #chat-app.layout-wechat #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
-            border-radius: 4px !important; padding: 10px 14px !important; box-shadow: none !important; font-size: 16px !important; line-height: 1.6 !important; border: none !important; overflow: visible !important;
+        /* 对方气泡的小尾巴（左侧指向头像） */
+        html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            content: '';
+            position: absolute;
+            top: 14px; /* 尾巴距离顶部的距离 */
+            left: -6px; /* 尾巴伸出气泡外部 */
+            border-width: 6px 8px 6px 0;
+            border-style: solid;
+            border-color: transparent #ffffff transparent transparent !important;
+            display: block !important;
+            width: 0; height: 0; background: transparent !important;
         }
-        /* 强制还原微信小三角尾巴 */
-        html body #chat-app.layout-wechat #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before,
-        html body #chat-app.layout-wechat #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after { 
-            content: ''; position: absolute; top: 14px; border-style: solid; border-width: 6px; width: 0; height: 0; background: transparent !important; display: none !important;
+        /* 强行抹除右侧残影 */
+        html body #chat-app.layout-wechat #chat-container .msg.char::after { display: none !important; }
+
+        /* 自己气泡 - 现代微信绿 */
+        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: #95ec69 !important; /* 灵魂注入：现代微信标准绿 */
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important; /* 去除深色阴影 */
+            border: none !important;
+            padding: 10px 14px !important;
+            text-align: left !important;
+            color: #111111 !important; /* 重点注意：微信绿底的文字是黑色的，不是白色！ */
+            font-size: 16px !important;
+            line-height: 1.5 !important;
+            position: relative !important;
+            overflow: visible !important; 
+            margin-right: 6px !important;
         }
-        html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { background: #FFFFFF !important; color: #111 !important; margin-left: 6px; }
-        html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before { display: block !important; left: -11px; border-color: transparent #FFFFFF transparent transparent !important; }
-        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { background: #95EC69 !important; color: #111 !important; margin-right: 6px; }
-        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after { display: block !important; right: -11px; border-color: transparent transparent transparent #95EC69 !important; }
-        
+
+        /* 自己气泡的小尾巴（右侧指向头像） */
+        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            content: '';
+            position: absolute;
+            top: 14px; 
+            right: -6px; 
+            left: auto;
+            border-width: 6px 0 6px 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent #95ec69 !important; /* 颜色与气泡绿一致 */
+            display: block !important;
+            width: 0; height: 0; background: transparent !important;
+        }
+        /* 强行抹除左侧残影 */
+        html body #chat-app.layout-wechat #chat-container .msg.user::after { display: none !important; }
+
+        /* 已发送标识 - 隐藏（微信没有文字版“已发送”） */
+        html body #chat-app.layout-wechat #chat-container .msg-wrapper.user .msg-content-box::after {
+            display: none !important; 
+        }
+
+        /* 单条气泡时间戳 - 隐藏 */
+        html body #chat-app.layout-wechat #chat-container .msg-time { display: none !important; }
+
+        /* 悬停光泽（模拟微弱变暗） */
+        html body #chat-app.layout-wechat #chat-container .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover {
+            box-shadow: none !important;
+            background-color: #f5f5f5 !important;
+            transition: background-color 0.2s ease !important;
+        }
+
+        html body #chat-app.layout-wechat #chat-container .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover {
+            box-shadow: none !important;
+            background-color: #89d961 !important;
+            transition: background-color 0.2s ease !important;
+        }
+
         /* 微信发送栏 */
-        html body #chat-app.layout-wechat .chat-input-area { background: #F7F7F7 !important; border-top: 1px solid #ECECEC !important; padding: 10px 15px 35px !important; }
-        html body #chat-app.layout-wechat .chat-input { background: #FFFFFF !important; border-radius: 4px !important; border: none !important; color: #111 !important; height: 40px !important; font-size: 16px !important;}
-        html body #chat-app.layout-wechat .chat-icon-btn { color: #333 !important; }
-        html body #chat-app.layout-wechat .fa-arrow-circle-up { font-family: -apple-system, sans-serif !important; font-size: 14px !important; font-weight: 500 !important; background: #07C160 !important; color: #fff !important; border-radius: 4px !important; width: 60px !important; height: 36px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin-left: 10px !important; }
+        html body #chat-app.layout-wechat .chat-input-area { background: #F7F7F7 !important; border-top: 0.5px solid #D8D8D8 !important; padding: 10px 15px 35px !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        html body #chat-app.layout-wechat .chat-input { background: #FFFFFF !important; border-radius: 4px !important; border: none !important; color: #000 !important; height: 40px !important; font-size: 16px !important;}
+        html body #chat-app.layout-wechat .chat-icon-btn { color: #181818 !important; font-size: 26px !important; }
+        html body #chat-app.layout-wechat .fa-arrow-circle-up { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important; font-size: 15px !important; font-weight: 500 !important; background: #07C160 !important; color: #fff !important; border-radius: 4px !important; width: 60px !important; height: 32px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin-left: 10px !important; letter-spacing: 2px;}
         html body #chat-app.layout-wechat .fa-arrow-circle-up::before { content: '发送' !important; }
-        html body #chat-app.layout-wechat .fa-robot { color: #07C160 !important; font-size: 24px !important; margin-left: 12px !important; }
+        html body #chat-app.layout-wechat .fa-robot { display: none !important; } 
+        html body #chat-app.layout-wechat .msg-system { background: #DADADA !important; color: #FFFFFF !important; padding: 4px 10px !important; border-radius: 4px !important; display: inline-block !important; font-size: 12px !important; font-weight: normal !important; margin: 15px auto !important; width: auto !important; max-width: 80% !important; border: none !important; }
+        html body #chat-app.layout-wechat .ins-sys-msg { background: #DADADA !important; color: #FFFFFF !important; }
+        html body #chat-app.layout-wechat .image-bubble img.chat-upload-img { border-radius: 4px !important; border: none !important; box-shadow: none !important; }
+
+
+                /* ========================================== */
+        /* 5. Telegram (纸飞机) 极简日间淡色布局 */
+        /* ========================================== */
+        /* 维持原有背景图逻辑，去除深色遮罩，保证自定义壁纸原图显示 */
+        html body #chat-app.layout-telegram::before { display: none !important; } 
+        
+        /* 顶部栏：纯净白 */
+        html body #chat-app.layout-telegram .chat-header { background: #FFFFFF !important; border-bottom: 1px solid #EAEAEA !important; height: 85px !important; padding-bottom: 10px !important; align-items: flex-end !important;}
+        html body #chat-app.layout-telegram .chat-header-left i { color: #3390EC !important; }
+        html body #chat-app.layout-telegram .chat-info h3 { color: #000000 !important; font-size: 18px !important; font-weight: bold !important; }
+        html body #chat-app.layout-telegram .chat-info p { color: #8795A0 !important; font-size: 13px !important; }
+        html body #chat-app.layout-telegram .fa-phone-alt { color: #3390EC !important; }
+        
+        /* 气泡外层，TG头像在底部对齐 */
+        html body #chat-app.layout-telegram .msg-wrapper { gap: 8px !important; margin-bottom: 4px !important; align-items: flex-end !important; }
+        html body #chat-app.layout-telegram .msg-avatar { border-radius: 50% !important; width: 36px !important; height: 36px !important; margin-bottom: 2px !important;}
+        html body #chat-app.layout-telegram .msg-content-box { position: relative !important; max-width: 80% !important; }
+        
+        /* 强制隐藏默认的时间，把它移进气泡 */
+        html body #chat-app.layout-telegram .msg-time { display: none !important; }
+        
+        /* Telegram 气泡核心 */
+        html body #chat-app.layout-telegram #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
+            border-radius: 12px !important; padding: 8px 12px 20px 12px !important; /* 底部留白给时间 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; font-size: 15px !important; line-height: 1.5 !important; border: none !important;
+            position: relative; min-width: 60px;
+        }
+        html body #chat-app.layout-telegram #chat-container .msg::after { display: none !important; }
+        html body #chat-app.layout-telegram #chat-container .msg::before { display: none !important; }
+        
+        /* 对方气泡 - 白底黑字 */
+        html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
+            background: #FFFFFF !important; color: #000000 !important; border-bottom-left-radius: 4px !important; 
+        }
+        /* 对方内部的时间注入伪元素 - 浅灰时间 */
+        html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            content: attr(data-time); position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: #A1AAB3; display: block !important; border: none !important; width: auto; height: auto;
+        }
+        
+        /* 自己气泡 - 淡绿底黑字 */
+        html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
+            background: #EEFFDE !important; color: #000000 !important; border-bottom-right-radius: 4px !important; 
+        }
+        /* 自己气泡的时间与已读钩钩 - 绿色时间 */
+        html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            content: attr(data-time) " \2713\2713"; position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: #5DB050; display: block !important; border: none !important; width: auto; height: auto;
+        }
+        
+        /* 输入框区域 - 白色系 */
+        html body #chat-app.layout-telegram .chat-input-area { background: #FFFFFF !important; border-top: 1px solid #EAEAEA !important; padding: 8px 12px 30px !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
+        html body #chat-app.layout-telegram .chat-input { background: #F1F1F1 !important; border-radius: 20px !important; border: none !important; color: #000 !important; padding: 10px 16px !important;}
+        html body #chat-app.layout-telegram .chat-icon-btn { color: #8795A0 !important; font-size: 24px !important; }
+        html body #chat-app.layout-telegram .fa-arrow-circle-up { color: #3390EC !important; font-size: 28px !important; background: transparent !important; }
+        html body #chat-app.layout-telegram .fa-robot { color: #3390EC !important; font-size: 26px !important; margin-left: 10px !important;}
+        
+        /* Telegram 的系统消息 - 半透明灰底白字 */
+        html body #chat-app.layout-telegram .msg-system { background: rgba(0,0,0,0.2) !important; color: #FFFFFF !important; border: none !important; backdrop-filter: blur(5px) !important; padding: 4px 10px !important; border-radius: 12px !important; text-shadow: none !important;}
+        
+        /* 修复图片圆角 */
+        html body #chat-app.layout-telegram .image-bubble img.chat-upload-img { border-radius: 12px !important; box-shadow: none !important; border: none !important;}
+
+
+
 
 
         /* ========================================== */
@@ -2130,6 +2273,75 @@ html body #chat-app .msg-time {
 .vw-bar:nth-child(3) { height: 8px; }
 .vw-bar:nth-child(4) { height: 14px; }
 
+                               /* ========================================== */
+/* 关系网 App 专属样式 */
+/* ========================================== */
+#relation-app { background: var(--bg-base); min-height: 100vh; }
+.rel-node {
+    position: absolute; width: 64px; height: 64px; border-radius: 50%;
+    background: var(--bg-panel); border: 2px solid var(--accent);
+    display: flex; justify-content: center; align-items: center;
+    color: var(--text-main); font-size: 13px; font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer;
+    transform: translate(-50%, -50%); user-select: none;
+    text-align: center; line-height: 1.2; z-index: 2; transition: transform 0.1s;
+}
+.rel-node:active { transform: translate(-50%, -50%) scale(0.9); }
+.rel-edge-label {
+    position: absolute; background: var(--bg-glass); color: var(--text-main);
+    font-size: 11px; padding: 4px 8px; border-radius: 12px;
+    border: 0.5px solid var(--border-color); transform: translate(-50%, -50%);
+    cursor: pointer; z-index: 3; pointer-events: auto; white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.rel-list-item { background: var(--bg-panel); border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 0.5px solid var(--border-color); }
+.rel-list-title { font-size: 14px; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
+.rel-list-desc { font-size: 13px; color: var(--text-main); line-height: 1.5; }
+.rel-list-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; border-top: 0.5px solid var(--border-color); padding-top: 10px; }
+.rel-action-btn { font-size: 12px; color: var(--text-sub); cursor: pointer; }
+.rel-action-btn:active { color: var(--accent); }
+
+                               /* ========================================== */
+/* 群聊大厅 App 专属样式 */
+/* ========================================== */
+#group-chat-app { background: var(--chat-bg); background-size: cover; background-position: center; position: relative; }
+.group-msg-wrapper { display: flex; width: 100%; position: relative; align-items: flex-start; gap: 10px; margin-bottom: 15px; }
+.group-msg-wrapper.char { justify-content: flex-start; }
+.group-msg-wrapper.user { justify-content: flex-end; }
+.group-msg-name { font-size: 11px; color: var(--text-sub); margin-bottom: 4px; margin-left: 4px; }
+.group-msg-wrapper.user .group-msg-name { text-align: right; margin-right: 4px; }
+.group-setup-panel { padding: 20px; }
+.group-member-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-panel); border-radius: 12px; margin-bottom: 10px; border: 0.5px solid var(--border-color); cursor:pointer; }
+.group-member-item.selected { border-color: var(--accent); background: rgba(135,192,202,0.1); }
+
+
+                               /* ========================================== */
+/* IF 线剧场 App 专属样式 */
+/* ========================================== */
+#if-theater-app { background: var(--bg-base); min-height: 100vh; }
+.if-theater-header { padding: 60px 20px 15px; font-size: 20px; font-weight: bold; color: var(--text-main); background: var(--bg-glass-header); position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.if-category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+.if-cat-btn { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 5px; text-align: center; color: var(--text-sub); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.if-cat-btn.active { background: rgba(135,192,202,0.2); color: var(--accent); border-color: var(--accent); font-weight: bold; }
+.if-input-group { background: var(--bg-panel); border-radius: 16px; padding: 15px; border: 0.5px solid var(--border-color); margin-bottom: 15px; }
+.if-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+.if-row input { flex: 1; background: var(--input-bg); border: 1px solid transparent; border-radius: 8px; padding: 10px; color: var(--text-main); outline: none; }
+.if-row input:focus { border-color: var(--accent); }
+.if-result-area { display: none; flex-direction: column; height: calc(100vh - 100px); padding: 20px; }
+.if-story-content { flex: 1; overflow-y: auto; font-size: 16px; line-height: 1.8; color: var(--text-main); white-space: pre-wrap; padding: 15px; background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); margin-bottom: 15px; }
+.if-action-bar { display: flex; gap: 10px; margin-bottom: 15px; }
+.if-action-btn { flex: 1; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 0; text-align: center; color: var(--text-main); font-size: 13px; cursor: pointer; }
+.if-action-btn:active { transform: scale(0.95); }
+.if-action-btn.primary { background: var(--accent); color: #000; font-weight: bold; border: none; }
+.if-comments-area { background: var(--bg-panel); border-radius: 12px; padding: 15px; border: 0.5px solid var(--border-color); display: none; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+.if-comment-item { border-bottom: 0.5px dashed var(--border-color); padding-bottom: 10px; }
+.if-comment-item:last-child { border-bottom: none; padding-bottom: 0; }
+.if-comment-user { font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 4px; }
+.if-comment-text { font-size: 13px; color: var(--text-main); line-height: 1.4; }
+
+
+
+
                                                                                           
                                                                                           
 
@@ -2271,7 +2483,7 @@ html body #chat-app .msg-time {
                     <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
                     <div class="app-container" onclick="openApp('beautify-app')" data-drag-id="sys-beauty"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);"><i class="fas fa-paint-brush"></i></div><div class="app-label">美化中心</div></div>
                     <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
-                    <div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 182, 193, 0.4) 0%, rgba(255, 218, 185, 0.1) 100%);"><i class="fas fa-feather-alt"></i></div><div class="app-label">谈心</div></div>
+<div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-coffee" style="color: rgba(0,0,0,0.6);"></i></div><div class="app-label">线下约会</div></div>
                 </div>
 
                                 <!-- ============ 第二页 ============ -->
@@ -2389,6 +2601,33 @@ html body #chat-app .msg-time {
     </div>
     <div class="app-label">屏幕时间</div>
 </div>
+
+                               <!-- 👇新增：关系网图标 -->
+<div class="app-container" onclick="openApp('relation-app')" data-drag-id="sys-relation">
+    <div class="app-icon" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
+        <i class="fas fa-project-diagram" style="color: rgba(255,255,255,0.95);"></i>
+    </div>
+    <div class="app-label">关系网</div>
+</div>
+
+                               <!-- 👇新增：群聊大厅图标 -->
+<div class="app-container" onclick="openApp('group-chat-app')" data-drag-id="sys-groupchat">
+    <div class="app-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
+        <i class="fas fa-users" style="color: rgba(255,255,255,0.95);"></i>
+    </div>
+    <div class="app-label">群聊</div>
+</div>
+
+                        <!-- 👇新增：IF线剧场图标 -->
+<div class="app-container" onclick="openApp('if-theater-app')" data-drag-id="sys-iftheater">
+    <div class="app-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <i class="fas fa-theater-masks" style="color: rgba(255,255,255,0.95);"></i>
+    </div>
+    <div class="app-label">IF剧场</div>
+</div>
+ 
+
+
 
 
 
@@ -3083,14 +3322,15 @@ html body #chat-app .msg-time {
                 </div>
             </div>
 
-            <!-- 谈心 App -->
+                       <!-- 线下约会 App -->
             <div id="heart-chat-app" class="app-view">
                 <input type="file" id="heart-bg-upload" accept="image/*" style="display:none;" onchange="handleHeartBg(event)">
                 <div class="chat-header glass-effect">
                     <div class="chat-header-left">
                         <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
-                        <div class="chat-info"><h3 id="heart-char-name">谈心剧情</h3><p>沉浸式叙事模式</p></div>
+                        <div class="chat-info"><h3 id="heart-char-name">线下约会</h3><p>面对面互动叙事</p></div>
                     </div>
+
                     <div style="display:flex; gap: 15px; align-items:center;">
                         <i class="fas fa-sliders-h" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="openHeartSettings()" title="排版设置"></i>
                         <i class="fas fa-image" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="document.getElementById('heart-bg-upload').click()" title="更换剧情背景"></i>
@@ -3481,7 +3721,7 @@ html body #chat-app .msg-time {
                         <i class="fas fa-check-circle tl-check" id="check-qq"></i>
                     </div>
 
-                    <!-- iMessage -->
+                                        <!-- iMessage -->
                     <div class="theme-layout-card" onclick="applyChatLayout('imessage')">
                         <div class="tl-title">iOS iMessage 短信</div>
                         <div class="tl-preview">
@@ -3490,8 +3730,21 @@ html body #chat-app .msg-time {
                         </div>
                         <i class="fas fa-check-circle tl-check" id="check-imessage"></i>
                     </div>
+
+                                        <!-- Telegram -->
+                    <div class="theme-layout-card" onclick="applyChatLayout('telegram')">
+                        <div class="tl-title">Telegram 纸飞机</div>
+                        <div class="tl-preview" style="background: #E4EFEF;">
+                            <div class="tl-msg char" style="background:#FFFFFF; color:#000; border-radius:12px; border-bottom-left-radius:4px; position:relative; padding-bottom:18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">极简原生风。<span style="position:absolute; bottom:2px; right:6px; font-size:9px; color:#A1AAB3;">12:00</span></div>
+                            <div class="tl-msg user" style="background:#EEFFDE; color:#000; border-radius:12px; border-bottom-right-radius:4px; position:relative; padding-bottom:18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">淡绿时间内置，紧凑间距。<span style="position:absolute; bottom:2px; right:6px; font-size:9px; color:#5DB050;">12:01 ✓✓</span></div>
+                        </div>
+                        <i class="fas fa-check-circle tl-check" id="check-telegram"></i>
+                    </div>
+
                 </div>
             </div>
+
+
 
 
 
@@ -3705,6 +3958,138 @@ html body #chat-app .msg-time {
         </div>
     </div>
 </div>
+
+                               <!-- 关系网 App -->
+<div id="relation-app" class="app-view scrollable">
+    <div class="settings-header glass-effect" style="position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">关系网设定</span>
+        </div>
+        <div style="display:flex; gap: 15px; align-items:center;">
+            <i class="fas fa-plus" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="promptAddRelationNode()" title="添加节点"></i>
+            <i class="fas fa-link" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="promptAddRelationEdge()" title="连结关系"></i>
+        </div>
+    </div>
+    
+    <div style="padding: 10px 20px; font-size: 12px; color: var(--text-sub); text-align: center;">长按并拖拽圆圈可改变位置，点击连线查看详情。</div>
+    <div style="position: relative; width: 100%; height: 350px; background: rgba(0,0,0,0.05); overflow: hidden; border-bottom: 0.5px solid var(--border-color); border-top: 0.5px solid var(--border-color);" id="relation-canvas-container">
+        <!-- 连线层 -->
+        <svg id="relation-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none;"></svg>
+        <!-- 节点层 -->
+        <div id="relation-nodes" style="position: absolute; top:0; left:0; width:100%; height:100%;"></div>
+    </div>
+    
+    <div style="padding: 20px; padding-bottom: 80px;" id="relation-list-content">
+        <!-- 动态渲染的关系列表 -->
+    </div>
+</div>
+
+                               <!-- 群聊大厅 App -->
+<div id="group-chat-app" class="app-view">
+    <div id="group-setup-view" style="display:none; flex-direction:column; height:100%;">
+        <div class="settings-header glass-effect">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            创建 / 编辑群聊
+        </div>
+        <div class="scrollable group-setup-panel" style="flex:1;" id="group-member-list">
+            <!-- 选人列表动态渲染 -->
+        </div>
+        <div style="padding: 20px; padding-bottom: 40px;">
+            <div class="save-btn" onclick="enterGroupChat()">进入群聊 (<span id="group-sel-cnt">0</span>/5)</div>
+        </div>
+    </div>
+
+    <div id="group-chat-main-view" style="display:none; flex-direction:column; height:100%;">
+        <div class="chat-header glass-effect">
+            <div class="chat-header-left">
+                <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                <div class="chat-info">
+                    <h3 id="group-chat-title" style="color:var(--text-main); font-size:18px;">群聊 (0)</h3>
+                </div>
+            </div>
+            <i class="fas fa-users-cog" style="color:var(--accent); font-size: 18px; cursor: pointer; padding:5px;" onclick="openGroupSetup()"></i>
+        </div>
+        <div class="chat-body scrollable" id="group-chat-container"></div>
+        <div class="typing-indicator" id="group-typing-indicator" style="display:none; margin-left:15px; margin-bottom:10px;">群成员正在输入...</div>
+        <div class="chat-input-area glass-effect" style="flex-wrap: wrap; padding-bottom: 25px;">
+            <div style="display: flex; width: 100%; align-items: center;">
+                <input type="text" class="chat-input" id="group-user-input" placeholder="发消息参与群聊..." onkeydown="if(event.key==='Enter') sendGroupMessage()">
+                <i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; margin-left: 10px;" onclick="sendGroupMessage()" title="发送"></i>
+            </div>
+            <!-- 互动/旁观 按钮面板 -->
+            <div style="width: 100%; display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;">
+                <div class="save-btn" style="flex: 1; margin: 0; padding: 12px 0; font-size: 13px; background: rgba(135,192,202,0.2); color: var(--accent); border: 1px solid var(--accent); border-radius: 12px;" onclick="triggerGroupAIResponse('random')">
+                    <i class="fas fa-eye"></i> 旁观 (让AI互聊)
+                </div>
+                <div class="save-btn" style="flex: 1; margin: 0; padding: 12px 0; font-size: 13px; background: var(--accent); color: #000; border-radius: 12px;" onclick="promptSpecificGroupAI()">
+                    <i class="fas fa-hand-pointer"></i> 指定谁接话
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                         <!-- IF线剧场 App -->
+<div id="if-theater-app" class="app-view">
+    <div class="if-theater-header">
+        <i class="fas fa-chevron-left" onclick="handleIfTheaterBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+        <span>IF 线剧场</span>
+    </div>
+    
+    <!-- 配置生成页 -->
+    <div id="if-setup-view" class="scrollable" style="padding: 20px; padding-bottom: 80px;">
+        <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">请选择剧本类型：</div>
+        <div class="if-category-grid" id="if-category-grid">
+            <div class="if-cat-btn active" onclick="selectIfCategory(this, '悬疑')">悬疑</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '言情')">言情</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '古风')">古风</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '权谋')">权谋</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '微恐')">微恐</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '现代')">现代</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '穿越')">穿越</div>
+            <div class="if-cat-btn" onclick="selectIfCategory(this, '无限流')">无限流</div>
+        </div>
+        
+        <div class="if-input-group">
+            <div class="if-row">
+                <span style="font-size: 14px; color: var(--text-main); width: 50px;">主演1</span>
+                <input type="text" id="if-role-1" placeholder="角色名字">
+            </div>
+            <div class="if-row">
+                <span style="font-size: 14px; color: var(--text-main); width: 50px;">主演2</span>
+                <input type="text" id="if-role-2" placeholder="角色名字">
+            </div>
+            <div style="margin-top: 15px;">
+                <div style="font-size: 14px; color: var(--text-main); margin-bottom: 8px;">剧情脑洞 (可选)</div>
+                <textarea id="if-prompt-input" class="setting-textarea" style="height: 80px;" placeholder="例如：失忆后重逢、在末日废墟中互相依靠..."></textarea>
+            </div>
+        </div>
+        
+        <div class="save-btn" id="if-generate-btn" style="width: 100%; margin: 0; background: var(--accent); color: #000;" onclick="generateIfStory()">🎬 开机生成短篇</div>
+    </div>
+    
+    <!-- 结果展示页 -->
+    <div id="if-result-view" class="if-result-area scrollable">
+        <div style="font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 10px; text-align: center;" id="if-result-title">《IF线：未知》</div>
+        <div class="if-story-content" id="if-story-content">加载中...</div>
+        
+        <div class="if-action-bar">
+            <div class="if-action-btn" onclick="saveIfToNovel()"><i class="fas fa-book"></i> 存书架</div>
+            <div class="if-action-btn primary" onclick="shareIfToChat()"><i class="fas fa-share"></i> 分享给TA</div>
+        </div>
+        <div class="if-action-bar">
+            <div class="if-action-btn" onclick="generateIfComments()" id="if-comment-btn" style="width: 100%;"><i class="fas fa-comments"></i> 召唤网友生成评价</div>
+        </div>
+        
+        <div class="if-comments-area" id="if-comments-area">
+            <!-- 评论列表 -->
+        </div>
+    </div>
+</div>
+
+
+
 
 
 
@@ -5093,6 +5478,8 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
 
                const contentBox = document.createElement('div'); contentBox.className = 'msg-content-box';
         const div = document.createElement('div'); div.className = `msg ${role}`;
+                div.setAttribute('data-time', time); // 👈 新增：为了给 Telegram 主题内嵌时间使用
+
         
                                 // 1. 为特殊的聊天气泡添加样式与互交 (👇 从这里修改覆盖)
         if (msgType === 'sticker') div.classList.add('sticker-bubble');
@@ -5205,6 +5592,16 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         }
 
         let personaBlock = globalUser.persona ? `\n\n【当前用户(我)的人设设定】：\n${globalUser.persona}` : "";
+        // 👇 新增线下记忆互通
+        const heartKey = `ai_os_heart_${activeCharId}`;
+        const totalHeart = JSON.parse(localStorage.getItem(heartKey) || '[]');
+        let meetInjectBlock = "";
+        if(totalHeart.length > 0) {
+            // 取最近剧情作为精简记忆防超长
+            const recentMeet = totalHeart.slice(-4).map(m => `${m.role === 'user' ? '用户' : activeChar.name}: ${m.content.substring(0, 150)}...`).join('\n');
+            meetInjectBlock = `\n\n【线下约会记忆互通】：\n你们最近在线下见面时的互动剧情记录如下：\n${recentMeet}\n如果话题合适，请在这次手机短信中自然地提及或延续线下发生的事情！`;
+        }
+
 
 // 👇新增这段：状态同步与规则注入
         let statusInjectBlock = `\n\n【状态同步机制】：
@@ -5286,6 +5683,10 @@ if (globalAPI.enableNarration) {
         builtInRules += `\n【重要隐藏交互机制】：如果你觉得合适，可以通过在回复中独立输出 [TRANSFER:金额] 来向用户发红包转账（例如 [TRANSFER:100] 或 [TRANSFER:520]），这会在用户端触发真实的UI转账特效。`;
         // 👇 新增这行：赋予 AI 发送语音的能力
         builtInRules += `\n如果你想发语音消息，请在回复中独立输出 $$VOICE:这里写你想在语音里说的话$$，系统会将其转化为真实的语音条发给用户。`;
+        // 👇 新增这行：赋予 AI 聊天时主动发朋友圈的能力
+
+        builtInRules += `\n【朋友圈发布权限】：遇到值得纪念的时刻，你可以在聊天中独立输出 $$MOMENT:朋友圈文字内容|||英文配图描述(如果不配图请写NONE)$$，这将立即在你们共享的朋友圈中发布一条新动态（例如：$$MOMENT:今天真开心~|||a cup of coffee$$）。`;
+        
 
         // 赋予 AI 备忘录读取和控制权
         let memoListStr = sharedMemo.map((m, i) => `${i}. [${m.done ? '已完成' : '未完成'}] ${m.text}`).join('; ');
@@ -5430,8 +5831,22 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
 【你的超级特权】：如果你发现TA玩这些系统内的App时间太长（比如看小说或逛贴吧推特好几个小时）、去了不该去的地方、或和不该接触的人接触，你可以狠狠吃醋或发脾气。如果你觉得有必要惩罚TA，可以在回复中独立输出 $$LOCK_SCREEN:理由$$ 来强制锁定TA的手机屏幕（例如 $$LOCK_SCREEN:你玩贴吧太久了，现在只能陪我聊天！$$）。锁定后TA将无法使用手机其他功能，只能停留在短信界面向你认错。如果TA认错态度好，你必须输出 $$UNLOCK_SCREEN$$ 为TA解除锁定。`;
         }
 
+                // 👇 新增：人物关系网全局注入
+        let relationInjectBlock = "";
+        if (typeof relationData !== 'undefined' && relationData.edges && relationData.edges.length > 0) {
+            let relLines = relationData.edges.map(e => {
+                const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
+                const t = relationData.nodes.find(n=>n.id===e.targetId)?.name || '未知';
+                return `- ${s} 与 ${t} 的关系是[${e.relation}]：${e.desc}`;
+            }).join('\n');
+            relationInjectBlock = `\n\n【核心人物关系网设定】：\n${relLines}\n请你在互动中必须严格遵循、记忆并代入上述所有人际关系。`;
+        }
+        // 👆 新增结束
+
+
         // 把 screenTimeInjectBlock 加入到最终拼接中
-        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + envInjectBlock + homeInjectBlock + statusInjectBlock + petInjectBlock + musicInjectBlock + momentsInjectBlock + drawInjectBlock + screenTimeInjectBlock + builtInRules + detailStatusRules }];
+        // 把 relationInjectBlock 加入到最终拼接中
+        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + meetInjectBlock + envInjectBlock + homeInjectBlock + statusInjectBlock + petInjectBlock + musicInjectBlock + momentsInjectBlock + drawInjectBlock + screenTimeInjectBlock + relationInjectBlock + builtInRules + detailStatusRules }];
 
 
 
@@ -5526,6 +5941,9 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
                         // 捕获屏幕锁定和解锁指令
             reply = reply.replace(/\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, reason) => `[MSG][LOCK_SCREEN:${reason}][MSG]`);
             reply = reply.replace(/\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, () => `[MSG][UNLOCK_SCREEN][MSG]`);
+            // 👇 新增：捕获朋友圈发布指令
+
+            reply = reply.replace(/\$\$\s*MOMENT(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, content) => `[MSG][MOMENT:${content}][MSG]`);
 
 
 
@@ -5803,6 +6221,31 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                 else if (msgs[i] === '[UNLOCK_SCREEN]') {
                     triggerScreenUnlock();
                     addMessageToUI('system', `<i class="fas fa-unlock" style="color:#34c759;"></i> ${activeChar.name} 解锁了你的手机。`, false, null, `[系统交互：你成功解除了屏幕锁定，用户恢复自由。]`);
+                }
+
+                 // 👇 新增：处理 AI 发朋友圈逻辑
+                else if (msgs[i].startsWith('[MOMENT:') && msgs[i].endsWith(']')) {
+                    const momentContent = msgs[i].substring(8, msgs[i].length - 1);
+                    let mText = momentContent;
+                    let mImgPrompt = "NONE";
+                    if(momentContent.includes('|||')) {
+                        let parts = momentContent.split('|||');
+                        mText = parts[0].trim();
+                        mImgPrompt = parts[1].trim();
+                    }
+                    
+                    let mImgUrl = null;
+                    if (mImgPrompt !== "NONE" && mImgPrompt.length > 3) {
+                        mImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(mImgPrompt)}?width=800&height=800&nologo=true`;
+                    }
+                    
+                    // 写入底层数据并保存
+                    momentsData.unshift({ author: activeChar.name, text: mText, image: mImgUrl, time: "刚刚" });
+                    saveMoments();
+                    if(document.getElementById('moments-app').classList.contains('active')) renderMoments();
+                    
+                    // 聊天框弹出系统高亮提示
+                    addMessageToUI('system', `<i class="fas fa-camera-retro" style="color:var(--accent);"></i> ${activeChar.name} 刚刚发布了一条新的朋友圈！退出聊天去看看吧~`, false, null, `[系统交互：你成功发布了一条朋友圈。]`);
                 }
 
 
@@ -7214,16 +7657,26 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
 
         const url = cleanBaseUrl(globalAPI.url);
         
-        // ✨ 新增：提取并动态拼接文风提示词
+                // ✨ 新增：提取并动态拼接文风提示词
         let styleInjection = heartSettings.writingStyle ? `\n7. 【文风/特殊设定强制优先级】：请务必遵循以下特殊文风及场景要求进行撰写 —— ${heartSettings.writingStyle}` : "";
 
-        const heartSystemPrompt = `【谈心模式开启：轻小说叙事】
-1. 你现在不再通过短信交流，而是在编写一部沉浸式的互动轻小说。
-2. 你的回复必须是大段落的、充满细节的描写（环境、氛围、动作、心理）。
+        // 👇 新增：短信记忆互通
+        let smsInjectBlock = "";
+        const smsKey = `ai_os_chat_${activeCharId}`;
+        const totalSms = JSON.parse(localStorage.getItem(smsKey) || '[]');
+        if (totalSms && totalSms.length > 0) {
+            const recentSms = totalSms.filter(m => m.role !== 'system').slice(-6).map(m => `${m.role === 'user' ? '我' : activeChar.name}: ${m.rawApiContent || m.content}`).join('\n');
+            smsInjectBlock = `\n\n【手机短信记忆互通】：\n你们近期在手机短信上的聊天记录如下：\n${recentSms}\n请在这次线下约会中，自然地承接你们在手机上聊过的话题。`;
+        }
+
+        const heartSystemPrompt = `【线下约会模式开启：轻小说叙事】
+1. 你现在不是在通过手机发短信，而是和用户在线下（面对面）真实相处。
+2. 你的回复必须是大段落的、充满细节的描写（环境、氛围、动作、心理），以推动真实的线下相处剧情。
 3. 每次回复篇幅要求在300-800字之间。
 4. 使用文学化的语言，生动刻画你（${activeChar.name}）与用户之间的情感互动。
 5. 必须保留你原本的人设：${activeChar.prompt}。
-6. 所有的对话必须自然地嵌入在描写之中。${styleInjection}`;
+6. 所有的对话必须自然地嵌入在描写之中。${styleInjection}${smsInjectBlock}`;
+
 
         let apiMessages = [{ role: "system", content: heartSystemPrompt }];
         const sliceHistory = heartHistory.slice(-10).map(m => ({
@@ -7287,12 +7740,13 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
     }
 
 
-    const _originalOpenAppHeart = openApp;
+        const _originalOpenAppHeart = openApp;
     openApp = function(appId) {
         _originalOpenAppHeart(appId);
         if(appId === 'heart-chat-app') {
             const char = characters.find(c => c.id === activeCharId);
-            document.getElementById('heart-char-name').innerText = `与 ${char.name} 谈心`;
+            document.getElementById('heart-char-name').innerText = `与 ${char.name} 线下相处`;
+
             const saved = localStorage.getItem(`ai_os_heart_${activeCharId}`);
             heartHistory = saved ? JSON.parse(saved) : [];
                         const savedBg = localStorage.getItem(`ai_os_heart_bg_${activeCharId}`);
@@ -9087,7 +9541,7 @@ openApp = function(appId) {
         const chatApp = document.getElementById('chat-app');
         if(!chatApp) return;
         
-        chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage');
+        chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layout-telegram');
         document.querySelectorAll('.theme-layout-card').forEach(c => c.classList.remove('active'));
         
         if (layout !== 'default') {
@@ -10337,6 +10791,735 @@ openApp = function(appId) {
             }
         }
     });
+
+
+    
+// ==========================================
+// 关系网 App 核心可视化与同步逻辑
+// ==========================================
+let relationData = JSON.parse(localStorage.getItem('ai_os_relation')) || {
+    nodes: [
+        { id: 'user', name: "我", x: 30, y: 50 },
+        { id: 'char', name: "TA", x: 70, y: 50 }
+    ],
+    edges: []
+};
+
+function saveRelationData() {
+    localStorage.setItem('ai_os_relation', JSON.stringify(relationData));
+}
+
+function renderRelationApp() {
+    // 动态同步内置两名角色的名字
+    const char = characters.find(c => c.id === activeCharId);
+    const charNode = relationData.nodes.find(n => n.id === 'char');
+    if (charNode && char) charNode.name = char.name;
+    const userNode = relationData.nodes.find(n => n.id === 'user');
+    if (userNode) userNode.name = globalUser.name;
+    
+    const svg = document.getElementById('relation-svg');
+    const nodesContainer = document.getElementById('relation-nodes');
+    const listContent = document.getElementById('relation-list-content');
+    
+    if(!svg) return;
+    svg.innerHTML = ''; nodesContainer.innerHTML = '';
+    
+    // 1. 渲染关系连线
+    relationData.edges.forEach(e => {
+        const source = relationData.nodes.find(n => n.id === e.sourceId);
+        const target = relationData.nodes.find(n => n.id === e.targetId);
+        if(!source || !target) return;
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', source.x + '%'); line.setAttribute('y1', source.y + '%');
+        line.setAttribute('x2', target.x + '%'); line.setAttribute('y2', target.y + '%');
+        line.setAttribute('stroke', 'var(--accent)');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-dasharray', '5,5');
+        svg.appendChild(line);
+        
+        const label = document.createElement('div');
+        label.className = 'rel-edge-label';
+        label.innerText = e.relation;
+        label.style.left = ((source.x + target.x) / 2) + '%';
+        label.style.top = ((source.y + target.y) / 2) + '%';
+        label.onclick = () => showRelationDetail(e.id);
+        nodesContainer.appendChild(label);
+    });
+    
+    // 2. 渲染节点 (带拖拽)
+    relationData.nodes.forEach(n => {
+        const node = document.createElement('div');
+        node.className = 'rel-node';
+        node.innerText = n.name;
+        node.style.left = n.x + '%'; node.style.top = n.y + '%';
+        
+        // 拖拽逻辑
+        let isDrag = false;
+        const dragStart = (e) => { isDrag = true; };
+        const dragMove = (e) => {
+            if(!isDrag) return;
+            e.preventDefault();
+            const container = document.getElementById('relation-canvas-container');
+            const rect = container.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            let nx = ((clientX - rect.left) / rect.width) * 100;
+            let ny = ((clientY - rect.top) / rect.height) * 100;
+            nx = Math.max(10, Math.min(90, nx)); ny = Math.max(15, Math.min(85, ny));
+            n.x = nx; n.y = ny;
+            node.style.left = nx + '%'; node.style.top = ny + '%';
+            renderRelationEdgesOnly(); // 拖拽中只重绘线段防卡顿
+        };
+        const dragEnd = () => { if(isDrag) { isDrag = false; saveRelationData(); renderRelationApp(); } };
+        
+        node.addEventListener('mousedown', dragStart);
+        node.addEventListener('touchstart', dragStart, {passive:false});
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('touchmove', dragMove, {passive:false});
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+        
+        nodesContainer.appendChild(node);
+    });
+    
+    // 3. 渲染下方的描述列表
+    listContent.innerHTML = relationData.edges.length === 0 ? 
+        `<div style="text-align:center; color:var(--text-sub); margin-top:20px;">空空如也。点击右上角 ➕ 和 🔗 来构建属于你们的人际网吧！</div>` :
+        relationData.edges.map(e => {
+            const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
+            const t = relationData.nodes.find(n=>n.id===e.targetId)?.name || '未知';
+            return `
+            <div class="rel-list-item">
+                <div class="rel-list-title">${s} ↔ ${t} : [ ${e.relation} ]</div>
+                <div class="rel-list-desc">${e.desc}</div>
+                <div class="rel-list-actions">
+                    <div class="rel-action-btn" onclick="shareRelationToChat('${e.id}')"><i class="fas fa-share"></i> 同步告诉TA / 记入记忆书</div>
+                    <div class="rel-action-btn" onclick="deleteRelationEdge('${e.id}')"><i class="fas fa-trash"></i> 删除</div>
+                </div>
+            </div>`;
+        }).join('');
+}
+
+function renderRelationEdgesOnly() {
+    const svg = document.getElementById('relation-svg');
+    svg.innerHTML = '';
+    const labels = document.querySelectorAll('.rel-edge-label');
+    let labelIdx = 0;
+    relationData.edges.forEach(e => {
+        const source = relationData.nodes.find(n => n.id === e.sourceId);
+        const target = relationData.nodes.find(n => n.id === e.targetId);
+        if(!source || !target) return;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', source.x + '%'); line.setAttribute('y1', source.y + '%');
+        line.setAttribute('x2', target.x + '%'); line.setAttribute('y2', target.y + '%');
+        line.setAttribute('stroke', 'var(--accent)'); line.setAttribute('stroke-width', '2'); line.setAttribute('stroke-dasharray', '5,5');
+        svg.appendChild(line);
+        if (labels[labelIdx]) {
+            labels[labelIdx].style.left = ((source.x + target.x) / 2) + '%';
+            labels[labelIdx].style.top = ((source.y + target.y) / 2) + '%';
+        }
+        labelIdx++;
+    });
+}
+
+async function promptAddRelationNode() {
+    const name = await sysPrompt("添加角色节点", "请输入新出场的人物/角色名称：");
+    if(name && name.trim()) {
+        relationData.nodes.push({ id: 'node_'+Date.now(), name: name.trim(), x: 50, y: 80 });
+        saveRelationData(); renderRelationApp();
+    }
+}
+
+async function promptAddRelationEdge() {
+    if (relationData.nodes.length < 2) return sysAlert("提示", "角色节点不足，请先点击 ➕ 添加新人物！");
+    const names = relationData.nodes.map(n=>n.name).join(', ');
+    const sourceStr = await sysPrompt("1. 选择主体", `建立牵绊：请输入主体角色名字。\n(已有：${names})`);
+    if(!sourceStr) return;
+    const targetStr = await sysPrompt("2. 选择目标", `请输入被牵绊的另一方名字。\n(已有：${names})`);
+    if(!targetStr) return;
+    
+    const source = relationData.nodes.find(n => n.name === sourceStr.trim());
+    const target = relationData.nodes.find(n => n.name === targetStr.trim());
+    if(!source || !target) return sysAlert("错误", "找不到对应的名字，请确保完全一致且存在于面板中！");
+    
+    const relation = await sysPrompt("3. 定义称呼/关系", "例如：青梅竹马、宿敌、上司、秘密恋人等");
+    if(!relation) return;
+    
+    const desc = await sysPrompt("4. 详细解释", "请输入这段关系的详细背景设定，AI 会牢牢记住：");
+    if(!desc) return;
+    
+    relationData.edges.push({ id: 'edge_'+Date.now(), sourceId: source.id, targetId: target.id, relation: relation.trim(), desc: desc.trim() });
+    saveRelationData(); renderRelationApp();
+}
+
+function showRelationDetail(id) {
+    const edge = relationData.edges.find(e => e.id === id);
+    if(edge) {
+        const s = relationData.nodes.find(n=>n.id===edge.sourceId)?.name;
+        const t = relationData.nodes.find(n=>n.id===edge.targetId)?.name;
+        sysAlert(`${s} 与 ${t} (${edge.relation})`, edge.desc);
+    }
+}
+
+async function deleteRelationEdge(id) {
+    const c = await sysConfirm("删除关系", "确认彻底删除这段牵绊吗？");
+    if(c) {
+        relationData.edges = relationData.edges.filter(e => e.id !== id);
+        saveRelationData(); renderRelationApp();
+    }
+}
+
+// ✨ 让 AI 强制理解和记忆
+function shareRelationToChat(id) {
+    const edge = relationData.edges.find(e => e.id === id);
+    if(!edge) return;
+    const s = relationData.nodes.find(n=>n.id===edge.sourceId)?.name;
+    const t = relationData.nodes.find(n=>n.id===edge.targetId)?.name;
+    
+    const fullDesc = `【重点人物关系设定】：${s} 与 ${t} 之间的关系是 [${edge.relation}]。详细纠葛设定：${edge.desc}`;
+    
+    // 强制自动存入不可磨灭的记忆书
+    addMemoryData(fullDesc, 'manual');
+    
+    // 生成美观的互动UI发送到聊天框
+    const html = `
+        <div class="x-share-card" style="background: rgba(40, 30, 50, 0.75); border-color: rgba(200, 100, 200, 0.4);">
+            <div class="xs-header" style="color: #e0c3fc;">
+                <i class="fas fa-project-diagram" style="font-size: 20px;"></i>
+                <div style="font-weight: bold; font-size: 15px;">关系网与回忆同步</div>
+            </div>
+            <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                <div style="font-weight:bold; color:#fff; margin-bottom:4px;">${s} ↔ ${t} : ${edge.relation}</div>
+                <div style="opacity:0.8;">${edge.desc}</div>
+                <div style="color:var(--accent); font-size:11px; margin-top:8px; font-style:italic;">✓ 已载入当前角色潜意识与记忆书库</div>
+            </div>
+        </div>
+    `;
+    
+    const rawText = `[向你同步并植入了一条绝对不可更改的人际关系网设定：${fullDesc}。请你务必在接下来的相处中牢牢记住这个设定，如果你身处其中，请给出对应的态度和反应；如果是聊别人的八卦，请谈谈你的看法！]`;
+    
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'x-share');
+    setTimeout(() => triggerAIResponse(), 800);
+}
+
+// 拦截应用打开函数以渲染 Canvas 面板
+const _originalOpenAppRelation = openApp;
+openApp = function(appId) {
+    _originalOpenAppRelation(appId);
+    if(appId === 'relation-app') {
+        renderRelationApp();
+    }
+};
+
+
+// ==========================================
+// 群聊系统引擎 (支持连发与打字延迟)
+// ==========================================
+let groupData = JSON.parse(localStorage.getItem('ai_os_group_chat')) || {
+    members: [], // 存储角色的 id
+    history: []
+};
+let groupTyping = false;
+
+function openGroupSetup() {
+    document.getElementById('group-chat-main-view').style.display = 'none';
+    document.getElementById('group-setup-view').style.display = 'flex';
+    renderGroupSetup();
+}
+
+function renderGroupSetup() {
+    const list = document.getElementById('group-member-list');
+    list.innerHTML = `<div style="font-size:13px; color:var(--text-sub); margin-bottom:15px; line-height:1.5;">请选择加入群聊的角色（最多5名）。<br>当你在群里发消息时，可以指定某人接话，或者点击旁观让他们自由群聊。</div>`;
+    
+    characters.forEach(c => {
+        const isSel = groupData.members.includes(c.id);
+        const item = document.createElement('div');
+        item.className = `group-member-item ${isSel ? 'selected' : ''}`;
+        item.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${c.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border: 1px solid rgba(255,255,255,0.1);">
+                <span style="color:var(--text-main); font-weight:bold;">${c.name}</span>
+            </div>
+            <i class="fas ${isSel ? 'fa-check-circle' : 'fa-circle'}" style="color:${isSel ? 'var(--accent)' : 'var(--text-sub)'}; font-size:20px;"></i>
+        `;
+        item.onclick = () => {
+            if (groupData.members.includes(c.id)) {
+                groupData.members = groupData.members.filter(id => id !== c.id);
+            } else {
+                if (groupData.members.length >= 5) return sysAlert("满员", "群聊最多只能容纳 5 名AI角色哦！");
+                groupData.members.push(c.id);
+            }
+            renderGroupSetup();
+        };
+        list.appendChild(item);
+    });
+    document.getElementById('group-sel-cnt').innerText = groupData.members.length;
+}
+
+function enterGroupChat() {
+    if (groupData.members.length === 0) return sysAlert("提示", "请至少选择 1 名角色加入群聊！");
+    saveGroupData();
+    document.getElementById('group-setup-view').style.display = 'none';
+    document.getElementById('group-chat-main-view').style.display = 'flex';
+    document.getElementById('group-chat-title').innerText = `群聊 (${groupData.members.length + 1}人)`;
+    renderGroupHistory();
+}
+
+function saveGroupData() {
+    localStorage.setItem('ai_os_group_chat', JSON.stringify(groupData));
+}
+
+function renderGroupHistory() {
+    const container = document.getElementById('group-chat-container');
+    container.innerHTML = '';
+    groupData.history.forEach(m => addGroupMessageToUI(m.senderId, m.content, true));
+    scrollGroupToBottom();
+}
+
+function addGroupMessageToUI(senderId, content, isRestoring = false) {
+    const container = document.getElementById('group-chat-container');
+    const wrapper = document.createElement('div');
+    
+    let isUser = senderId === 'user';
+    let roleClass = isUser ? 'user' : 'char';
+    wrapper.className = `group-msg-wrapper ${roleClass}`;
+    
+    let avatarUrl, name, bgColor, textColor;
+    if (isUser) {
+        avatarUrl = globalUser.avatar;
+        name = globalUser.name;
+        bgColor = "var(--accent)";
+        textColor = "#000"; // 用户气泡在群聊中设定黑字高亮
+    } else {
+        const char = characters.find(c => c.id === senderId);
+        if (!char) return; // 防呆：角色被删除了
+        avatarUrl = char.avatar;
+        name = char.name;
+        bgColor = char.charColor || "#333";
+        textColor = char.charTextColor || "#fff";
+    }
+
+    const html = `
+        ${!isUser ? `<img src="${avatarUrl}" class="msg-avatar" style="border-radius:12px; object-fit:cover; width:38px; height:38px; margin-top:15px;">` : ''}
+        <div class="msg-content-box" style="max-width: 75%;">
+            <div class="group-msg-name">${name}</div>
+            <div class="msg ${roleClass}" style="background:${bgColor}; color:${textColor}; border:none; box-shadow:0 2px 5px rgba(0,0,0,0.1); border-radius:16px;">${content}</div>
+        </div>
+        ${isUser ? `<img src="${avatarUrl}" class="msg-avatar" style="border-radius:12px; object-fit:cover; width:38px; height:38px; margin-top:15px;">` : ''}
+    `;
+    wrapper.innerHTML = html;
+    
+    // 支持长按删除
+    let touchTimer;
+    wrapper.querySelector('.msg').addEventListener('touchstart', () => { touchTimer = setTimeout(() => { handleGroupMsgContext(wrapper); }, 600); }, {passive: true});
+    wrapper.querySelector('.msg').addEventListener('touchend', () => clearTimeout(touchTimer));
+    wrapper.querySelector('.msg').addEventListener('contextmenu', (e) => { e.preventDefault(); handleGroupMsgContext(wrapper); });
+
+    container.appendChild(wrapper);
+    
+    if (!isRestoring) {
+        groupData.history.push({ senderId, content });
+        saveGroupData();
+    }
+    scrollGroupToBottom();
+}
+
+async function handleGroupMsgContext(wrapper) {
+    const container = document.getElementById('group-chat-container');
+    const idx = Array.from(container.children).indexOf(wrapper);
+    if(idx !== -1) {
+        const confirmDel = await sysConfirm("操作", "要删除这条群聊消息吗？");
+        if(confirmDel) {
+            groupData.history.splice(idx, 1);
+            saveGroupData();
+            renderGroupHistory();
+        }
+    }
+}
+
+function scrollGroupToBottom() {
+    requestAnimationFrame(() => {
+        const c = document.getElementById('group-chat-container');
+        if(c) c.scrollTop = c.scrollHeight;
+    });
+}
+
+function sendGroupMessage() {
+    const input = document.getElementById('group-user-input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    addGroupMessageToUI('user', text.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    input.value = '';
+}
+
+async function promptSpecificGroupAI() {
+    if (groupData.members.length === 0) return;
+    const names = groupData.members.map((id, i) => `${i+1}. ${characters.find(c=>c.id===id)?.name}`).join('\n');
+    const choice = await sysPrompt("点名接话", `请输入想让谁发消息的编号：\n${names}`);
+    if (!choice || isNaN(choice)) return;
+    const idx = parseInt(choice) - 1;
+    if (groupData.members[idx]) {
+        triggerGroupAIResponse('specific', groupData.members[idx]);
+    }
+}
+
+// 核心：处理AI回复、连发及打字机延迟动画
+async function triggerGroupAIResponse(mode = 'random', specificId = null) {
+    if (groupTyping) return;
+    if (groupData.members.length === 0) return;
+
+    let targetCharId = specificId;
+    if (mode === 'random') {
+        // 随机挑选一个角色（尽量避开最后一个发言的人）
+        const lastMsg = groupData.history.length > 0 ? groupData.history[groupData.history.length - 1] : null;
+        const candidates = groupData.members.filter(id => lastMsg ? id !== lastMsg.senderId : true);
+        if (candidates.length > 0) {
+            targetCharId = candidates[Math.floor(Math.random() * candidates.length)];
+        } else {
+            targetCharId = groupData.members[Math.floor(Math.random() * groupData.members.length)];
+        }
+    }
+
+    const targetChar = characters.find(c => c.id === targetCharId);
+    if (!targetChar) return;
+
+    groupTyping = true;
+    const ti = document.getElementById('group-typing-indicator');
+    ti.innerText = `${targetChar.name} 正在输入...`;
+    ti.style.display = 'block';
+    scrollGroupToBottom();
+
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) {
+        ti.style.display = 'none';
+        groupTyping = false;
+        return sysAlert("错误", "请先配置 API 密钥");
+    }
+
+    // ========== 组装超级群聊 Prompt ==========
+    let groupPrompt = `【系统指令】：这是一个由多个 AI 角色和真实用户组成的多人群聊。
+群内目前共有 ${groupData.members.length + 1} 名成员：\n`;
+    groupPrompt += `[群员] 真实人类（用户）：${globalUser.name}。用户的身份设定：${globalUser.persona || "暂无"}\n`;
+    groupData.members.forEach(id => {
+        const c = characters.find(char => char.id === id);
+        if(c) groupPrompt += `[群员] AI角色：${c.name}。其性格设定为：${c.prompt}\n`;
+    });
+    
+    // 如果有关系网数据，将其注入
+    if (typeof relationData !== 'undefined' && relationData.edges && relationData.edges.length > 0) {
+        let relLines = relationData.edges.map(e => {
+            const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
+            const t = relationData.nodes.find(n=>n.id===e.targetId)?.name || '未知';
+            return `- ${s} 与 ${t}：${e.relation} (${e.desc})`;
+        }).join('\n');
+        groupPrompt += `\n【群成员之间的人际关系网】：\n${relLines}\n请务必依据这些人物关系在聊天中进行互动，对喜欢的人友好，对讨厌的人可以互怼。\n`;
+    }
+
+    groupPrompt += `\n【你的任务】：
+此时此刻，你正在扮演【${targetChar.name}】！
+你的语气、三观必须完全契合【${targetChar.name}】的设定！
+
+【群聊规则】：
+1. 根据下文提供的聊天记录，以【${targetChar.name}】的口吻给出最自然的回复。
+2. 像在群里真实打字聊天一样，简短直接。不要客套，可以直接针对刚才谁说的话进行回答或吐槽。
+3. 绝对不要加你的名字前缀（例如不要输出 "${targetChar.name}: xxx"），直接输出你要说的话正文即可。
+4. 可以根据上下文和人物关系主动挑起话题、艾特某人或表达情绪。
+5. 【连发机制】：你最多可以连发 1 至 5 条短消息。如果你想连发多句话来表达激动、补充说明或连续吐槽，必须严格使用 \`[MSG]\` 作为每条消息的分隔符。例如：你要干嘛[MSG]怎么突然说这个[MSG]莫名其妙的。如果只发一条则不需要分隔符。`;
+
+    // 提取近期群聊历史 (只取最后 30 条)
+    let apiMessages = [{ role: "system", content: groupPrompt }];
+    const recentHistory = groupData.history.slice(-30);
+    
+    // 格式化聊天记录
+    let chatLogStr = recentHistory.map(m => {
+        let n = m.senderId === 'user' ? globalUser.name : (characters.find(c=>c.id===m.senderId)?.name || "未知");
+        return `[${n} 发送]: ${m.content}`;
+    }).join('\n');
+    
+    if (chatLogStr) {
+        apiMessages.push({ role: "user", content: `【以下是最新的群聊记录】：\n${chatLogStr}\n\n现在，请你扮演【${targetChar.name}】，轮到你在群里发言了，你想说什么？(直接输出正文)` });
+    } else {
+        apiMessages.push({ role: "user", content: `群聊刚刚建立，没有任何人说话。请你扮演【${targetChar.name}】，主动在群里发第一条消息打个招呼吧：` });
+    }
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, temperature: 0.85 }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        
+        // 去除可能的 AI 自带名字前缀，比如 "小红：你好呀"
+        const prefixMatch = new RegExp(`^\\[?${targetChar.name}\\]?[:：]\\s*`, 'i');
+        reply = reply.replace(prefixMatch, '');
+        
+        ti.style.display = 'none';
+        
+        // 核心修改：解析 [MSG] 连发逻辑并依次渲染
+        let msgs = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
+        
+        for (let i = 0; i < msgs.length; i++) {
+            if (i > 0) { 
+                ti.innerText = `${targetChar.name} 正在补充输入...`;
+                ti.style.display = 'block'; 
+                scrollGroupToBottom(); 
+                // 模拟真人连续打字的间隔延迟
+                let typeWait = Math.min(Math.max(msgs[i].length * 100, 800), 3000);
+                await new Promise(res => setTimeout(res, typeWait)); 
+                ti.style.display = 'none'; 
+            }
+            addGroupMessageToUI(targetCharId, msgs[i]);
+        }
+        
+    } catch (e) {
+        ti.style.display = 'none';
+        sysAlert("群聊出错", `请求失败或网络超时：${e.message}`);
+    } finally {
+        groupTyping = false;
+    }
+}
+
+// 拦截原系统的 openApp 以注入群聊渲染
+const _originalOpenAppGroup = openApp;
+openApp = function(appId) {
+    _originalOpenAppGroup(appId);
+    if(appId === 'group-chat-app') {
+        if(groupData.members.length === 0) {
+            openGroupSetup();
+        } else {
+            document.getElementById('group-setup-view').style.display = 'none';
+            document.getElementById('group-chat-main-view').style.display = 'flex';
+            document.getElementById('group-chat-title').innerText = `群聊 (${groupData.members.length + 1}人)`;
+            renderGroupHistory();
+        }
+    }
+};
+
+
+// ==========================================
+// IF 线剧场 App 逻辑
+// ==========================================
+let currentIfCategory = "悬疑";
+let currentIfStory = { title: "", content: "" };
+
+function selectIfCategory(el, cat) {
+    document.querySelectorAll('.if-cat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    currentIfCategory = cat;
+}
+
+function handleIfTheaterBack() {
+    if (document.getElementById('if-result-view').style.display === 'flex') {
+        document.getElementById('if-result-view').style.display = 'none';
+        document.getElementById('if-setup-view').style.display = 'block';
+    } else {
+        goBack();
+    }
+}
+
+// 拦截应用打开以动态填充“我”和“TA”的名字
+const _originalOpenAppIf = openApp;
+openApp = function(appId) {
+    _originalOpenAppIf(appId);
+    if(appId === 'if-theater-app') {
+        const char = characters.find(c => c.id === activeCharId);
+        document.getElementById('if-role-1').value = globalUser.name;
+        if(char) document.getElementById('if-role-2').value = char.name;
+        
+        document.getElementById('if-result-view').style.display = 'none';
+        document.getElementById('if-setup-view').style.display = 'block';
+        document.getElementById('if-comments-area').style.display = 'none';
+    }
+};
+
+async function generateIfStory() {
+    const role1 = document.getElementById('if-role-1').value.trim();
+    const role2 = document.getElementById('if-role-2').value.trim();
+    const userIdea = document.getElementById('if-prompt-input').value.trim();
+    
+    if (!role1 || !role2) return sysAlert("提示", "请输入两位主演的名字！");
+
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) return sysAlert("错误", "请先配置 API 密钥");
+
+    const btn = document.getElementById('if-generate-btn');
+    if (btn.innerText.includes('生成中')) return;
+    
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在创作...';
+
+    // 抓取全宇宙的角色设定
+    let allCharInfos = `【我的设定】：${globalUser.name} - ${globalUser.persona || '无'}\n`;
+    characters.forEach(c => {
+        allCharInfos += `【${c.name}的设定】：${c.prompt}\n`;
+    });
+
+    const prompt = `你是一个顶级短篇小说家。现在需要创作一篇【${currentIfCategory}】题材的 IF 线微小说。
+【主演】：${role1} 与 ${role2}
+【用户附加脑洞】：${userIdea || "请自由发挥一段精彩的剧情"}
+
+如果主演的名字在以下设定中能匹配上，请务必参考他们的性格和背景：
+${allCharInfos}
+
+【创作要求】：
+1. 剧情必须完整，包含开端、发展、高潮、结局。
+2. 视角可以是第三人称，字数 800 - 1500 字。
+3. 文风要符合【${currentIfCategory}】的特点。言情要甜虐交织，悬疑要扑朔迷离，微恐要毛骨悚然，无限流要紧张刺激。
+4. 必须输出一段完整的 JSON 字符串数据。
+格式：
+{
+  "title": "充满吸引力的小说标题",
+  "content": "小说正文，必须用 \\n 换行分段"
+}`;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); 
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.85 }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        
+        const firstBrace = reply.indexOf('{');
+        const lastBrace = reply.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+        
+        const result = JSON.parse(reply);
+        if (result.title && result.content) {
+            currentIfStory = result;
+            
+            // 切换视图
+            document.getElementById('if-setup-view').style.display = 'none';
+            document.getElementById('if-result-view').style.display = 'flex';
+            document.getElementById('if-result-title').innerText = `《${result.title}》`;
+            document.getElementById('if-story-content').innerText = result.content;
+            
+            // 重置评论区
+            document.getElementById('if-comments-area').style.display = 'none';
+            document.getElementById('if-comment-btn').innerHTML = '<i class="fas fa-comments"></i> 召唤网友生成评价';
+        } else {
+            throw new Error("格式错误");
+        }
+    } catch(e) {
+        sysAlert("生成失败", e.message);
+    } finally {
+        btn.innerHTML = originalText;
+    }
+}
+
+function saveIfToNovel() {
+    if (!currentIfStory.title) return;
+    const title = `[IF·${currentIfCategory}] ${currentIfStory.title}`;
+    novelData.unshift({ title: title, content: currentIfStory.content });
+    saveNovelData(); // 这是基于之前已有的小说APP的缓存变量保存
+    sysAlert("保存成功", `已存入书架！可以前往【小说】App查看。`);
+}
+
+function shareIfToChat() {
+    if (!currentIfStory.title) return;
+    const snippet = currentIfStory.content.substring(0, 60).replace(/\n/g, ' ') + '...';
+
+    // 复用原有的无底色交互卡片样式 x-share-card
+    const html = `
+        <div class="x-share-card" style="background: rgba(30, 30, 45, 0.75); border-color: rgba(251, 194, 235, 0.5);">
+            <div class="xs-header" style="color: #fbc2eb;">
+                <i class="fas fa-theater-masks" style="font-size: 20px;"></i>
+                <div style="font-weight: bold; font-size: 15px;">IF 线平行宇宙剧场</div>
+            </div>
+            <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                <div style="font-weight:bold; color:#fff; margin-bottom:4px;">《${currentIfStory.title}》</div>
+                <div style="opacity:0.8; font-style: italic;">"${snippet}"</div>
+            </div>
+        </div>
+    `;
+
+    const rawText = `[向你分享了一篇平行宇宙（IF线）里关于你们俩的微小说。题材是【${currentIfCategory}】。内容是：\n${currentIfStory.content}\n\n请你看完这篇小说后，根据你的性格，在聊天中告诉我你的读后感！你觉得这个平行宇宙里的你们怎么样？]`;
+
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'x-share');
+    setTimeout(() => triggerAIResponse(), 500);
+}
+
+async function generateIfComments() {
+    if (!currentIfStory.title) return;
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) return sysAlert("错误", "请配置 API 密钥");
+
+    const btn = document.getElementById('if-comment-btn');
+    if (btn.innerText.includes('加载中')) return;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载书评...';
+
+    const prompt = `这是一篇名叫《${currentIfStory.title}》的小说，题材是【${currentIfCategory}】。
+内容摘要：${currentIfStory.content.substring(0, 300)}...（后略）
+请你模拟 3 到 4 个热心网友（粉丝），对这篇小说发表评论。
+有的可以嗑CP，有的可以分析剧情，有的可以催更。
+
+【输出要求】
+严格输出 JSON 字符串。格式如下：
+{
+  "comments": [
+    {"user": "网友网名", "text": "评论内容"},
+    {"user": "网友网名", "text": "评论内容"}
+  ]
+}`;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        const firstBrace = reply.indexOf('{');
+        const lastBrace = reply.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+        
+        const result = JSON.parse(reply);
+        
+        if (result.comments) {
+            const area = document.getElementById('if-comments-area');
+            area.innerHTML = result.comments.map(c => `
+                <div class="if-comment-item">
+                    <div class="if-comment-user"><i class="fas fa-user-circle"></i> ${c.user}</div>
+                    <div class="if-comment-text">${c.text}</div>
+                </div>
+            `).join('');
+            area.style.display = 'flex';
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新评论';
+        }
+    } catch(e) {
+        btn.innerHTML = '<i class="fas fa-comments"></i> 生成失败，重试';
+    }
+}
+
+
 
 
 
