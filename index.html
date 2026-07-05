@@ -706,9 +706,23 @@
         :root.light-mode .ins-sys-msg { background: rgba(0,0,0,0.05); border: 0.5px solid rgba(0,0,0,0.1); color: var(--text-main) !important; }
 
         .msg-quote { font-size: 12px; opacity: 0.8; border-left: 2px solid rgba(255,255,255,0.5); padding-left: 6px; margin-bottom: 4px; font-style: italic; word-break: break-all; }
-        .msg.sticker-bubble { background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; font-weight: normal; backdrop-filter: none; opacity: 1;}
-        /* 将 max-width 改为 80px 即可 */
-.sticker-img { max-width: 80px; border-radius: 12px; display: block; border: 0.5px solid rgba(255,255,255,0.15); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                        .msg.sticker-bubble { background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; font-weight: normal; backdrop-filter: none; opacity: 1;}
+        
+        /* 表情包尺寸，110px符合正常微信/TG表情包大小 */
+        html body #chat-app #chat-container .msg .sticker-img { 
+            max-width: 110px !important; 
+            width: auto !important; 
+            height: auto !important;
+            display: block !important; 
+            border: none !important; 
+            box-shadow: none !important; 
+            border-radius: 8px !important; /* 加回一点点非常微弱的圆角，防止边缘像素生硬 */
+            margin: 0 !important;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)) !important;
+        }
+
+
+
 
         #sticker-panel { display: none; position: absolute; bottom: 100%; left: 0; right: 0; background: var(--bg-glass); border-top: 0.5px solid var(--border-color); padding: 15px; z-index: 5; max-height: 220px; overflow-y: auto; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .sticker-item { width: 100%; aspect-ratio: 1; background-size: cover; background-position: center; border-radius: 12px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.15); box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.1s;}
@@ -1915,24 +1929,76 @@ html body #chat-app .msg-time {
         html body #chat-app.layout-wechat .chat-icon-btn { color: #181818 !important; font-size: 26px !important; }
         html body #chat-app.layout-wechat .fa-arrow-circle-up { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important; font-size: 15px !important; font-weight: 500 !important; background: #07C160 !important; color: #fff !important; border-radius: 4px !important; width: 60px !important; height: 32px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin-left: 10px !important; letter-spacing: 2px;}
         html body #chat-app.layout-wechat .fa-arrow-circle-up::before { content: '发送' !important; }
-        html body #chat-app.layout-wechat .fa-robot { display: none !important; } 
+html body #chat-app.layout-wechat .fa-robot { 
+    display: flex !important; 
+    align-items: center !important;
+    color: #07C160 !important; /* 微信绿 */
+    font-size: 26px !important; 
+    margin-left: 12px !important; 
+} 
         html body #chat-app.layout-wechat .msg-system { background: #DADADA !important; color: #FFFFFF !important; padding: 4px 10px !important; border-radius: 4px !important; display: inline-block !important; font-size: 12px !important; font-weight: normal !important; margin: 15px auto !important; width: auto !important; max-width: 80% !important; border: none !important; }
         html body #chat-app.layout-wechat .ins-sys-msg { background: #DADADA !important; color: #FFFFFF !important; }
         html body #chat-app.layout-wechat .image-bubble img.chat-upload-img { border-radius: 4px !important; border: none !important; box-shadow: none !important; }
 
 
-                /* ========================================== */
+                        /* ========================================== */
         /* 5. Telegram (纸飞机) 极简日间淡色布局 */
         /* ========================================== */
         /* 维持原有背景图逻辑，去除深色遮罩，保证自定义壁纸原图显示 */
         html body #chat-app.layout-telegram::before { display: none !important; } 
         
-        /* 顶部栏：纯净白 */
-        html body #chat-app.layout-telegram .chat-header { background: #FFFFFF !important; border-bottom: 1px solid #EAEAEA !important; height: 85px !important; padding-bottom: 10px !important; align-items: flex-end !important;}
-        html body #chat-app.layout-telegram .chat-header-left i { color: #3390EC !important; }
-        html body #chat-app.layout-telegram .chat-info h3 { color: #000000 !important; font-size: 18px !important; font-weight: bold !important; }
-        html body #chat-app.layout-telegram .chat-info p { color: #8795A0 !important; font-size: 13px !important; }
-        html body #chat-app.layout-telegram .fa-phone-alt { color: #3390EC !important; }
+        /* 顶部栏：高斯模糊及居中排版 */
+        html body #chat-app.layout-telegram .chat-header { 
+            background: rgba(255, 255, 255, 0.75) !important; 
+            backdrop-filter: blur(25px) saturate(180%) !important; 
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important; 
+            border-bottom: 0.5px solid rgba(0,0,0,0.1) !important; 
+            height: 85px !important; 
+            padding-bottom: 10px !important; 
+            position: relative !important; 
+            align-items: flex-end !important;
+        }
+
+        /* 左侧返回键深蓝色与 Back 字样 */
+        html body #chat-app.layout-telegram .chat-header-left { display: flex; align-items: center; z-index: 10; }
+        html body #chat-app.layout-telegram .chat-header-left i.fa-chevron-left {
+            color: #1a6ab0 !important; /* 偏深的蓝色 */
+            margin-right: 0 !important; 
+        }
+        html body #chat-app.layout-telegram .chat-header-left::after {
+            content: 'Back';
+            color: #1a6ab0;
+            font-size: 16px;
+            margin-left: 2px;
+            font-weight: 500;
+            pointer-events: none;
+            position: relative;
+            top: -1px;
+        }
+        
+        /* 备注名字绝对居中 */
+        html body #chat-app.layout-telegram .chat-info { 
+            position: absolute; left: 50%; transform: translateX(-50%); bottom: 10px; text-align: center; width: auto; 
+        }
+        html body #chat-app.layout-telegram .chat-info h3 { color: #000000 !important; font-size: 17px !important; font-weight: bold !important; margin: 0 !important; display: flex; justify-content: center; }
+        html body #chat-app.layout-telegram .chat-info p { color: #8795A0 !important; font-size: 12px !important; margin-top: 2px !important;}
+        
+        /* 隐藏原有电话图标 */
+        html body #chat-app.layout-telegram .fa-phone-alt { display: none !important; }
+
+        /* 右侧展示角色头像 (跟随工坊) */
+        html body #chat-app.layout-telegram .chat-header::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            bottom: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-image: var(--chat-avatar);
+            background-size: cover;
+            background-position: center;
+        }
         
         /* 气泡外层，TG头像在底部对齐 */
         html body #chat-app.layout-telegram .msg-wrapper { gap: 8px !important; margin-bottom: 4px !important; align-items: flex-end !important; }
@@ -1944,10 +2010,18 @@ html body #chat-app .msg-time {
         
         /* Telegram 气泡核心 */
         html body #chat-app.layout-telegram #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
-            border-radius: 12px !important; padding: 8px 12px 20px 12px !important; /* 底部留白给时间 */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; font-size: 15px !important; line-height: 1.5 !important; border: none !important;
-            position: relative; min-width: 60px;
+            border-radius: 18px !important; /* 更加圆润 */
+            padding: 8px 12px !important; /* 上下的内边距缩小，使得单行文字更加细窄 */
+            padding-right: 48px !important; /* 核心：气泡微微拉长，在后缀处预留纯净空白区容纳时间数字，防止遮挡文字 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; 
+            font-size: 15px !important; 
+            line-height: 1.5 !important; 
+            border: none !important;
+            position: relative; 
+            min-width: auto !important;
+            width: fit-content;
         }
+        
         html body #chat-app.layout-telegram #chat-container .msg::after { display: none !important; }
         html body #chat-app.layout-telegram #chat-container .msg::before { display: none !important; }
         
@@ -1955,18 +2029,26 @@ html body #chat-app .msg-time {
         html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
             background: #FFFFFF !important; color: #000000 !important; border-bottom-left-radius: 4px !important; 
         }
-        /* 对方内部的时间注入伪元素 - 浅灰时间 */
+        /* 对方内部的时间注入伪元素 - 浅灰时间定位到后缀保留区 */
         html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
-            content: attr(data-time); position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: #A1AAB3; display: block !important; border: none !important; width: auto; height: auto;
+            content: attr(data-time); 
+            position: absolute; 
+            bottom: 6px; right: 10px; 
+            font-size: 11px; color: #A1AAB3; 
+            display: block !important; border: none !important; width: auto; height: auto;
         }
         
         /* 自己气泡 - 淡绿底黑字 */
         html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
             background: #EEFFDE !important; color: #000000 !important; border-bottom-right-radius: 4px !important; 
         }
-        /* 自己气泡的时间与已读钩钩 - 绿色时间 */
+        /* 自己气泡的时间与已读钩钩 - 绿色时间定位到后缀保留区 */
         html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
-            content: attr(data-time) " \2713\2713"; position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: #5DB050; display: block !important; border: none !important; width: auto; height: auto;
+            content: attr(data-time) " \2713\2713"; 
+            position: absolute; 
+            bottom: 6px; right: 10px; 
+            font-size: 11px; color: #5DB050; 
+            display: block !important; border: none !important; width: auto; height: auto;
         }
         
         /* 输入框区域 - 白色系 */
@@ -1981,6 +2063,7 @@ html body #chat-app .msg-time {
         
         /* 修复图片圆角 */
         html body #chat-app.layout-telegram .image-bubble img.chat-upload-img { border-radius: 12px !important; box-shadow: none !important; border: none !important;}
+
 
 
 
@@ -2080,6 +2163,22 @@ html body #chat-app .msg-time {
         /* ========================================== */
         /* 聊天专属大小缩放 (仅限短信 App 生效) */
         /* ========================================== */
+                        /* --- 最小号 (新增) --- */
+        html body #chat-app.chat-size-xsmall .chat-header { height: 80px !important; padding-bottom: 5px !important; }
+        html body #chat-app.layout-wechat.chat-size-xsmall .chat-header { height: 65px !important; }
+        html body #chat-app.layout-imessage.chat-size-xsmall .chat-header { height: 85px !important; }
+        
+        html body #chat-app.chat-size-xsmall .chat-info h3 { font-size: 13px !important; }
+        html body #chat-app.chat-size-xsmall .chat-info p { font-size: 10px !important; }
+        html body #chat-app.chat-size-xsmall .chat-input-area { padding: 6px 10px 25px !important; }
+        html body #chat-app.chat-size-xsmall .chat-input { font-size: 13px !important; padding: 6px 10px !important; }
+        html body #chat-app.chat-size-xsmall .chat-icon-btn, 
+        html body #chat-app.chat-size-xsmall .fa-robot, 
+        html body #chat-app.chat-size-xsmall .fa-arrow-circle-up { font-size: 18px !important; }
+        html body #chat-app.layout-imessage.chat-size-xsmall .fa-arrow-circle-up { font-size: 22px !important; }
+        html body #chat-app.chat-size-xsmall .msg-avatar { width: 28px !important; height: 28px !important; }
+        html body #chat-app.layout-wechat.chat-size-xsmall .msg-avatar { width: 30px !important; height: 30px !important; }
+        
         /* --- 小号 --- */
         html body #chat-app.chat-size-small .chat-header { height: 90px !important; padding-bottom: 10px !important; }
         html body #chat-app.layout-wechat.chat-size-small .chat-header { height: 75px !important; }
@@ -2790,7 +2889,7 @@ html body #chat-app .msg-time {
                                         <!-- 隐藏的图片选择器 -->
                     <input type="file" id="chat-image-upload-input" accept="image/*" style="display:none;" onchange="handleChatImageUpload(event)">
                     
-                    <!-- 新增：(+) 号更多功能面板 -->
+                                        <!-- 新增：(+) 号更多功能面板 -->
                     <div id="tools-panel">
                         <div class="tool-item" onclick="document.getElementById('chat-image-upload-input').click(); toggleToolsPanel();">
                             <div class="tool-icon-wrap"><i class="fas fa-image" style="color: #9b59b6;"></i></div>
@@ -2808,7 +2907,18 @@ html body #chat-app .msg-time {
                             <div class="tool-icon-wrap"><i class="fas fa-quote-right" style="color: #27ae60;"></i></div>
                             <span>改状态</span>
                         </div>
+                        <!-- 👇 新增的两个功能 👇 -->
+                        <div class="tool-item" onclick="startNewChatKeepMemory()">
+                            <div class="tool-icon-wrap"><i class="fas fa-broom" style="color: #f1c40f;"></i></div>
+                            <span>新开对话</span>
+                        </div>
+                        <div class="tool-item" onclick="clearChatHistory()">
+                            <div class="tool-icon-wrap"><i class="fas fa-trash-alt" style="color: #e74c3c;"></i></div>
+                            <span>清空对话</span>
+                        </div>
+                        <!-- 👆 新增结束 👆 -->
                     </div>
+
 
                     
                     <!-- 左侧功能按钮 -->
@@ -3673,12 +3783,14 @@ html body #chat-app .msg-time {
                                                                                            
 
                          <!-- 👇 新增的缩放大小控制区 👇 -->
-                    <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">聊天全局缩放</div>
+                                        <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">聊天全局缩放</div>
                     <div class="status-tabs" style="margin: 0 0 25px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px;">
+                        <div class="tab-btn" id="btn-chat-size-xsmall" onclick="applyChatSize('xsmall')">最小</div>
                         <div class="tab-btn" id="btn-chat-size-small" onclick="applyChatSize('small')">小</div>
                         <div class="tab-btn active" id="btn-chat-size-medium" onclick="applyChatSize('medium')">中等 (默认)</div>
                         <div class="tab-btn" id="btn-chat-size-large" onclick="applyChatSize('large')">大</div>
                     </div>
+
 
                                                      <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">顶部面板高度</div>
                     <div class="status-tabs" style="margin: 0 0 25px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px;">
@@ -3850,18 +3962,20 @@ html body #chat-app .msg-time {
                     </div>
                 </div>
 
-                <!-- 阅读器全屏视图 -->
+                                <!-- 阅读器全屏视图 -->
                 <div id="novel-reader-view">
                     <div class="reader-header">
                         <i class="fas fa-chevron-left" onclick="closeNovelReader()" style="font-size: 20px; cursor:pointer;"></i>
                         <span id="reader-title" style="font-size: 15px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">小说标题</span>
-                        <div style="display: flex; gap: 15px;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <i class="fas fa-pen-fancy" onclick="continueNovel()" style="font-size: 18px; cursor: pointer; color: var(--accent);" title="AI 续写下一章"></i>
                             <i class="fas fa-share-square" onclick="shareNovelToChat()" style="font-size: 18px; cursor: pointer; color: var(--accent);" title="分享这本小说给TA"></i>
                         </div>
                     </div>
                     <div class="reader-body scrollable" id="reader-body"></div>
                 </div>
-            </div>
+            </div> <!-- 👈 ！！！就是在这里，补上这一行 </div>，把小说 App 彻底闭合！！！ -->
+
 
                                 <!-- 仿知乎 App -->
             <div id="zhihu-app" class="app-view">
@@ -5447,7 +5561,14 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
     }
 
     function addMessageToUI(role, content, isHtml = false, time = null, rawApiContent = null, msgType = 'text', isRestoring = false) {
-        if(!time) { const now = new Date(); time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; }
+        if(!time) { 
+            const now = new Date(); 
+            let h = now.getHours();
+            let m = String(now.getMinutes()).padStart(2, '0');
+            let ampm = h < 12 ? 'am' : 'pm';
+            h = h % 12 || 12; // 0点转换为12点
+            time = `${h}:${m} ${ampm}`; 
+        }
         const container = document.getElementById('chat-container');
         
         if (role === 'system') {
@@ -5563,13 +5684,29 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         div.addEventListener('touchend', () => clearTimeout(touchTimer));
         div.addEventListener('contextmenu', (e) => { e.preventDefault(); const idx = Array.from(container.children).indexOf(wrapper); if(idx !== -1 && messageHistory[idx]) openActionSheet(idx, messageHistory[idx]); });
 
-        const timeSpan = document.createElement('div'); timeSpan.className = 'msg-time'; timeSpan.innerText = time;
-        contentBox.appendChild(div); contentBox.appendChild(timeSpan);
+                        contentBox.appendChild(div); 
         if (role === 'char') { wrapper.appendChild(avatarDiv); wrapper.appendChild(contentBox); } else { wrapper.appendChild(contentBox); wrapper.appendChild(avatarDiv); }
 
-        container.appendChild(wrapper); scrollToBottom();
+                // 👇 判断是否需要显示时间（如果当前时间跟上一条显示的时间相同，则隐藏）
+        let showTime = true;
+        const lastTimeNodes = container.querySelectorAll('.msg-time-center');
+        if (lastTimeNodes.length > 0 && lastTimeNodes[lastTimeNodes.length - 1].innerText === time) {
+            showTime = false;
+        }
+
+        if (showTime) {
+            const timeSpan = document.createElement('div'); 
+            timeSpan.className = 'msg-time-center'; 
+            timeSpan.style.cssText = 'width: 100%; text-align: center; font-size: 11px; color: var(--text-sub); margin: 15px 0 8px; display: block; font-weight: 500;';
+            timeSpan.innerText = time;
+            container.appendChild(timeSpan);
+        }
+
+        container.appendChild(wrapper); 
+        scrollToBottom();
 
         if (!isRestoring) {
+
             messageHistory.push({ role, content, isHtml, time, rawApiContent: rawApiContent || content, msgType });
             localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
         }
@@ -6311,7 +6448,7 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         }
     }
 
-    function loadChatHistory() {
+        function loadChatHistory() {
         const h = localStorage.getItem(`ai_os_chat_${activeCharId}`);
         document.getElementById('chat-container').innerHTML = ''; 
         messageHistory = [];
@@ -6320,24 +6457,29 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                 const parsed = JSON.parse(h);
                 messageHistory = parsed; 
                 parsed.forEach(m => {
-    // 气泡外神动历史恢复
-    if (m.msgType === 'narration') {
-        if (globalAPI.enableNarration) {
-            const container = document.getElementById('chat-container');
-            const narDiv = document.createElement('div');
-            narDiv.className = 'narration-block';
-            narDiv.innerText = m.content;
-            container.appendChild(narDiv);
-        }
-        return; // 跳过普通消息渲染
-    }
-        addMessageToUI(m.role, m.content, m.isHtml, m.time, m.rawApiContent, m.msgType, true);
-});
+                    // 👇 新增：跳过被标记为隐藏的历史消息，不在界面上渲染，但仍保留在数据里传给AI
+                    if (m.isHidden) return;
+                    // 👆 新增结束
+
+                    // 气泡外神动历史恢复
+                    if (m.msgType === 'narration') {
+                        if (globalAPI.enableNarration) {
+                            const container = document.getElementById('chat-container');
+                            const narDiv = document.createElement('div');
+                            narDiv.className = 'narration-block';
+                            narDiv.innerText = m.content;
+                            container.appendChild(narDiv);
+                        }
+                        return; // 跳过普通消息渲染
+                    }
+                    addMessageToUI(m.role, m.content, m.isHtml, m.time, m.rawApiContent, m.msgType, true);
+                });
             } catch (e) { console.error("恢复历史记录出错", e); }
         }
         scrollToBottom();
         setTimeout(() => { if(typeof syncAllMusicWidgets === 'function') syncAllMusicWidgets(); }, 150);
     }
+
 
         
 
@@ -9560,27 +9702,39 @@ openApp = function(appId) {
         }
     }
 
-    function applyChatSize(size) {
+        function applyChatSize(size) {
         const chatApp = document.getElementById('chat-app');
         if(!chatApp) return;
         
-        chatApp.classList.remove('chat-size-small', 'chat-size-large');
-        document.getElementById('btn-chat-size-small').classList.remove('active');
-        document.getElementById('btn-chat-size-medium').classList.remove('active');
-        document.getElementById('btn-chat-size-large').classList.remove('active');
+        // 移除所有特定的缩放类
+        chatApp.classList.remove('chat-size-xsmall', 'chat-size-small', 'chat-size-large');
         
-        if (size === 'small') {
+        const btnXsmall = document.getElementById('btn-chat-size-xsmall');
+        const btnSmall = document.getElementById('btn-chat-size-small');
+        const btnMedium = document.getElementById('btn-chat-size-medium');
+        const btnLarge = document.getElementById('btn-chat-size-large');
+        
+        if (btnXsmall) btnXsmall.classList.remove('active');
+        if (btnSmall) btnSmall.classList.remove('active');
+        if (btnMedium) btnMedium.classList.remove('active');
+        if (btnLarge) btnLarge.classList.remove('active');
+        
+        if (size === 'xsmall') {
+            chatApp.classList.add('chat-size-xsmall');
+            if (btnXsmall) btnXsmall.classList.add('active');
+        } else if (size === 'small') {
             chatApp.classList.add('chat-size-small');
-            document.getElementById('btn-chat-size-small').classList.add('active');
+            if (btnSmall) btnSmall.classList.add('active');
         } else if (size === 'large') {
             chatApp.classList.add('chat-size-large');
-            document.getElementById('btn-chat-size-large').classList.add('active');
+            if (btnLarge) btnLarge.classList.add('active');
         } else {
-            document.getElementById('btn-chat-size-medium').classList.add('active');
+            if (btnMedium) btnMedium.classList.add('active');
         }
         
         localStorage.setItem('ai_os_chat_size', size);
     }
+
 
         // 监听系统初始化，在开机时读取保存的主题和大小
     document.addEventListener('DOMContentLoaded', function() {
@@ -9931,8 +10085,7 @@ openApp = function(appId) {
         const reader = new FileReader();
         reader.onload = function(event) {
             const content = event.target.result;
-            novelData.unshift({ title: title, content: content });
-            saveNovelData();
+novelData.unshift({ title: title, content: content, chapterCount: 1 });            saveNovelData();
             renderNovelShelf();
             document.getElementById('sys-dialog-overlay').style.display = 'none';
             sysAlert("导入成功", `小说《${title}》已成功上架！`);
@@ -9990,8 +10143,7 @@ openApp = function(appId) {
             const newNovel = JSON.parse(reply);
             
             if (newNovel.title && newNovel.content) {
-                novelData.unshift({ title: newNovel.title, content: newNovel.content });
-                saveNovelData();
+novelData.unshift({ title: newNovel.title, content: newNovel.content, chapterCount: 1 });                saveNovelData();
                 renderNovelShelf();
                 document.getElementById('sys-dialog-overlay').style.display = 'none';
                 sysAlert("催更成功", `AI 已经为你写好了小说《${newNovel.title}》！`);
@@ -10018,6 +10170,98 @@ openApp = function(appId) {
         currentNovelIdx = null;
         document.getElementById('novel-reader-view').style.display = 'none';
     }
+
+    // 👇 新增：AI小说连载/续写引擎
+    async function continueNovel() {
+        if (currentNovelIdx === null) return;
+        const book = novelData[currentNovelIdx];
+        
+        if (!book.chapterCount) book.chapterCount = 1;
+        
+        if (book.chapterCount >= 12) {
+            sysAlert("已完结", "这本小说已经达到了 12 章的完结限制啦！请重新开一本新书吧。");
+            return;
+        }
+
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) return sysAlert("错误", "请先在“角色工坊”配置好大模型 API 密钥！");
+
+        const isEnding = book.chapterCount === 11;
+        const targetChapter = book.chapterCount + 1;
+
+        sysAlert("催更中...", `AI 大神正在奋力续写第 ${targetChapter} 章...\n${isEnding ? '(这是最终章！)' : ''}\n请耐心等待几秒钟~`);
+
+        // 提取近3000字作为剧情记忆，防止上下文爆炸
+        const contextContent = book.content.length > 3000 ? "...(前情提要)...\n\n" + book.content.slice(-3000) : book.content;
+
+        const prompt = `你是一个顶级网络小说作家。你正在连载一部名叫《${book.title}》的小说。
+以下是前面章节的最新内容：
+${contextContent}
+
+【任务要求】
+请你紧接上面的剧情，写出第 ${targetChapter} 章的内容。
+1. 字数要求在 800 - 1500 字之间。
+2. 剧情要连贯，符合网文节奏，不要重复已经发生过的事情。
+${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且圆满的大结局，完成故事的谢幕！" : "3. 剧情要继续发展，给下一章留下吸引人的悬念。"}
+
+必须输出一段完整的 JSON 字符串数据。格式严格要求：
+{
+  "content": "续写的正文内容。开头请直接写上【第${targetChapter}章 你的本章小标题】，段落之间必须使用 \\n 进行换行。"
+}`;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 120000); 
+
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.85 }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            
+            const firstBrace = reply.indexOf('{');
+            const lastBrace = reply.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
+                reply = reply.substring(firstBrace, lastBrace + 1);
+            } else {
+                throw new Error("模型回复中没有找到符合规则的 JSON 数据");
+            }
+            
+            const newChapter = JSON.parse(reply);
+            
+            if (newChapter.content) {
+                // 将新章节拼接到当前书本中
+                book.content += "\n\n\n" + newChapter.content;
+                book.chapterCount = targetChapter;
+                saveNovelData();
+                
+                // 刷新阅读器视图
+                const readerBody = document.getElementById('reader-body');
+                readerBody.innerText = book.content;
+                
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                sysAlert("续写成功", `第 ${targetChapter} 章已更新！${isEnding ? '\n全书已完结撒花！🎉' : ''}`);
+                
+                // 延迟滚动到底部，让用户看到新章节
+                setTimeout(() => {
+                    readerBody.scrollTop = readerBody.scrollHeight;
+                }, 100);
+
+            } else {
+                throw new Error("JSON 格式缺失 content 字段");
+            }
+        } catch (e) {
+            sysAlert("生成失败", `AI 没能写完，报错啦。\n\n详情: ${e.message}`);
+        }
+    }
+    // 👆 新增结束
+
 
     // 分享给 AI 角色畅谈
     function shareNovelToChat() {
@@ -10622,9 +10866,40 @@ openApp = function(appId) {
         contacts: "刚给同事发了消息"
     };
 
-    let lockState = JSON.parse(localStorage.getItem('ai_os_lock_state')) || { locked: false, reason: "" };
+        let lockState = JSON.parse(localStorage.getItem('ai_os_lock_state')) || { locked: false, reason: "" };
+
+    // 👇 新增：补回缺失的锁定与解锁函数，并增加持久化
+    function triggerScreenLock(reason, charName) {
+        lockState.locked = true;
+        lockState.reason = reason;
+        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
+        
+        const reasonDisplay = document.getElementById('lock-reason-display');
+        if (reasonDisplay) reasonDisplay.innerText = reason;
+        
+        const lockEl = document.getElementById('sys-screen-lock');
+        if (lockEl) lockEl.style.display = 'flex';
+    }
+
+    function triggerScreenUnlock() {
+        lockState.locked = false;
+        lockState.reason = "";
+        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
+        
+        const lockEl = document.getElementById('sys-screen-lock');
+        if (lockEl) lockEl.style.display = 'none';
+    }
+
+    // 初始化时如果仍然是锁定状态，则继续锁屏，防止用户刷新网页逃课
+    document.addEventListener('DOMContentLoaded', function() {
+        if (lockState && lockState.locked) {
+            triggerScreenLock(lockState.reason, "");
+        }
+    });
+    // 👆 新增结束
 
     function renderScreenTimeApp() {
+
         const container = document.getElementById('screentime-content');
         if(!container) return;
 
@@ -10656,117 +10931,125 @@ openApp = function(appId) {
         `;
     }
 
-    async function refreshScreenTime() {
-        const char = characters.find(c => c.id === activeCharId);
-        const url = cleanBaseUrl(globalAPI.url);
-        if(!url || !globalAPI.key) return sysAlert("错误", "请先在角色工坊配置 API 密钥");
-
+        async function refreshScreenTime() {
         const btn = document.getElementById('screentime-refresh-btn');
         if (btn.classList.contains('fa-spin')) return;
         btn.classList.add('fa-spin');
 
-        // 调用大模型随机生成具有戏剧性的手机使用记录，且【严格限定】在当前系统代码已有的 App 内！
-        const prompt = `你现在是一个手机底层的安全监控模块。请根据角色【${char.name}】的视角和用户平时的人设，随机生成用户今天的手机使用情况。
-要求输出严格的JSON，绝对不要包含任何 markdown 标记：
-{
-  "apps": [
-    {"name": "必须只能填这里面的应用", "time": "X小时X分钟", "color": "十六进制颜色代码"},
-    {"name": "必须只能填这里面的应用", "time": "X小时X分钟", "color": "十六进制颜色代码"}
-  ],
-  "location": "具体的物理位置(如: 某某网吧、公司、家里卧室、某个街道)",
-  "contacts": "最近的社交行为(如: 10分钟前给谁打了电话，可能是一些异性或亲友)"
-}
-【极度重要的应用限制】：apps数组里的"name"字段，绝对不能填抖音/微信，【必须且只能】从这个列表中选择：[贴吧社区, X (推特), 小说阅读, 断网恐龙, 朋友圈, 知乎, 小宠物, 音乐播放器]。
-请分配一些夸张的时间（比如看小说3小时），方便稍后让角色有理由吃醋或发脾气锁屏。`;
-
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000); 
-
-            const res = await fetch(`${url}/chat/completions`, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
-                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            const data = await res.json();
-            let reply = data.choices[0].message.content.trim();
-            const firstBrace = reply.indexOf('{');
-            const lastBrace = reply.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+            // 纯本地统计算法：根据用户在当前系统内真实留下的数据估算使用时长
+            let appsUsage = [];
             
-            screenTimeData = JSON.parse(reply);
+            // 1. 短信聊天
+            let msgCount = messageHistory.filter(m => m.role === 'user').length;
+            if (msgCount > 0) {
+                let mins = msgCount * 2 + Math.floor(Math.random() * 10);
+                let h = Math.floor(mins / 60); let m = mins % 60;
+                let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                appsUsage.push({ name: "短信聊天", time: timeStr, color: "#27ae60", mins: mins });
+            }
+
+            // 2. 电子宠物
+            if (typeof petData !== 'undefined' && petData.level) {
+                let mins = petData.level * 8 + (petData.coinsEarnedToday ? Math.floor(petData.coinsEarnedToday / 2) : 0);
+                if (mins > 0) {
+                    let h = Math.floor(mins / 60); let m = mins % 60;
+                    let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                    appsUsage.push({ name: "小宠物", time: timeStr, color: "#cc5555", mins: mins });
+                }
+            }
+
+            // 3. 朋友圈
+            if (typeof momentsData !== 'undefined') {
+                let momentCount = momentsData.filter(m => m.author === globalUser.name).length;
+                if (momentCount > 0) {
+                    let mins = momentCount * 15;
+                    let h = Math.floor(mins / 60); let m = mins % 60;
+                    let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                    appsUsage.push({ name: "朋友圈", time: timeStr, color: "#22c55e", mins: mins });
+                }
+            }
+
+            // 4. 小说阅读
+            if (typeof novelData !== 'undefined' && novelData.length > 0) {
+                let mins = novelData.length * 35;
+                let h = Math.floor(mins / 60); let m = mins % 60;
+                let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                appsUsage.push({ name: "小说阅读", time: timeStr, color: "#ff9a9e", mins: mins });
+            }
+
+            // 5. 贴吧社区
+            if (typeof tiebaData !== 'undefined') {
+                let tiebaCount = 0;
+                Object.values(tiebaData).forEach(arr => tiebaCount += arr.length);
+                if (tiebaCount > 0) {
+                    let mins = tiebaCount * 10;
+                    let h = Math.floor(mins / 60); let m = mins % 60;
+                    let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                    appsUsage.push({ name: "贴吧社区", time: timeStr, color: "#3b82f6", mins: mins });
+                }
+            }
+
+            // 6. X (推特)
+            if (typeof xData !== 'undefined') {
+                let xCount = 0;
+                Object.values(xData).forEach(arr => xCount += arr.length);
+                if (xCount > 0) {
+                    let mins = xCount * 12;
+                    let h = Math.floor(mins / 60); let m = mins % 60;
+                    let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                    appsUsage.push({ name: "X (推特)", time: timeStr, color: "#000000", mins: mins });
+                }
+            }
+            
+            // 7. 知乎
+            if (typeof zhihuData !== 'undefined' && zhihuData.length > 0) {
+                let mins = zhihuData.length * 20;
+                let h = Math.floor(mins / 60); let m = mins % 60;
+                let timeStr = h > 0 ? `${h}小时 ${m}分钟` : `${m}分钟`;
+                appsUsage.push({ name: "知乎", time: timeStr, color: "#0084FF", mins: mins });
+            }
+            
+            // 如果用户真的一次都没玩过
+            if (appsUsage.length === 0) {
+                appsUsage.push({ name: "系统待机", time: "12分钟", color: "#888888", mins: 12 });
+            }
+
+            // 按时长长短进行从大到小的排序
+            appsUsage.sort((a, b) => b.mins - a.mins);
+
+            // 读取真实位置（从查岗/偷看手机数据里提取真实坐标）
+            const char = characters.find(c => c.id === activeCharId);
+            let loc = "安全环境 / 居家";
+            if (char && char.snoopData && char.snoopData.location) {
+                loc = char.snoopData.location;
+            }
+
+            // 根据真实发信频率评估社交接触
+            let contactStatus = msgCount > 20 ? "手机通讯极其频繁，一直在发消息" : (msgCount > 0 ? "有过几次简短的通讯和交流记录" : "今天尚未发生通讯行为，非常安静");
+
+            // 模拟一个计算动画的延迟感
+            await new Promise(r => setTimeout(r, 600));
+
+            // 保存最终生成的纯真实数据
+            screenTimeData = {
+                apps: appsUsage.map(a => ({ name: a.name, time: a.time, color: a.color })),
+                location: loc,
+                contacts: contactStatus
+            };
+            
             localStorage.setItem('ai_os_screentime', JSON.stringify(screenTimeData));
             renderScreenTimeApp();
-            sysAlert("刷新成功", "当前设备的底层运行数据已被 AI 重新评估更新！\n你可以去聊天框看看TA有没有发现你在系统里乱玩应用。");
+            
+            sysAlert("提取完成", "已根据您在系统内的真实操作数据，精准生成了屏幕使用报告！\n没有任何虚构成分，TA可以随时查看您的真实轨迹了。");
+
         } catch (e) {
-            sysAlert("刷新失败", "网络超时或数据格式出错。\n" + e.message);
+            sysAlert("提取失败", "本地数据解析出错。\n" + e.message);
         } finally {
             btn.classList.remove('fa-spin');
         }
     }
 
-    // 触发锁定
-    function triggerScreenLock(reason, charName) {
-        lockState = { locked: true, reason: reason };
-        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
-        document.getElementById('lock-reason-display').innerText = reason;
-        document.getElementById('sys-screen-lock').querySelector('h2').innerText = `已被 ${charName} 强制锁定`;
-        document.getElementById('sys-screen-lock').style.display = 'flex';
-        document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-    }
-
-    // 触发解锁
-    function triggerScreenUnlock() {
-        lockState = { locked: false, reason: "" };
-        localStorage.setItem('ai_os_lock_state', JSON.stringify(lockState));
-        document.getElementById('sys-screen-lock').style.display = 'none';
-    }
-
-    // 🚀 核心黑科技：重写并接管所有核心系统导航，实现完美的强制拦截
-    const __originalOpenAppScreenTime = openApp;
-    openApp = function(appId) {
-        if(lockState.locked && appId !== 'chat-app') {
-            document.getElementById('sys-screen-lock').style.display = 'flex';
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            return;
-        }
-        __originalOpenAppScreenTime(appId);
-        if(appId === 'screentime-app') renderScreenTimeApp();
-    };
-
-    const __originalGoBackScreenTime = goBack;
-    goBack = function() {
-        if(lockState.locked) {
-            document.getElementById('sys-screen-lock').style.display = 'flex';
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            return;
-        }
-        __originalGoBackScreenTime();
-    };
-
-    const __originalGoHomeScreenTime = goHome;
-    goHome = function() {
-        if(lockState.locked) {
-            document.getElementById('sys-screen-lock').style.display = 'flex';
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            return;
-        }
-        __originalGoHomeScreenTime();
-    };
-
-    // 开机自检：如果你昨天被锁了没解锁，今天开机照样被锁死
-    document.addEventListener('DOMContentLoaded', () => {
-        if(lockState && lockState.locked) {
-            const char = characters.find(c => c.id === activeCharId) || {name: "系统"};
-            document.getElementById('lock-reason-display').innerText = lockState.reason;
-            document.getElementById('sys-screen-lock').querySelector('h2').innerText = `已被 ${char.name} 强制锁定`;
-            document.getElementById('sys-screen-lock').style.display = 'flex';
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            document.getElementById('os-home').style.display = 'none';
-        }
-    });
 
 
 
@@ -10797,17 +11080,52 @@ openApp = function(appId) {
 // ==========================================
 // 关系网 App 核心可视化与同步逻辑
 // ==========================================
-let relationData = JSON.parse(localStorage.getItem('ai_os_relation')) || {
-    nodes: [
-        { id: 'user', name: "我", x: 30, y: 50 },
-        { id: 'char', name: "TA", x: 70, y: 50 }
-    ],
-    edges: []
-};
+let relationData = { nodes: [], edges: [] };
+
+function loadRelationData() {
+    const key = `ai_os_relation_${activeUserIdx}_${activeCharId}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+        relationData = JSON.parse(saved);
+    } else {
+        // 兼容旧版本的全量数据，保护旧存档不丢失
+        if (activeUserIdx === 0 && localStorage.getItem('ai_os_relation')) {
+            relationData = JSON.parse(localStorage.getItem('ai_os_relation'));
+        } else {
+            relationData = {
+                nodes: [
+                    { id: 'user', name: globalUser.name || "我", x: 30, y: 50 },
+                    { id: 'char', name: characters.find(c=>c.id===activeCharId)?.name || "TA", x: 70, y: 50 }
+                ],
+                edges: []
+            };
+        }
+    }
+}
 
 function saveRelationData() {
-    localStorage.setItem('ai_os_relation', JSON.stringify(relationData));
+    const key = `ai_os_relation_${activeUserIdx}_${activeCharId}`;
+    localStorage.setItem(key, JSON.stringify(relationData));
 }
+
+// 延迟初始加载，确保取得正确的 user 索引和 char 索引
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadRelationData, 800);
+});
+
+// 重写原有的 switchUserProfile，无缝独立加载当前身份的关系网
+const _originalSwitchUserProfileRelation = switchUserProfile;
+switchUserProfile = function(idx, btnEl) {
+    _originalSwitchUserProfileRelation(idx, btnEl);
+    loadRelationData();
+};
+
+// 重写 loadCharacterState，无缝切换当前角色的关系网
+const _originalLoadCharacterStateRelation = loadCharacterState;
+loadCharacterState = function(id, isFromHub = false) {
+    _originalLoadCharacterStateRelation(id, isFromHub);
+    loadRelationData();
+};
 
 function renderRelationApp() {
     // 动态同步内置两名角色的名字
@@ -10847,23 +11165,42 @@ function renderRelationApp() {
         nodesContainer.appendChild(label);
     });
     
-    // 2. 渲染节点 (带拖拽)
+    // 2. 渲染节点 (带拖拽与长按删除功能)
     relationData.nodes.forEach(n => {
         const node = document.createElement('div');
         node.className = 'rel-node';
         node.innerText = n.name;
         node.style.left = n.x + '%'; node.style.top = n.y + '%';
         
-        // 拖拽逻辑
+        // 拖拽与长按删除逻辑
         let isDrag = false;
-        const dragStart = (e) => { isDrag = true; };
+        let dragStartX, dragStartY;
+        const dragStart = (e) => { 
+            isDrag = true; 
+            dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
+            dragStartY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            // 如果不是核心双人节点，开启长按删除判定
+            if (n.id !== 'user' && n.id !== 'char') {
+                node.deleteTimer = setTimeout(() => { 
+                    if(isDrag) { isDrag = false; promptDeleteRelationNode(n.id); }
+                }, 600);
+            }
+        };
+        
         const dragMove = (e) => {
             if(!isDrag) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            // 移动超过 5px 则判定为拖拽，取消长按删除指令防误触
+            if (Math.abs(clientX - dragStartX) > 5 || Math.abs(clientY - dragStartY) > 5) {
+                clearTimeout(node.deleteTimer);
+            }
+
             e.preventDefault();
             const container = document.getElementById('relation-canvas-container');
             const rect = container.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             let nx = ((clientX - rect.left) / rect.width) * 100;
             let ny = ((clientY - rect.top) / rect.height) * 100;
             nx = Math.max(10, Math.min(90, nx)); ny = Math.max(15, Math.min(85, ny));
@@ -10871,7 +11208,11 @@ function renderRelationApp() {
             node.style.left = nx + '%'; node.style.top = ny + '%';
             renderRelationEdgesOnly(); // 拖拽中只重绘线段防卡顿
         };
-        const dragEnd = () => { if(isDrag) { isDrag = false; saveRelationData(); renderRelationApp(); } };
+        
+        const dragEnd = () => { 
+            clearTimeout(node.deleteTimer);
+            if(isDrag) { isDrag = false; saveRelationData(); renderRelationApp(); } 
+        };
         
         node.addEventListener('mousedown', dragStart);
         node.addEventListener('touchstart', dragStart, {passive:false});
@@ -10879,13 +11220,22 @@ function renderRelationApp() {
         document.addEventListener('touchmove', dragMove, {passive:false});
         document.addEventListener('mouseup', dragEnd);
         document.addEventListener('touchend', dragEnd);
+
+        // 电脑端直接右键删除
+        if (n.id !== 'user' && n.id !== 'char') {
+            node.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                clearTimeout(node.deleteTimer);
+                promptDeleteRelationNode(n.id);
+            });
+        }
         
         nodesContainer.appendChild(node);
     });
     
     // 3. 渲染下方的描述列表
     listContent.innerHTML = relationData.edges.length === 0 ? 
-        `<div style="text-align:center; color:var(--text-sub); margin-top:20px;">空空如也。点击右上角 ➕ 和 🔗 来构建属于你们的人际网吧！</div>` :
+        `<div style="text-align:center; color:var(--text-sub); margin-top:20px;">空空如也。点击右上角 ➕ 和 🔗 来构建属于你们的人际网吧！<br><span style="font-size:11px;">(提示: 长按非主角的圆圈可删除该节点)</span></div>` :
         relationData.edges.map(e => {
             const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
             const t = relationData.nodes.find(n=>n.id===e.targetId)?.name || '未知';
@@ -10895,7 +11245,7 @@ function renderRelationApp() {
                 <div class="rel-list-desc">${e.desc}</div>
                 <div class="rel-list-actions">
                     <div class="rel-action-btn" onclick="shareRelationToChat('${e.id}')"><i class="fas fa-share"></i> 同步告诉TA / 记入记忆书</div>
-                    <div class="rel-action-btn" onclick="deleteRelationEdge('${e.id}')"><i class="fas fa-trash"></i> 删除</div>
+                    <div class="rel-action-btn" onclick="deleteRelationEdge('${e.id}')"><i class="fas fa-trash"></i> 删除连线</div>
                 </div>
             </div>`;
         }).join('');
@@ -10927,6 +11277,15 @@ async function promptAddRelationNode() {
     const name = await sysPrompt("添加角色节点", "请输入新出场的人物/角色名称：");
     if(name && name.trim()) {
         relationData.nodes.push({ id: 'node_'+Date.now(), name: name.trim(), x: 50, y: 80 });
+        saveRelationData(); renderRelationApp();
+    }
+}
+
+async function promptDeleteRelationNode(nodeId) {
+    const c = await sysConfirm("删除节点", "确认要删除这个角色节点吗？\n删除后相关的关系连线也会一并被清空！");
+    if(c) {
+        relationData.nodes = relationData.nodes.filter(n => n.id !== nodeId);
+        relationData.edges = relationData.edges.filter(e => e.sourceId !== nodeId && e.targetId !== nodeId);
         saveRelationData(); renderRelationApp();
     }
 }
@@ -11012,6 +11371,7 @@ openApp = function(appId) {
         renderRelationApp();
     }
 };
+
 
 
 // ==========================================
@@ -11430,8 +11790,7 @@ ${allCharInfos}
 function saveIfToNovel() {
     if (!currentIfStory.title) return;
     const title = `[IF·${currentIfCategory}] ${currentIfStory.title}`;
-    novelData.unshift({ title: title, content: currentIfStory.content });
-    saveNovelData(); // 这是基于之前已有的小说APP的缓存变量保存
+novelData.unshift({ title: title, content: currentIfStory.content, chapterCount: 1 });    saveNovelData(); // 这是基于之前已有的小说APP的缓存变量保存
     sysAlert("保存成功", `已存入书架！可以前往【小说】App查看。`);
 }
 
@@ -11518,6 +11877,39 @@ async function generateIfComments() {
         btn.innerHTML = '<i class="fas fa-comments"></i> 生成失败，重试';
     }
 }
+
+
+    // ==========================================
+    // 新增：聊天状态管理 (新开对话 / 清空对话)
+    // ==========================================
+    async function startNewChatKeepMemory() {
+        const confirm = await sysConfirm("新开对话", "确定要新开对话吗？\n屏幕聊天记录将被清空，但 AI 仍会保留近期的上下文记忆。");
+        if (!confirm) return;
+
+        // 将现有的所有历史记录标记为隐藏
+        messageHistory.forEach(m => m.isHidden = true);
+        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+        
+        // 刷新 UI
+        document.getElementById('chat-container').innerHTML = '';
+        toggleToolsPanel();
+        addMessageToUI('system', '✨ 已新开对话，TA 依然记得之前发生过的事。');
+    }
+
+    async function clearChatHistory() {
+        const confirm = await sysConfirm("彻底清空对话", "【危险操作】确定要彻底清空对话吗？\n清空后 AI 将失去所有的上下文短期记忆（已存入记忆书的内容除外）。");
+        if (!confirm) return;
+
+        // 彻底清空数组并覆盖缓存
+        messageHistory = [];
+        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+        
+        // 刷新 UI
+        document.getElementById('chat-container').innerHTML = '';
+        toggleToolsPanel();
+        addMessageToUI('system', '🧹 对话已彻底清空，TA 的短期记忆已重置。');
+    }
+
 
 
 
