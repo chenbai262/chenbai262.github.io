@@ -2025,9 +2025,10 @@ html body #chat-app.layout-wechat .fa-robot {
         html body #chat-app.layout-telegram #chat-container .msg::after { display: none !important; }
         html body #chat-app.layout-telegram #chat-container .msg::before { display: none !important; }
         
-        /* 对方气泡 - 白底黑字 */
+                /* 对方气泡 - 白底黑字 */
         html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
             background: #FFFFFF !important; color: #000000 !important; border-bottom-left-radius: 4px !important; 
+            padding-right: 45px !important; /* 强制提升权重，防止缩放类覆盖右侧留白 */
         }
         /* 对方内部的时间注入伪元素 - 浅灰时间定位到后缀保留区 */
         html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
@@ -2041,6 +2042,7 @@ html body #chat-app.layout-wechat .fa-robot {
         /* 自己气泡 - 淡绿底黑字 */
         html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) { 
             background: #EEFFDE !important; color: #000000 !important; border-bottom-right-radius: 4px !important; 
+            padding-right: 68px !important; /* 强制提升权重，加宽以容纳时间与双钩，防止文字重叠 */
         }
         /* 自己气泡的时间与已读钩钩 - 绿色时间定位到后缀保留区 */
         html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
@@ -2050,6 +2052,7 @@ html body #chat-app.layout-wechat .fa-robot {
             font-size: 11px; color: #5DB050; 
             display: block !important; border: none !important; width: auto; height: auto;
         }
+
         
         /* 输入框区域 - 白色系 */
         html body #chat-app.layout-telegram .chat-input-area { background: #FFFFFF !important; border-top: 1px solid #EAEAEA !important; padding: 8px 12px 30px !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
@@ -2440,6 +2443,56 @@ html body #chat-app.layout-wechat .fa-robot {
 
 
 
+                                 /* ========================================== */
+        /* 新增：自由定制桌面小组件专属 CSS */
+        /* ========================================== */
+        .widget { 
+            transition: width 0.3s, height 0.3s, background 0.3s, border-radius 0.3s; 
+            position: relative; overflow: hidden; 
+        }
+
+        /* 1. 音乐播放器小组件 */
+        .widget-music-player { 
+            grid-column: span 4; height: 120px; display: flex; align-items: center; gap: 15px; padding: 15px; 
+            background: rgba(255,255,255,0.15); border-radius: 22px; color: #fff; border: 0.5px solid rgba(255, 255, 255, 0.2);
+        }
+        .wg-music-cover { 
+            width: 65px; height: 65px; border-radius: 50%; 
+            background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&q=80'); 
+            background-size: cover; background-position: center; 
+            animation: spin 8s linear infinite paused; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1);
+        }
+        .wg-music-cover.playing { animation-play-state: running; }
+        .wg-music-info { flex: 1; overflow: hidden; white-space: nowrap; }
+        .wg-music-info div:nth-child(1) { font-size: 16px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); text-shadow: 0 1px 2px rgba(0,0,0,0.2);}
+        .wg-music-info div:nth-child(2) { font-size: 12px; color: var(--text-sub); margin-top: 4px; overflow: hidden; text-overflow: ellipsis;}
+        .wg-music-ctrl { display: flex; gap: 18px; font-size: 22px; color: var(--text-main); }
+        .wg-music-ctrl i { cursor: pointer; transition: transform 0.1s, color 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .wg-music-ctrl i:active { transform: scale(0.85); color: var(--accent); }
+
+        /* 2. 照片墙小组件 */
+        .widget-photo-wall { grid-column: span 2; height: 160px; padding: 0 !important; border: 0.5px solid rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 10px rgba(0,0,0,0.1);}
+        .wg-photo-img { 
+            width: 100%; height: 100%; background-color: rgba(255,255,255,0.1); 
+            background-size: cover; background-position: center; 
+            display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; color: var(--text-sub); font-size: 12px; font-weight: bold; text-align: center; line-height: 1.5;
+        }
+
+        /* 3. 日历小组件 (高级版) */
+        .widget-calendar-pro { 
+            grid-column: span 4; height: 180px; display: flex; flex-direction: column; padding: 15px; 
+            background: rgba(255,255,255,0.12); border-radius: 22px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+        }
+        .wg-cal-header { font-size: 15px; font-weight: bold; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .wg-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; flex: 1; text-align: center; }
+        .wg-cal-day { font-size: 10px; color: var(--text-sub); font-weight: bold; padding-bottom: 2px;}
+        .wg-cal-date { font-size: 13px; color: var(--text-main); display: flex; justify-content: center; align-items: center; border-radius: 8px; transition: 0.2s;}
+        .wg-cal-date.active { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+
+
+
 
                                                                                           
                                                                                           
@@ -2545,218 +2598,99 @@ html body #chat-app.layout-wechat .fa-robot {
                 </div>
             </div>
 
-                                      <!-- 支持滑动的多页桌面 -->
+                                                  <!-- 支持滑动的多页桌面 -->
             <div id="os-home" onscroll="updatePageDots()">
                 
-                <!-- ============ 第一页 ============ -->
+                <!-- ============ 第一页 (主屏核心) ============ -->
                 <div class="home-page" id="page-1">
-                    
                     <div class="widget-liquid-time" data-drag-id="liquid-time">
                         <div class="liquid-time-text" id="lq-time">00<span>:</span>00</div>
                         <div class="liquid-date-text" id="lq-date">1月1日 星期一</div>
                     </div>
 
-                    <div class="widget widget-calendar glass-effect" data-drag-id="sys-calendar">
-                        <div style="color: var(--theme-dark); font-weight: 600; font-size: 14px;" id="cal-day">星期一</div>
-                        <div style="font-size: 42px; font-weight: 300;" id="cal-date">26</div>
+                    <!-- 照片墙与天气对齐放置 -->
+                    <div class="widget widget-photo-wall glass-effect" id="wg-photo" data-drag-id="sys-wg-photo" ondblclick="openWidgetSettings('wg-photo')" title="双击自由定制样式大小">
+                        <div class="wg-photo-img" id="wg-photo-img" onclick="document.getElementById('wg-photo-upload').click()">
+                            <span id="wg-photo-hint">点击上传照片<br><span style="font-weight:normal; opacity:0.8; font-size:10px;">(双击改大小)</span></span>
+                        </div>
+                        <input type="file" id="wg-photo-upload" accept="image/*" style="display:none;" onchange="handleWidgetPhotoUpload(event)">
                     </div>
-                    
-                    <div class="widget widget-weather glass-effect" data-drag-id="sys-weather">
+
+                    <div class="widget widget-weather glass-effect" id="wg-weather" data-drag-id="sys-weather" ondblclick="openWidgetSettings('wg-weather')" style="height: 160px;">
                         <i class="fas fa-cloud-sun" style="font-size: 28px;"></i>
                         <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
                         <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
                     </div>
 
-                    <div class="widget widget-memo glass-effect" data-drag-id="sys-memo">
-                        <div class="memo-header">
-                            <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
-                            <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
-                        </div>
-                        <div id="memo-list" class="memo-list scrollable"></div>
-                    </div>
-
+                    <!-- 第一页常用 APP -->
                     <div class="app-container" onclick="openApp('memory-app')" data-drag-id="sys-memory"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(195, 180, 190, 0.1) 100%);"><i class="fas fa-book"></i></div><div class="app-label">记忆书</div></div>
                     <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
                     <div class="app-container" onclick="changeHomeWallpaper()" data-drag-id="sys-wallpaper"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
                     <div class="app-container" onclick="openApp('pomodoro-app')" data-drag-id="sys-pomo"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 215, 0.4) 0%, rgba(190, 185, 195, 0.1) 100%);"><i class="fas fa-stopwatch"></i></div><div class="app-label">番茄钟</div></div>
                     <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
                     <div class="app-container" onclick="openApp('beautify-app')" data-drag-id="sys-beauty"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);"><i class="fas fa-paint-brush"></i></div><div class="app-label">美化中心</div></div>
-                    <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
-<div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-coffee" style="color: rgba(0,0,0,0.6);"></i></div><div class="app-label">线下约会</div></div>
+                    <div class="app-container" onclick="openApp('theme-app')" data-drag-id="sys-theme"><div class="app-icon" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"><i class="fas fa-paint-roller" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">主题布局</div></div>
+                    <div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-coffee" style="color: rgba(0,0,0,0.6);"></i></div><div class="app-label">线下约会</div></div>
                 </div>
 
-                                <!-- ============ 第二页 ============ -->
+                <!-- ============ 第二页 (进阶生活) ============ -->
                 <div class="home-page" id="page-2">
-                    <div class="app-container" onclick="openApp('pet-app')" data-drag-id="sys-pet">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 225, 180, 0.4) 0%, rgba(255, 190, 160, 0.1) 100%);">
-                            <i class="fas fa-paw" style="color: rgba(255,255,255,0.95);"></i>
-                        </div>
-                        <div class="app-label">小宠物</div>
+                    <div class="widget widget-calendar-pro glass-effect" id="wg-cal" data-drag-id="sys-wg-cal" ondblclick="openWidgetSettings('wg-cal')" title="双击自由定制样式大小">
+                        <div class="wg-cal-header"><span id="wg-cal-header-month">2026年7月</span><i class="fas fa-calendar-alt"></i></div>
+                        <div class="wg-cal-grid" id="wg-cal-grid"></div>
                     </div>
 
-                    <!-- 👇新增：朋友圈图标 (移到这里) -->
-                    <div class="app-container" onclick="openApp('moments-app')" data-drag-id="sys-moments">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(34, 197, 94, 0.1) 100%);">
-                            <i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i>
+                    <div class="widget widget-music-player glass-effect" id="wg-music" data-drag-id="sys-wg-music" ondblclick="openWidgetSettings('wg-music')" title="双击自由定制样式大小">
+                        <div class="wg-music-cover" id="wg-music-cover"></div>
+                        <div class="wg-music-info">
+                            <div id="wg-music-title">未播放</div>
+                            <div id="wg-music-artist">请打开系统音乐听歌</div>
                         </div>
-                        <div class="app-label">朋友圈</div>
-                    </div>
-                    <!-- 👆新增结束 -->
-                    <!-- 👇新增：小遥控图标 -->
-
-
-
-
-
-
-
-                    <div class="app-container" onclick="openApp('remote-app')" data-drag-id="sys-remote">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.4) 0%, rgba(255, 20, 147, 0.1) 100%);">
-                            <i class="fas fa-gamepad" style="color: rgba(255,255,255,0.95);"></i>
+                        <div class="wg-music-ctrl">
+                            <i class="fas fa-step-backward" onclick="sysPrevSong(event)"></i>
+                            <i class="fas fa-play" id="wg-music-play" onclick="sysTogglePlay(event)" style="font-size:26px;"></i>
+                            <i class="fas fa-step-forward" onclick="sysNextSong(event)"></i>
                         </div>
-                        <div class="app-label">小遥控</div>
                     </div>
 
-<!-- 👇新增：查手机图标 -->
-                    <div class="app-container" onclick="openApp('snoop-app')" data-drag-id="sys-snoop">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 160, 255, 0.4) 0%, rgba(100, 100, 255, 0.1) 100%);">
-                            <i class="fas fa-mobile-alt" style="color: rgba(255,255,255,0.95);"></i>
+                    <div class="app-container" onclick="openApp('pet-app')" data-drag-id="sys-pet"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 225, 180, 0.4) 0%, rgba(255, 190, 160, 0.1) 100%);"><i class="fas fa-paw" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小宠物</div></div>
+                    <div class="app-container" onclick="openApp('moments-app')" data-drag-id="sys-moments"><div class="app-icon" style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(34, 197, 94, 0.1) 100%);"><i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">朋友圈</div></div>
+                    <div class="app-container" onclick="openApp('remote-app')" data-drag-id="sys-remote"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.4) 0%, rgba(255, 20, 147, 0.1) 100%);"><i class="fas fa-gamepad" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小遥控</div></div>
+                    <div class="app-container" onclick="openApp('snoop-app')" data-drag-id="sys-snoop"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 160, 255, 0.4) 0%, rgba(100, 100, 255, 0.1) 100%);"><i class="fas fa-mobile-alt" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">TA的手机</div></div>
+                    <div class="app-container" onclick="openApp('tieba-app')" data-drag-id="sys-tieba"><div class="app-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);"><i class="fas fa-comments" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">贴吧社区</div></div>
+                    <div class="app-container" onclick="openApp('x-app')" data-drag-id="sys-x"><div class="app-icon" style="background: #000000; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 32px; height: 32px; fill: #ffffff;"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.964H5.078z"></path></g></svg></div><div class="app-label">X (推特)</div></div>
+                    <div class="app-container" onclick="openApp('health-app')" data-drag-id="sys-health"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 99, 132, 0.4) 0%, rgba(255, 154, 158, 0.1) 100%);"><i class="fas fa-heartbeat" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">健康监测</div></div>
+                    <div class="app-container" onclick="openApp('draw-app')" data-drag-id="sys-draw"><div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">生图</div></div>
+                </div>
+
+                <!-- ============ 第三页 (应用与工具) ============ -->
+                <div class="home-page" id="page-3">
+                    <div class="widget widget-memo glass-effect" id="wg-memo" data-drag-id="sys-memo" ondblclick="openWidgetSettings('wg-memo')">
+                        <div class="memo-header">
+                            <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
+                            <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
                         </div>
-                        <div class="app-label">TA的手机</div>
+                        <div id="memo-list" class="memo-list scrollable"></div>
                     </div>
-
-<!-- 👇新增：贴吧社区图标 -->
-<div class="app-container" onclick="openApp('tieba-app')" data-drag-id="sys-tieba">
-    <div class="app-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);">
-        <i class="fas fa-comments" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">贴吧社区</div>
-</div>
-
-<!-- 👇新增：X(推特) 图标 -->
-<div class="app-container" onclick="openApp('x-app')" data-drag-id="sys-x">
-    <div class="app-icon" style="background: #000000; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-        <!-- 还原真实的 X logo -->
-        <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 32px; height: 32px; fill: #ffffff;"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.964H5.078z"></path></g></svg>
-    </div>
-    <div class="app-label">X (推特)</div>
-</div>
-
-                                           <!-- 👇新增：健康报告图标 -->
-                    <div class="app-container" onclick="openApp('health-app')" data-drag-id="sys-health">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 99, 132, 0.4) 0%, rgba(255, 154, 158, 0.1) 100%);">
-                            <i class="fas fa-heartbeat" style="color: rgba(255,255,255,0.95);"></i>
-                        </div>
-                        <div class="app-label">健康监测</div>
-                    </div>
-
-                          
-<!-- 👇新增：主题布局App图标 -->
-<div class="app-container" onclick="openApp('theme-app')" data-drag-id="sys-theme">
-    <div class="app-icon" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);">
-        <i class="fas fa-paint-roller" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">主题布局</div>
-</div>
-
-                                             <!-- 👇新增：生图App图标 -->
-                    <div class="app-container" onclick="openApp('draw-app')" data-drag-id="sys-draw">
-                        <div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
-                            <i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i>
-                        </div>
-                        <div class="app-label">生图</div>
-                    </div>
-
-                                                                  <!-- 👇新增：小说阅读图标 -->
-                    <div class="app-container" onclick="openApp('novel-app')" data-drag-id="sys-novel">
-                        <div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                            <i class="fas fa-book-reader" style="color: rgba(255,255,255,0.95);"></i>
-                        </div>
-                        <div class="app-label">小说</div>
-                    </div>
-
-
-                                        <!-- 👇新增：知乎 App 图标 -->
-                    <div class="app-container" onclick="openApp('zhihu-app')" data-drag-id="sys-zhihu">
-                        <div class="app-icon" style="background: #0084FF; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.4);">
-                            <i class="fab fa-zhihu" style="color: #ffffff; font-size: 32px;"></i>
-                        </div>
-                        <div class="app-label">知乎</div>
-                    </div>
-
-                                                                                                              <!-- 👇新增：家庭空间图标 -->
-                    <div class="app-container" onclick="openApp('home-app')" data-drag-id="sys-home">
-                        <div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 200, 150, 0.4) 0%, rgba(255, 150, 100, 0.1) 100%);">
-                            <i class="fas fa-home" style="color: rgba(255,255,255,0.95);"></i>
-                        </div>
-                        <div class="app-label">家庭空间</div>
-                    </div>
-
-
-                               <!-- 👇新增：屏幕使用时间(防沉迷) 图标 -->
-<div class="app-container" onclick="openApp('screentime-app')" data-drag-id="sys-screentime">
-    <div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-chart-pie" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">屏幕时间</div>
-</div>
-
-                               <!-- 👇新增：关系网图标 -->
-<div class="app-container" onclick="openApp('relation-app')" data-drag-id="sys-relation">
-    <div class="app-icon" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
-        <i class="fas fa-project-diagram" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">关系网</div>
-</div>
-
-                               <!-- 👇新增：群聊大厅图标 -->
-<div class="app-container" onclick="openApp('group-chat-app')" data-drag-id="sys-groupchat">
-    <div class="app-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
-        <i class="fas fa-users" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">群聊</div>
-</div>
-
-                        <!-- 👇新增：IF线剧场图标 -->
-<div class="app-container" onclick="openApp('if-theater-app')" data-drag-id="sys-iftheater">
-    <div class="app-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-theater-masks" style="color: rgba(255,255,255,0.95);"></i>
-    </div>
-    <div class="app-label">IF剧场</div>
-</div>
- 
-
-
-
-
-
-
-
-                                              
-
-
-                                              
-
-
-
-
-
-
-
-
+                    
+                    <div class="app-container" onclick="openApp('novel-app')" data-drag-id="sys-novel"><div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-book-reader" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小说</div></div>
+                    <div class="app-container" onclick="openApp('zhihu-app')" data-drag-id="sys-zhihu"><div class="app-icon" style="background: #0084FF; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.4);"><i class="fab fa-zhihu" style="color: #ffffff; font-size: 32px;"></i></div><div class="app-label">知乎</div></div>
+                    <div class="app-container" onclick="openApp('home-app')" data-drag-id="sys-home"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 200, 150, 0.4) 0%, rgba(255, 150, 100, 0.1) 100%);"><i class="fas fa-home" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">家庭空间</div></div>
+                    <div class="app-container" onclick="openApp('screentime-app')" data-drag-id="sys-screentime"><div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-chart-pie" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">屏幕时间</div></div>
+                    <div class="app-container" onclick="openApp('relation-app')" data-drag-id="sys-relation"><div class="app-icon" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);"><i class="fas fa-project-diagram" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">关系网</div></div>
+                    <div class="app-container" onclick="openApp('group-chat-app')" data-drag-id="sys-groupchat"><div class="app-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);"><i class="fas fa-users" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">群聊</div></div>
+                    <div class="app-container" onclick="openApp('if-theater-app')" data-drag-id="sys-iftheater"><div class="app-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-theater-masks" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">IF剧场</div></div>
+                    <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
                 </div>
             </div>
-
-                    
-
-
-                                      
 
             <!-- 滑动页面指示器 -->
             <div class="page-dots" id="home-page-dots">
                 <div class="dot active"></div>
                 <div class="dot"></div>
+                <div class="dot"></div>
             </div>
+
 
             <!-- 底部 Dock 栏必须移出滑动区，固定在底部 -->
             <div class="dock glass-effect">
@@ -3613,6 +3547,42 @@ html body #chat-app.layout-wechat .fa-robot {
                 </div>
             </div>
 
+                              <!-- 👇 新增：组件自由修改定制弹窗 -->
+<div id="widget-settings-modal" class="modal-overlay" style="z-index: 6500;">
+    <div class="modal-content">
+        <div class="modal-header"><span onclick="closeWidgetSettings()" style="cursor:pointer; color:var(--text-sub);">取消</span><span>小组件样式定制</span><span style="opacity: 0;">空</span></div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">组件宽度 (网格占位)</span>
+            <select id="wg-set-width" class="setting-select">
+                <option value="span 1">1 列 (超窄)</option>
+                <option value="span 2">2 列 (正方形/占半行)</option>
+                <option value="span 3">3 列 (占一大半)</option>
+                <option value="span 4">4 列 (长方形/占整行)</option>
+            </select>
+        </div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">组件高度: <span id="val-wg-height" style="color:var(--accent)">120</span>px</span>
+            <input type="range" min="60" max="350" step="5" value="120" id="wg-set-height" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-height').innerText=this.value">
+        </div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">背景颜色</span>
+            <input type="color" id="wg-set-bg" value="#ffffff" style="width: 100%; height: 40px; border:none; background:transparent;">
+        </div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">背景透明度: <span id="val-wg-opacity" style="color:var(--accent)">0.15</span></span>
+            <input type="range" min="0" max="1" step="0.05" value="0.15" id="wg-set-opacity" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-opacity').innerText=this.value">
+        </div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">边框圆角: <span id="val-wg-radius" style="color:var(--accent)">22</span>px</span>
+            <input type="range" min="0" max="50" step="1" value="22" id="wg-set-radius" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-radius').innerText=this.value">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <div class="modal-btn" style="flex:1;" onclick="applyWidgetSettings()"><i class="fas fa-check"></i> 保存并应用</div>
+            <div class="modal-btn" style="flex:0.5; background:#ff453a; color:#fff;" onclick="hideCurrentWidget()">隐藏组件</div>
+        </div>
+    </div>
+</div>
+
                                                                                           
 
 
@@ -3659,6 +3629,9 @@ html body #chat-app.layout-wechat .fa-robot {
                     </div>
                 </div>
             </div>
+
+                              
+
 
 
 
@@ -7930,12 +7903,11 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         applyAssistiveState();
     });
 
-    // ==========================================
-    // 主屏幕 APP 与小组件长按自由拖拽排序 (究极稳定版)
+            // ==========================================
+    // 主屏幕 APP 与小组件长按自由拖拽排序 (极致流畅无卡顿版)
     // ==========================================
 
-
-        // 监听滑动，更新指示器
+    // 监听滑动，更新指示器
     function updatePageDots() {
         const home = document.getElementById('os-home');
         if(!home) return;
@@ -7943,16 +7915,6 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         const dots = document.querySelectorAll('#home-page-dots .dot');
         dots.forEach((dot, i) => { dot.classList.toggle('active', i === pageIndex); });
     }
-
-
-
-
-
-
-
-
-
-
 
     function initHomeDragAndDrop() {
         const container = document.getElementById('os-home');
@@ -7962,24 +7924,32 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
         let dragTimer = null;
         let offsetX = 0, offsetY = 0, startX = 0, startY = 0;
         let isDragging = false, hasDragged = false;
+         let lastSwapTime = 0; // 👇 新增：网格跳跃冷却时间
+        const pages = Array.from(container.querySelectorAll('.home-page'));
 
-        // 1. 初始化 ID
-        const items = Array.from(container.children).filter(el => !el.classList.contains('dock') && !el.classList.contains('home-bar'));
-        items.forEach((child, i) => {
-            if (!child.dataset.dragId) child.dataset.dragId = 'home-item-' + i;
+        // 1. 分配 ID 和恢复顺序
+        pages.forEach((page, pIndex) => {
+            Array.from(page.children).forEach((child, i) => {
+                if (!child.dataset.dragId) child.dataset.dragId = `page-${pIndex}-item-${i}`;
+            });
         });
 
-        // 2. 恢复顺序
-        const savedOrder = JSON.parse(localStorage.getItem('ai_os_home_order'));
-        if (savedOrder) {
-            const dock = container.querySelector('.dock');
-            savedOrder.forEach(id => {
-                const el = container.querySelector(`[data-drag-id="${id}"]`);
-                if (el && dock) container.insertBefore(el, dock);
-            });
-        }
+        try {
+            const savedOrder = JSON.parse(localStorage.getItem('ai_os_home_pages_order'));
+            if (savedOrder) {
+                for (const pageId in savedOrder) {
+                    const page = document.getElementById(pageId);
+                    if (page) {
+                        savedOrder[pageId].forEach(id => {
+                            const el = container.querySelector(`[data-drag-id="${id}"]`);
+                            if (el) page.appendChild(el);
+                        });
+                    }
+                }
+            }
+        } catch (e) { }
 
-        // 3. 拦截点击防误触
+        // 防止拖拽结束立即触发点击
         container.addEventListener('click', function(e) {
             if (hasDragged) {
                 e.preventDefault();
@@ -7987,22 +7957,28 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             }
         }, true);
 
-        // 4. 绑定事件
         container.addEventListener('touchstart', handleStart, { passive: false });
         container.addEventListener('mousedown', handleStart);
         
-        // 挂载到 window 保证拖动到边缘时事件不丢失
         window.addEventListener('touchmove', handleMove, { passive: false });
         window.addEventListener('mousemove', handleMove);
         window.addEventListener('touchend', handleEnd);
         window.addEventListener('mouseup', handleEnd);
+                        window.addEventListener('touchcancel', handleEnd);
+        // 🚨 致命错误修复：绝对不能在这里调用 handleEnd()！否则手机长按时会瞬间切断拖拽导致拖不动！
+        container.addEventListener('contextmenu', (e) => { 
+            e.preventDefault(); 
+        });
+
+
 
         function handleStart(e) {
             const target = e.target.closest('.widget, .app-container');
-            if (!target || target.closest('.dock') || target.classList.contains('dock')) return;
+            if (!target || target.closest('.dock')) return; 
             
-            // 排除交互元素与鼠标右键
-            if (['I', 'INPUT', 'BUTTON', 'TEXTAREA'].includes(e.target.tagName)) return;
+            // 排除交互控件和内部操作区域，防止无法点击组件内部的按钮
+            if (['I', 'INPUT', 'BUTTON', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return; 
+            if (e.target.closest('.wg-music-ctrl') || e.target.closest('.memo-checkbox') || e.target.closest('.wg-cal-grid') || e.target.closest('.memo-header') || e.target.closest('.wg-photo-img')) return; 
             if (e.button === 2) return;
 
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -8014,8 +7990,9 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             hasDragged = false;
 
             clearTimeout(dragTimer);
-            // 长按 350ms 触发，加入震动反馈
+            
             dragTimer = setTimeout(() => {
+                if (isDragging) return;
                 isDragging = true;
                 hasDragged = true;
                 dragItem = target;
@@ -8024,10 +8001,23 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                 offsetX = clientX - rect.left;
                 offsetY = clientY - rect.top;
 
-                placeholder = document.createElement('div');
+                // 🚨核心修复：切断滚动吸附机制，彻底防止冲突卡死浏览器引擎
+                container.style.scrollSnapType = 'none';
+                container.style.scrollBehavior = 'auto';
+
+                                                placeholder = document.createElement('div');
                 placeholder.className = target.className;
+                // 👇 恢复 iOS 原生的完美隐形空隙，并关闭碰撞体积，任凭手指滑动吸附
                 placeholder.style.visibility = 'hidden';
-                container.insertBefore(placeholder, target);
+                placeholder.style.opacity = '0';
+                placeholder.style.pointerEvents = 'none';
+                
+                placeholder.style.gridColumn = window.getComputedStyle(target).gridColumn;
+                placeholder.style.height = rect.height + 'px';
+
+
+                
+                target.parentNode.insertBefore(placeholder, target);
 
                 cloneEl = target.cloneNode(true);
                 cloneEl.style.position = 'fixed';
@@ -8036,11 +8026,11 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                 cloneEl.style.width = rect.width + 'px';
                 cloneEl.style.height = rect.height + 'px';
                 cloneEl.style.zIndex = '999999';
-                cloneEl.style.pointerEvents = 'none';
+                cloneEl.style.pointerEvents = 'none'; // 核心：开启鼠标穿透，使得抓取下方元素零误差
                 cloneEl.style.transform = 'scale(1.05)';
                 cloneEl.style.opacity = '0.9';
-                cloneEl.style.transition = 'transform 0.2s';
-                cloneEl.style.boxShadow = '0 15px 30px rgba(0,0,0,0.5)';
+                cloneEl.style.transition = 'none'; // 核心：拖动时切断过渡动画，避免延迟拖尾卡顿
+                cloneEl.style.margin = '0';
                 
                 document.body.appendChild(cloneEl);
                 target.style.display = 'none';
@@ -8054,43 +8044,59 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
             if (!isDragging) {
-                // 防抖核心：如果移动距离超过 10px，判定为真实滑动屏幕，取消长按拖拽
+                // 如果用户没有长按够时间就开始滑动（翻页），取消拖拽监听
                 if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
                     clearTimeout(dragTimer);
                 }
                 return;
             }
 
-            e.preventDefault(); // 拖拽中阻止屏幕滚动
+            e.preventDefault(); // 阻断系统默认滚动，由 JS 强制接管
             
             cloneEl.style.left = (clientX - offsetX) + 'px';
             cloneEl.style.top = (clientY - offsetY) + 'px';
 
-            const elements = document.elementsFromPoint(clientX, clientY);
-            if (!elements) return;
-            
-            const dropTarget = elements.find(el => 
-                (el.classList.contains('widget') || el.classList.contains('app-container')) && 
-                !el.closest('.dock') && 
-                el !== cloneEl && 
-                el !== placeholder
-            );
+            // 边缘自动跨页滚动
+            const edgeThreshold = 40;
+            if (clientX < edgeThreshold) {
+                container.scrollLeft -= 15;
+            } else if (clientX > window.innerWidth - edgeThreshold) {
+                container.scrollLeft += 15;
+            }
 
-            if (dropTarget && placeholder) {
+            // 核心性能修复：使用更高性能的单层点穿透 API
+            const targetEl = document.elementFromPoint(clientX, clientY);
+            if (!targetEl) return;
+            
+            const dropTarget = targetEl.closest('.widget, .app-container');
+            const targetPage = targetEl.closest('.home-page');
+
+                        // 👇 新增：加入 150ms 空间重排冷却阻尼，彻底终结在两个图标边缘游走时疯狂来回闪烁跳跃的 BUG
+            if (Date.now() - lastSwapTime < 150) return;
+
+            if (dropTarget && !dropTarget.closest('.dock') && dropTarget !== placeholder) {
                 const rect = dropTarget.getBoundingClientRect();
-                const isAfter = (clientY > rect.top + rect.height / 2) || (clientX > rect.left + rect.width / 2 && clientY > rect.top);
+                // 👇 将感应核心面积调宽至 0.6，必须真切地拖入它的大半个领地，它才会给你让出坑位
+                const isAfter = (clientY > rect.top + rect.height * 0.6) || 
+                               (Math.abs(clientY - (rect.top + rect.height/2)) < rect.height/2 && clientX > rect.left + rect.width * 0.6);
                 
                 if (isAfter) {
-                    if (dropTarget.nextSibling && !dropTarget.nextSibling.classList.contains('dock')) {
-                        container.insertBefore(placeholder, dropTarget.nextSibling);
+                    if (dropTarget.nextSibling) {
+                        dropTarget.parentNode.insertBefore(placeholder, dropTarget.nextSibling);
                     } else {
-                        const dock = container.querySelector('.dock');
-                        container.insertBefore(placeholder, dock);
+                        dropTarget.parentNode.appendChild(placeholder);
                     }
                 } else {
-                    container.insertBefore(placeholder, dropTarget);
+                    dropTarget.parentNode.insertBefore(placeholder, dropTarget);
+                }
+                lastSwapTime = Date.now(); // 记录本次跳跃时间
+            } else if (targetPage && placeholder) {
+                if (targetPage.lastElementChild !== placeholder && !targetPage.contains(dropTarget)) {
+                     targetPage.appendChild(placeholder);
+                     lastSwapTime = Date.now();
                 }
             }
+
         }
 
         function handleEnd() {
@@ -8099,14 +8105,16 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             
             isDragging = false;
             
-            // 松手时的丝滑吸附动画
             if (placeholder && dragItem && cloneEl) {
                 const rect = placeholder.getBoundingClientRect();
                 cloneEl.style.transition = 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 cloneEl.style.left = rect.left + 'px';
                 cloneEl.style.top = rect.top + 'px';
                 cloneEl.style.transform = 'scale(1)';
-                cloneEl.style.boxShadow = 'none';
+
+                // 核心修复：松手后必须把滚动吸附交还给 CSS
+                container.style.scrollSnapType = 'x mandatory';
+                container.style.scrollBehavior = 'smooth';
 
                 setTimeout(() => {
                     if(dragItem && placeholder && placeholder.parentNode) {
@@ -8118,22 +8126,28 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
 
                     dragItem = null; placeholder = null; cloneEl = null;
 
-                    // 持久化保存
-                    const order = Array.from(container.children)
-                        .filter(el => el.dataset.dragId)
-                        .map(el => el.dataset.dragId);
-                    localStorage.setItem('ai_os_home_order', JSON.stringify(order));
+                    const orderData = {};
+                    pages.forEach(page => {
+                        orderData[page.id] = Array.from(page.children)
+                            .filter(el => el.dataset.dragId)
+                            .map(el => el.dataset.dragId);
+                    });
+                    localStorage.setItem('ai_os_home_pages_order', JSON.stringify(orderData));
                     
-                    // 延迟解除防误触锁定
+                    // 防误触保护锁
                     setTimeout(() => { hasDragged = false; }, 50);
                 }, 200);
             } else {
                 hasDragged = false;
+                container.style.scrollSnapType = 'x mandatory';
+                container.style.scrollBehavior = 'smooth';
             }
         }
     }
 
     setTimeout(initHomeDragAndDrop, 500);
+
+
 
        // ==========================================
     // 新增：用户更新状态功能
@@ -11911,6 +11925,215 @@ async function generateIfComments() {
         toggleToolsPanel();
         addMessageToUI('system', '🧹 对话已彻底清空，TA 的短期记忆已重置。');
     }
+
+
+
+        // ==========================================
+    // 👑 桌面小组件系统 (音乐、日历、照片墙、样式定制)
+    // ==========================================
+
+    // --- 1. 小组件音乐联动补丁 ---
+    window.sysTogglePlay = function(e) { if(e) e.stopPropagation(); togglePlay(); };
+    window.sysNextSong = function(e) { if(e) e.stopPropagation(); nextSong(); };
+    window.sysPrevSong = function(e) { if(e) e.stopPropagation(); prevSong(); };
+
+    // 用切片方式补全对桌面音乐小组件的同频刷新
+    const _originalSyncAllMusicWidgets = syncAllMusicWidgets;
+    syncAllMusicWidgets = async function() {
+        if(typeof _originalSyncAllMusicWidgets === 'function') await _originalSyncAllMusicWidgets();
+        
+        const isPlaying = !document.getElementById('audio-player').paused;
+        const s = songs[currentSongIdx];
+        let coverMap = JSON.parse(localStorage.getItem('ai_os_music_covers') || '{}');
+        let finalCover = coverMap[s.title] || s.cover;
+        if (finalCover.startsWith('idb://')) {
+            finalCover = await getImageFromDB(finalCover.replace('idb://', '')) || s.cover;
+        }
+        
+        // 渲染桌面音乐组件
+        const wgCover = document.getElementById('wg-music-cover');
+        if(wgCover) {
+            wgCover.style.backgroundImage = `url('${finalCover}')`;
+            if(isPlaying) wgCover.classList.add('playing'); else wgCover.classList.remove('playing');
+        }
+        const wgTitle = document.getElementById('wg-music-title');
+        if(wgTitle) wgTitle.innerText = s.title;
+        const wgArtist = document.getElementById('wg-music-artist');
+        if(wgArtist) wgArtist.innerText = s.artist;
+        const wgPlay = document.getElementById('wg-music-play');
+        if(wgPlay) wgPlay.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+    };
+
+    // --- 2. 照片墙上传与渲染逻辑 ---
+    async function handleWidgetPhotoUpload(e) {
+        if(e) e.stopPropagation();
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.max(img.width, img.height);
+                if (size > 1000) size = 1000;
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                // 居中智能裁切
+                const offsetX = (img.width - Math.min(img.width, img.height)) / 2;
+                const offsetY = (img.height - Math.min(img.width, img.height)) / 2;
+                ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                
+                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+                const imgId = 'wg_photo_' + Date.now();
+                await saveImageToDB(imgId, base64Url);
+                localStorage.setItem('ai_os_wg_photo', 'idb://' + imgId);
+                
+                renderWidgetPhoto();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    function renderWidgetPhoto() {
+        const savedPhoto = localStorage.getItem('ai_os_wg_photo');
+        if(savedPhoto) {
+            const imgDiv = document.getElementById('wg-photo-img');
+            const hint = document.getElementById('wg-photo-hint');
+            if (savedPhoto.startsWith('idb://')) {
+                getImageFromDB(savedPhoto.replace('idb://', '')).then(r => {
+                    if(r && imgDiv) {
+                        imgDiv.style.backgroundImage = `url('${r}')`;
+                        if(hint) hint.style.display = 'none';
+                    }
+                });
+            }
+        }
+    }
+
+    // --- 3. 高级日历渲染逻辑 ---
+    function renderWidgetCalendarPro() {
+        const grid = document.getElementById('wg-cal-grid');
+        if(!grid) return;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const date = now.getDate();
+        const elMonth = document.getElementById('wg-cal-header-month');
+        if(elMonth) elMonth.innerText = `${year}年 ${month + 1}月`;
+        
+        let html = '<div class="wg-cal-day">日</div><div class="wg-cal-day">一</div><div class="wg-cal-day">二</div><div class="wg-cal-day">三</div><div class="wg-cal-day">四</div><div class="wg-cal-day">五</div><div class="wg-cal-day">六</div>';
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div class="wg-cal-date"></div>`;
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            html += `<div class="wg-cal-date ${i === date ? 'active' : ''}">${i}</div>`;
+        }
+        grid.innerHTML = html;
+    }
+
+    // --- 4. 小组件自由定制大小与样式逻辑 ---
+    let currentEditingWidgetId = null;
+    let widgetCustomStyles = JSON.parse(localStorage.getItem('ai_os_widget_styles')) || {};
+
+    // 双击任意组件触发该函数
+    window.openWidgetSettings = function(id) {
+        currentEditingWidgetId = id;
+        const wg = document.getElementById(id);
+        if(!wg) return;
+        
+        const saved = widgetCustomStyles[id] || {};
+        
+        // 抓取回显宽度
+        const currentGridCol = saved.width || window.getComputedStyle(wg).gridColumnStart || 'span 4';
+        const wSelect = document.getElementById('wg-set-width');
+        for(let i=0; i<wSelect.options.length; i++) {
+            if(currentGridCol.includes(wSelect.options[i].value)) wSelect.selectedIndex = i;
+        }
+
+        // 回显高度
+        const hStr = saved.height || wg.clientHeight + 'px';
+        document.getElementById('wg-set-height').value = parseInt(hStr);
+        document.getElementById('val-wg-height').innerText = parseInt(hStr);
+        
+        // 回显色彩圆角
+        document.getElementById('wg-set-bg').value = saved.bgColor || '#ffffff';
+        document.getElementById('wg-set-opacity').value = saved.opacity !== undefined ? saved.opacity : 0.15;
+        document.getElementById('val-wg-opacity').innerText = saved.opacity !== undefined ? saved.opacity : 0.15;
+        
+        document.getElementById('wg-set-radius').value = saved.radius !== undefined ? parseInt(saved.radius) : 22;
+        document.getElementById('val-wg-radius').innerText = saved.radius !== undefined ? parseInt(saved.radius) : 22;
+
+        document.getElementById('widget-settings-modal').style.display = 'flex';
+    };
+
+    window.closeWidgetSettings = function() {
+        document.getElementById('widget-settings-modal').style.display = 'none';
+        currentEditingWidgetId = null;
+    };
+
+    window.applyWidgetSettings = function() {
+        if(!currentEditingWidgetId) return;
+        
+        const width = document.getElementById('wg-set-width').value;
+        const height = document.getElementById('wg-set-height').value + 'px';
+        const bgColor = document.getElementById('wg-set-bg').value;
+        const opacity = document.getElementById('wg-set-opacity').value;
+        const radius = document.getElementById('wg-set-radius').value + 'px';
+
+        widgetCustomStyles[currentEditingWidgetId] = { width, height, bgColor, opacity, radius, hidden: false };
+        localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+
+        applySingleWidgetStyle(currentEditingWidgetId);
+        closeWidgetSettings();
+    };
+
+    window.hideCurrentWidget = function() {
+        if(!currentEditingWidgetId) return;
+        const c = confirm("隐藏后，如果你想找回，需要清除浏览器缓存重置系统！确定要隐藏吗？");
+        if(c) {
+            widgetCustomStyles[currentEditingWidgetId] = widgetCustomStyles[currentEditingWidgetId] || {};
+            widgetCustomStyles[currentEditingWidgetId].hidden = true;
+            localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+            applySingleWidgetStyle(currentEditingWidgetId);
+            closeWidgetSettings();
+        }
+    };
+
+    function applySingleWidgetStyle(id) {
+        const wg = document.getElementById(id);
+        const saved = widgetCustomStyles[id];
+        if(!wg || !saved) return;
+
+        if(saved.hidden) { wg.style.display = 'none'; return; } 
+        else { wg.style.display = 'flex'; }
+
+        if(saved.width) wg.style.gridColumn = saved.width;
+        if(saved.height) wg.style.height = saved.height;
+        if(saved.radius) wg.style.borderRadius = saved.radius;
+        if(saved.bgColor && saved.opacity !== undefined) {
+            // 用最高优先级强制覆盖默认样式
+            wg.style.setProperty('background', hexToRgba(saved.bgColor, saved.opacity), 'important');
+        }
+    }
+
+    // 5. 初始化所有小组件
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            // 1. 挂载记忆保存过的形状、大小和样式
+            for(let id in widgetCustomStyles) { applySingleWidgetStyle(id); }
+            // 2. 渲染新组件内部数据
+            renderWidgetPhoto();
+            renderWidgetCalendarPro();
+        }, 500);
+    });
+
 
 
 
