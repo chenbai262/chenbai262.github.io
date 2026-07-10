@@ -26,224 +26,106 @@
     <style>
     
 
-        /* --- 全局与主题配色 (深度 iOS 毛玻璃化) --- */
-       /* --- 1. 全局美化动态变量 --- */
-:root {
-    /* 基础主题色 */
-    --theme-light: #BDCBD2;
-    --theme-mid: #87C0CA;
-    --theme-dark: #66889E;
-    --app-bg: #000;
-    --screen-bg: url('https://img.cdn1.vip/i/6a1284e8521ce_1779598568.webp');
-    --accent: #87C0CA;
+                        /* --- 全局与主题配色 (新拟态 Neumorphism 底层基座) --- */
+        :root {
+            /* 1. 新拟态基础变量 (默认浅色模式) */
+            --neu-bg: #e0e5ec;
+            --neu-shadow-dark: #b8bcc2;
+            --neu-shadow-light: #ffffff;
+            --neu-accent: #6d5dfc;
+            
+            /* 2. 映射系统原有变量 */
+            --theme-light: #f0f0f3;
+            --theme-mid: #b8bcc2;
+            --theme-dark: #333333;
+            --accent: var(--neu-accent);
+            --app-bg: var(--neu-bg);
+            --screen-bg: var(--neu-bg); /* 默认纯色背景，可被壁纸覆盖 */
+            
+            --bg-base: var(--neu-bg);
+            --bg-panel: var(--neu-bg);
+            --bg-glass: var(--neu-bg);
+            --bg-glass-header: var(--neu-bg);
+            --text-main: #333333;
+            --text-sub: #6b7280;
+            --border-color: transparent; /* 拟态不需要实线边框 */
+            --input-bg: var(--neu-bg);
+            --chat-bg: var(--neu-bg);
+            --chat-overlay: transparent;
+            --modal-bg: var(--neu-bg);
 
-    /* 动态控制变量 (由美化中心控制) */
-    --ui-icon-radius: 20px;
-    --ui-glass-blur: 25px;
-    --ui-icon-scale: 1;
-    --ui-bubble-radius: 20px;
-    --ui-bubble-opacity: 1;
-    --ui-grid-gap: 15px;
-    --ui-dock-height: 90px;
-    --ui-time-size: 72px; /* 👈 新增：液态时间组件的基础数字大小 */
-    --ui-time-height: 140px; /* 👈 新增：液态时间组件的外框高度 */
+            /* 3. 新拟态物理阴影引擎 */
+            --shadow-raised: 8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light);
+            --shadow-raised-sm: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+            --shadow-pressed: inset 8px 8px 16px var(--neu-shadow-dark), inset -8px -8px 16px var(--neu-shadow-light);
+            --shadow-pressed-sm: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light);
 
-    /* ！！！缺失的深色模式核心变量补回 ！！！ */
-    --bg-base: #121212;
-    --bg-panel: rgba(28, 28, 30, 0.7);
-    --bg-glass: rgba(20, 20, 22, 0.55);
-    --bg-glass-header: rgba(20, 20, 22, 0.75);
-    --text-main: #ffffff;
-    --text-sub: #8e8e93;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --input-bg: rgba(255, 255, 255, 0.08);
-    --chat-bg: #121212;
-    --chat-overlay: rgba(0, 0, 0, 0.4);
-    --modal-bg: rgba(28, 28, 30, 0.95);
-}
-
-
-/* --- 2. 核心类名引用变量 --- */
-/* 图标样式引用 */
-/* --- 修复后的核心类名引用 --- */
-
-/* 图标样式：确保变量生效 */
-.app-icon { 
-    width: 62px; height: 62px; display: flex !important; align-items: center; justify-content: center; 
-    border-radius: var(--ui-icon-radius, 20px) !important; /* 强制覆盖 */
-    transform: scale(var(--ui-icon-scale, 1)) !important;
-    backdrop-filter: blur(var(--ui-glass-blur, 25px)) saturate(120%) !important;
-    -webkit-backdrop-filter: blur(var(--ui-glass-blur, 25px)) saturate(120%) !important;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-/* 气泡样式：修复圆角写死的问题 */
-.msg { 
-    padding: 12px 16px; 
-    border-radius: var(--ui-bubble-radius, 20px) !important; /* 全局圆角变量 */
-    opacity: var(--ui-bubble-opacity, 0.92) !important;
-    transition: all 0.2s ease;
-}
+                        /* UI 默认尺寸 */
+            --ui-icon-radius: 16px;
+            --ui-glass-blur: 0px; /* 默认无模糊 */
+            --ui-icon-scale: 0.85; /* 👈 图标默认缩小为 85% */
+            --ui-bubble-radius: 16px;
+            --ui-bubble-opacity: 1;
+            --ui-grid-gap: 15px; /* 👈 网格间距稍微收紧 */
+            --ui-dock-height: 90px;
+            --ui-time-size: 56px; /* 👈 时间字体等比缩小 */
+            --ui-time-height: 110px; /* 👈 时间组件高度缩小 */
+            --ui-time-weight: 700;
 
 
-
-/* 提示交互样式：保存成功后的 Toast */
-.beauty-toast {
-    position: absolute; top: 120px; left: 50%; transform: translateX(-50%);
-    background: var(--accent); color: #000; padding: 8px 20px;
-    border-radius: 20px; font-weight: bold; font-size: 13px;
-    z-index: 5001; display: none; animation: toastFade 1.5s forwards;
-}
-@keyframes toastFade {
-    0% { opacity: 0; transform: translate(-50%, 20px); }
-    20% { opacity: 1; transform: translate(-50%, 0); }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-
-/* 布局间距引用 */
-#os-home { 
-    padding: 68px 20px 20px; display: grid; 
-    grid-template-columns: repeat(4, 1fr); 
-    gap: var(--ui-grid-gap) !important; /* 引用变量 */
-    height: 100%; align-content: start; background: transparent !important; 
-}
-
-
-/* Dock 栏高度引用 */
-.dock { 
-    position: absolute; bottom: 35px; left: 15px; right: 15px; 
-    height: var(--ui-dock-height) !important; /* 引用变量 */
-    background: rgba(255,255,255,0.15); border-radius: 35px; 
-    display: flex; justify-content: space-around; align-items: center; 
-}
-
+        :root.dark-mode {
+            --neu-bg: #1a1b1e;
+            --neu-shadow-dark: #121315;
+            --neu-shadow-light: #222327;
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+        }
 
         :root.light-mode {
-            --bg-base: #f2f2f7;
-            --bg-panel: rgba(255, 255, 255, 0.8);
-            --bg-glass: rgba(250, 250, 250, 0.65);
-            --bg-glass-header: rgba(250, 250, 250, 0.85);
-            --text-main: #000000;
-            --text-sub: #666666;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --input-bg: rgba(0, 0, 0, 0.05);
-            --chat-bg: #e5e5ea;
-            --chat-overlay: rgba(255, 255, 255, 0.3);
-            --modal-bg: rgba(255, 255, 255, 0.95);
+            --neu-bg: #e0e5ec;
+            --neu-shadow-dark: #b8bcc2;
+            --neu-shadow-light: #ffffff;
+            --text-main: #333333;
+            --text-sub: #6b7280;
         }
 
-        /* --- 新增的三种主题配色 --- */
-        
-        /* 1. 原先的莫兰迪配色 */
         :root.morandi-mode {
-            --theme-light: #BDCBD2;
-            --theme-mid: #87C0CA;
-            --theme-dark: #66889E;
+            --neu-bg: #d1d9e0;
+            --neu-shadow-dark: #b2bac1;
+            --neu-shadow-light: #f0f8ff;
             --accent: #87C0CA;
-            --bg-base: #1C1C1E;
-            --bg-panel: rgba(44, 44, 46, 0.7);
-            --bg-glass: rgba(28, 28, 30, 0.55);
-            --bg-glass-header: rgba(28, 28, 30, 0.75);
-            --text-main: #F2F2F7;
-            --text-sub: #AEAEB2;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --input-bg: rgba(255, 255, 255, 0.08);
-            --chat-bg: #121212;
-            --chat-overlay: rgba(0, 0, 0, 0.4);
-            --modal-bg: rgba(28, 28, 30, 0.95);
+            --text-main: #4a5568;
+            --text-sub: #718096;
         }
 
-        /* 2. 黑白灰高级配色 */
         :root.monochrome-mode {
-            --theme-light: #D4D4D4;
-            --theme-mid: #888888;
-            --theme-dark: #333333;
-            --accent: #E0E0E0;
-            --bg-base: #0D0D0D;
-            --bg-panel: rgba(30, 30, 30, 0.8);
-            --bg-glass: rgba(20, 20, 20, 0.6);
-            --bg-glass-header: rgba(20, 20, 20, 0.85);
-            --text-main: #F5F5F5;
-            --text-sub: #9E9E9E;
-            --border-color: rgba(255, 255, 255, 0.15);
-            --input-bg: rgba(255, 255, 255, 0.1);
-            --chat-bg: #111111;
-            --chat-overlay: rgba(0, 0, 0, 0.6);
-            --modal-bg: rgba(15, 15, 15, 0.98);
+            --neu-bg: #2d2d2d;
+            --neu-shadow-dark: #1f1f1f;
+            --neu-shadow-light: #3b3b3b;
+            --accent: #e5e7eb;
+            --text-main: #f3f4f6;
+            --text-sub: #9ca3af;
         }
 
-        /* 3. 水蓝色 (清透护眼) */
         :root.aqua-mode {
-            --theme-light: #D0E7F5;
-            --theme-mid: #B0C4DE;
-            --theme-dark: #89ABE3;
-            --accent: #89ABE3;
-            --bg-base: #E8F1F8;
-            --bg-panel: rgba(255, 255, 255, 0.85);
-            --bg-glass: rgba(208, 231, 245, 0.5);
-            --bg-glass-header: rgba(208, 231, 245, 0.8);
-            --text-main: #1A2C3F;
-            --text-sub: #5E758C;
-            --border-color: rgba(137, 171, 227, 0.3);
-            --input-bg: rgba(255, 255, 255, 0.6);
-            --chat-bg: #D0E7F5;
-            --chat-overlay: rgba(255, 255, 255, 0.4);
-            --modal-bg: rgba(232, 241, 248, 0.95);
+            --neu-bg: #e6f0f9;
+            --neu-shadow-dark: #c4ccd4;
+            --neu-shadow-light: #ffffff;
+            --accent: #4a90e2;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
         }
 
-
-/* --- 响应式紧凑布局：当屏幕高度小于 800px 时触发 --- */
-@media screen and (max-height: 800px) {
-    :root {
-        --ui-grid-gap: 10px;        /* 缩小网格间距 */
-        --ui-icon-scale: 0.88;      /* 图标整体缩小 12% */
-    }
-    
-    /* 缩小顶部液态时间小组件的高度 */
-    .widget-liquid-time { 
-        height: 110px !important; 
-    }
-    .liquid-time-text { 
-        font-size: 54px !important; 
-    }
-
-    /* 调低主屏幕顶部边距，腾出空间 */
-    #os-home { 
-        padding: 55px 15px 15px !important; 
-    }
-
-    /* 缩小备忘录高度防止溢出 */
-    .widget-memo {
-        min-height: 110px !important;
-        padding: 12px !important;
-    }
-    .memo-list {
-        max-height: 100px !important;
-    }
-}
-
-/* --- 极度紧凑布局：当屏幕高度小于 650px 时（如分屏模式） --- */
-@media screen and (max-height: 650px) {
-    :root {
-        --ui-grid-gap: 6px;
-        --ui-icon-scale: 0.75;
-    }
-    .widget-liquid-time { height: 90px !important; }
-    .liquid-time-text { font-size: 42px !important; }
-    .app-label { font-size: 10px !important; margin-top: 2px !important; }
-    .dock { height: 75px !important; bottom: 25px !important; }
-}
-
-
-
-        /* 移除多重高斯模糊实例造成的显存泄露 */
+        /* 重置玻璃效果，改为拟态底色 */
         .glass-effect {
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            backdrop-filter: blur(var(--ui-glass-blur, 0px));
+            -webkit-backdrop-filter: blur(var(--ui-glass-blur, 0px));
+            background: var(--neu-bg);
+            border: none;
             transform: translateZ(0); 
         }
+
+
 
 
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -393,8 +275,8 @@
         }
 
 
-        .app-view.active { display: flex; animation: appOpen 0.25s cubic-bezier(0.25, 1, 0.2, 1) forwards; }
-                    .app-view.closing { display: flex; animation: appClose 0.2s cubic-bezier(0.25, 1, 0.2, 1) forwards; pointer-events: none; }
+        .app-view.active { display: flex; animation: appOpen 0.2s cubic-bezier(0.25, 1, 0.2, 1) forwards; } /* 👇 改为 0.2s */
+.app-view.closing { display: flex; animation: appClose 0.2s cubic-bezier(0.25, 1, 0.2, 1) forwards; pointer-events: none; } /* 👇 改为 0.2s */
 
 
 @keyframes appOpen { 
@@ -428,14 +310,14 @@
         }
         #os-home::-webkit-scrollbar { display: none; }
         
-                .home-page { 
+                        .home-page { 
             /* 👇核心修复横屏崩坏：坚决不用 vw，使用 flex: 0 0 100% 将宽度精准限制在父容器内 */
             flex: 0 0 100%; 
             width: 100%;
             height: 100%;
             scroll-snap-align: center; /* 滑动后严格居中 */
             scroll-snap-stop: always; /* ！！！核心：一滑只翻一页，确保完整停留不断续 */
-            padding: 45px 20px 140px; 
+            padding: 75px 20px 140px; /* 👈 顶部 padding 从 45px 改为 75px，让整体内容往下移 */
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: var(--ui-grid-gap) !important; 
@@ -450,18 +332,19 @@
 
 
 
+
         
         /* 页面指示器 (小圆点) */
         .page-dots {
             position: absolute; bottom: 135px; left: 0; width: 100%; 
             display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none;
         }
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
+            .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.2s; } /* 👇 改为 0.2s */
         .dot.active { background: #fff; width: 14px; border-radius: 4px; }
 
         .widget { background: rgba(255,255,255,0.15); border-radius: 22px; padding: 15px; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
-        /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号/动态大小) --- */
+                        /* --- 👑 新增：iOS 26 纯透明底液态玻璃时间 (中号/动态大小) --- */
         .widget-liquid-time {
             grid-column: span 4; 
             height: var(--ui-time-height, 140px); /* 支持动态高度 */
@@ -470,13 +353,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: transparent; 
-            border: 0.5px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03); 
+            /* 👇 接入变量，由JS进行无权重掌控 👇 */
+            background: var(--time-panel-bg, transparent); 
+            border: var(--time-panel-border, 0.5px solid rgba(255, 255, 255, 0.15)); 
+            box-shadow: var(--time-panel-shadow, inset 0 0 20px rgba(255, 255, 255, 0.03)); 
             border-radius: 28px;
             z-index: 1;
-            transition: height 0.3s ease; /* 调节大小的过渡动画 */
+            transition: height 0.3s ease, background 0.3s, box-shadow 0.3s, border 0.3s;
+            opacity: var(--ui-time-opacity, 1); 
         }
+
+
 
         /* 核心黑科技：液态玻璃质感数字字体 */
         .liquid-time-text {
@@ -540,20 +427,34 @@
 @media screen and (max-height: 800px) {
     :root {
         --ui-grid-gap: 10px;        /* 缩小网格间距 */
-        --ui-icon-scale: 0.88;      /* 图标整体缩小 12% */
+        --ui-icon-scale: 0.78;      /* 👈 小屏下图标进一步缩小 */
     }
     
-    /* 缩小顶部液态时间小组件的高度 */
-    .widget-liquid-time { 
-        height: 110px !important; 
-    }
-    .liquid-time-text { 
-        font-size: 54px !important; 
+    /* --- 2. 桌面小组件与 Dock 栏 --- */
+    .widget, .dock { 
+        background: var(--neu-bg); 
+        border-radius: 22px; 
+        box-shadow: var(--shadow-raised); 
+        border: none;
     }
 
-    /* 👇 核心修复：把外框 #os-home 改成了 .home-page，顶部进一步往上挪，并保证底部留白防遮挡 */
+    .widget-liquid-time {
+        background: var(--time-panel-bg, var(--neu-bg)); 
+        box-shadow: var(--time-panel-shadow, var(--shadow-pressed)); 
+        border: var(--time-panel-border, none);
+        border-radius: 24px;
+    }
+
+    .liquid-time-text {
+        background: linear-gradient(135deg, var(--text-main), var(--text-sub));
+        -webkit-background-clip: text;
+        color: transparent;
+        text-shadow: 2px 2px 4px var(--neu-shadow-dark);
+    }
+
+    /* 👈 核心修复：把外框 #os-home 改成了 .home-page，顶部进一步往上挪，并保证底部留白防遮挡 */
     .home-page { 
-        padding: 35px 15px 120px !important; 
+        padding: 55px 15px 120px !important; /* 👈 原来是 35px，现改为 55px 让其相应下移 */
     }
 
     /* 缩小备忘录高度防止溢出 */
@@ -564,18 +465,17 @@
     .memo-list {
         max-height: 100px !important;
     }
-}
-        
     
     /* 缩小顶部液态时间小组件的高度 */
     .widget-liquid-time { 
-        height: 110px !important; 
+        height: 90px !important; /* 👈 小屏高度进一步压缩 */
     }
-    .l .liquid-time-text { 
-        /* 👇 修改这里：不要写死 54px，改为读取变量并按比例缩放 👇 */
-        font-size: calc(var(--ui-time-size, 72px) * 0.8) !important; 
+    /* 👇 修复了原代码 .l 的类名写错及多余的 } 问题 */
+    .liquid-time-text { 
+        font-size: calc(var(--ui-time-size, 56px) * 0.8) !important; 
     }
-    }
+}
+
         @media screen and (max-height: 650px) {
             .widget-liquid-time { height: calc(var(--ui-time-height, 140px) * 0.65) !important; }
             .liquid-time-text { font-size: calc(var(--ui-time-size, 72px) * 0.65) !important; }
@@ -636,26 +536,22 @@
         /* 核心修改：极致简约清冷、清透液态粉灰玻璃图标 */
         .app-icon { 
             width: 62px; height: 62px; display: flex; align-items: center; justify-content: center; 
-            font-size: 26px; /* 稍微缩小留白，增强简约感 */
-            color: rgba(255, 255, 255, 0.9); /* 柔和白色，不刺眼 */
-            cursor: pointer; 
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s; 
-            border-radius: 20px; /* 柔和圆角液态感 */
-            border: 0.5px solid rgba(255, 255, 255, 0.3); /* 清透玻璃高光边 */
-            backdrop-filter: blur(25px) saturate(120%); 
-            -webkit-backdrop-filter: blur(25px) saturate(120%);
-            /* 液态高光与暗部折射：去除繁杂，保留极简清透物理感 */
-            box-shadow: 
-                0 8px 24px rgba(0, 0, 0, 0.08), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.5),
-                inset 0 4px 10px rgba(255, 255, 255, 0.2),
-                inset 0 -4px 10px rgba(0, 0, 0, 0.05);
+            border-radius: var(--ui-icon-radius, 16px); 
+            transform: scale(var(--ui-icon-scale, 1));
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: var(--neu-bg);
+            box-shadow: var(--shadow-raised);
+            border: none;
         }
-        .app-icon i {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); /* 内部悬浮微投影 */
+        .app-icon i, .app-icon svg {
+            color: var(--accent);
+            fill: var(--accent);
+            filter: drop-shadow(2px 2px 4px var(--neu-shadow-dark));
         }
-        .app-icon:active { transform: scale(0.85); filter: brightness(0.8); }
-        .app-label { font-size: 12px; color: #fff; text-align: center; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: 500;}
+.app-icon:active { 
+            transform: scale(0.95); 
+            box-shadow: var(--shadow-pressed); 
+        }        .app-label { font-size: 12px; color: #fff; text-align: center; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: 500;}
         .app-container { display: flex; flex-direction: column; align-items: center; }
         .dock { position: absolute; bottom: 35px; left: 15px; right: 15px; height: 90px; background: rgba(255,255,255,0.15); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; }
 
@@ -714,20 +610,18 @@
         .msg-wrapper.char .msg-content-box { align-items: flex-start; }
         .msg-wrapper.user .msg-content-box { align-items: flex-end; }
 
-                       .msg { 
-            padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: inline-block; position: relative; cursor: pointer; transition: transform 0.1s; 
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            opacity: 1;
-            border: 0.5px solid rgba(255,255,255,0.08);
-            /* 👇新增下面两行开启 GPU 加速 */
-            will-change: transform;
-            backface-visibility: hidden;
+                       /* --- 3. 气泡与输入框 --- */
+        .msg { 
+            padding: 12px 16px; 
+            border-radius: var(--ui-bubble-radius, 16px);
+            opacity: var(--ui-bubble-opacity, 1);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-raised-sm);
+            border: none;
         }
+        .msg:active { transform: scale(0.96); box-shadow: var(--shadow-pressed-sm); }
+        
 
-
-        .msg:active { transform: scale(0.96); }
         .msg img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
         .msg.char { border-top-left-radius: 4px; }
         .msg.user { border-top-right-radius: 4px; }
@@ -1163,7 +1057,7 @@ input:checked + .slider:before {
 
         /* 仿 iOS 气泡长按动作菜单 */
         .action-sheet-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 4500; display: none; flex-direction: column; justify-content: flex-end; animation: sheetFadeIn 0.2s forwards; }
-        .action-sheet { background: var(--modal-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 12px 16px 35px; display: flex; flex-direction: column; gap: 8px; transform: translateY(100%); animation: sheetSlideUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.action-sheet { background: var(--modal-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 12px 16px 35px; display: flex; flex-direction: column; gap: 8px; transform: translateY(100%); animation: sheetSlideUp 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; } /* 👇 改为 0.2s */
         .action-sheet-title { text-align: center; font-size: 12px; color: var(--text-sub); padding: 10px 0; border-bottom: 0.5px solid var(--border-color); max-height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .action-sheet-btn { background: var(--input-bg); padding: 16px; text-align: center; color: var(--text-main); font-size: 17px; font-weight: 500; border-radius: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.1s, background 0.1s;}
         .action-sheet-btn.danger { color: #ff453a; }
@@ -2781,6 +2675,111 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
 
 
 
+                          /* ========================================== */
+        /* 👑 新拟态 (Neumorphism) 核心组件强制覆写区 */
+        /* ========================================== */
+
+        /* 1. 桌面图标 (凸起) */
+        html body .app-icon {
+            background: var(--neu-bg) !important;
+            box-shadow: var(--shadow-raised) !important;
+            border: none !important;
+            border-radius: var(--ui-icon-radius, 16px) !important;
+            transition: all 0.2s ease !important;
+        }
+        /* 图标按下时 (凹陷) */
+        html body .app-icon:active {
+            box-shadow: var(--shadow-pressed) !important;
+            transform: scale(0.95) !important;
+        }
+        /* 👇 修改点：将拟态图标默认内容颜色改为高级灰色 */
+        html body .app-icon i, html body .app-icon svg {
+            color: #8e8e93 !important;
+            fill: #8e8e93 !important;
+            filter: none !important;
+        }
+        html body .app-label { color: var(--text-main) !important; text-shadow: none !important; }
+
+        /* 2. 桌面小组件与 Dock 栏 (凸起) */
+        html body .widget, html body .dock {
+            background: var(--neu-bg) !important;
+            box-shadow: var(--shadow-raised) !important;
+            border: none !important;
+        }
+        
+                /* 3. 顶部液态时间组件 (剥离权重，通过变量控制外壳) */
+        .widget-liquid-time {
+            background: var(--time-panel-bg, var(--neu-bg));
+            box-shadow: var(--time-panel-shadow, var(--shadow-pressed));
+            border: var(--time-panel-border, none);
+            border-radius: 24px;
+        }
+
+        /* 时间文字改为金属拉丝质感 */
+        html body .liquid-time-text {
+            background: linear-gradient(135deg, var(--text-main), var(--text-sub)) !important;
+            -webkit-background-clip: text !important;
+            color: transparent !important;
+            filter: none !important;
+            animation: none !important;
+            text-shadow: 2px 2px 4px var(--neu-shadow-dark) !important;
+        }
+
+        /* 4. 全局输入框与文本域 (凹陷) */
+        html body .setting-input, 
+        html body .chat-input, 
+        html body .modal-input, 
+        html body .setting-textarea,
+        html body .setting-select {
+            background: var(--neu-bg) !important;
+            box-shadow: var(--shadow-pressed-sm) !important;
+            border: none !important;
+            color: var(--text-main) !important;
+        }
+        html body .setting-input:focus, html body .chat-input:focus, html body .setting-textarea:focus {
+            box-shadow: var(--shadow-pressed) !important; /* 聚焦时凹陷加深 */
+        }
+
+        /* 5. 全局按钮 (凸起) */
+        html body .save-btn, 
+        html body .pomo-btn, 
+        html body .tab-btn.active, 
+        html body .app-toggle {
+            background: var(--neu-bg) !important;
+            box-shadow: var(--shadow-raised-sm) !important;
+            color: var(--accent) !important;
+            border: none !important;
+        }
+        html body .save-btn:active, html body .pomo-btn:active {
+            box-shadow: var(--shadow-pressed-sm) !important;
+            transform: scale(0.98) !important;
+        }
+        html body .del-btn {
+            background: var(--neu-bg) !important;
+            box-shadow: var(--shadow-raised-sm) !important;
+            color: var(--text-sub) !important;
+        }
+
+        /* 👇 新增：自由关闭系统全局图标与组件阴影的独立控制类 👇 */
+        body.no-icon-shadow .app-icon,
+        body.no-icon-shadow .widget,
+        body.no-icon-shadow .dock,
+        body.no-icon-shadow .widget-liquid-time,
+        body.no-icon-shadow .save-btn,
+        body.no-icon-shadow .pomo-btn,
+        body.no-icon-shadow .tab-btn.active,
+        body.no-icon-shadow .app-toggle,
+        body.no-icon-shadow .setting-input, 
+        body.no-icon-shadow .chat-input, 
+        body.no-icon-shadow .modal-input, 
+        body.no-icon-shadow .setting-textarea,
+        body.no-icon-shadow .setting-select {
+            box-shadow: none !important;
+        }
+
+
+
+
 
                       
 
@@ -3681,7 +3680,7 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                             <input type="color" id="ui-time-color" value="#ffffff" onchange="updateUIParam('timeColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
                         </div>
                         <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
-                            <span class="setting-label">时间尺寸: <span id="val-time-size">72</span>px</span>
+                            <span class="setting-label">时间尺寸: <span id="val-time-size">56</span>px</span>
                             <input type="range" min="40" max="150" step="2" value="72" class="setting-input" oninput="updateUIParam('timeSize', this.value)">
                         </div>
                                                                                            <!-- 👇 新增：时间粗细调节滑块 👇 -->
@@ -3689,7 +3688,19 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                             <span class="setting-label">时间粗细: <span id="val-time-weight">200</span></span>
                             <input type="range" min="100" max="900" step="100" value="200" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeWeight', this.value)">
                         </div>
+                  <!-- 👇 新增：时间组件透明度调节滑块 👇 -->
+                        <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
+                            <span class="setting-label">组件透明度: <span id="val-time-opacity">1.0</span></span>
+                            <input type="range" min="0" max="1" step="0.05" value="1.0" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeOpacity', this.value)">
+                        </div>
+                  <!-- 👇 新增：自由隐藏时间组件面板开关 👇 -->
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+                            <span class="setting-label">隐藏时间组件底层面板</span>
+                            <label class="switch"><input type="checkbox" id="ui-hide-time-panel-toggle" onchange="updateUIParam('hideTimePanel', this.checked)"><span class="slider"></span></label>
+                        </div>
                         <!-- 👆 新增结束 👆 -->
+
+                        
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">桌面图标/组件玻璃特效</span>
                             <label class="switch"><input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)"><span class="slider"></span></label>
@@ -3725,6 +3736,12 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         <div class="setting-item"><span class="setting-label">图标圆角: <span id="val-icon-radius">20</span>px</span><input type="range" min="0" max="31" value="20" class="setting-input" oninput="updateUIParam('iconRadius', this.value)"></div>
                         <div class="setting-item"><span class="setting-label">气泡弧度: <span id="val-bubble-radius">20</span>px</span><input type="range" min="4" max="25" value="20" class="setting-input" oninput="updateUIParam('bubbleRadius', this.value)"></div>
                         <div class="setting-item"><span class="setting-label">玻璃模糊: <span id="val-glass-blur">25</span>px</span><input type="range" min="0" max="50" value="25" class="setting-input" oninput="updateUIParam('glassBlur', this.value)"></div>
+                  <!-- 👇 新增：图标组件阴影开关 👇 -->
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+                            <span class="setting-label">显示界面组件与图标阴影</span>
+                            <label class="switch"><input type="checkbox" id="ui-icon-shadow-toggle" checked onchange="updateUIParam('iconShadow', this.checked)"><span class="slider"></span></label>
+                        </div>
+                        <!-- 👆 新增结束 👆 -->
                     </div>
 
                     <div class="settings-group-title">1. 气泡 CSS 代码</div>
@@ -4166,6 +4183,13 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                             <span style="font-size: 13px; color: var(--text-sub);">应用名称大小: <span id="val-app-label-size">12</span>px</span>
                             <input type="range" min="8" max="20" value="12" id="ui-app-label-size" style="accent-color: var(--accent);" oninput="updateIconFontParams()">
                         </div>
+
+                  <!-- 👇 新增：整体应用图标缩放调节 👇 -->
+                        <div style="border-top: 0.5px solid var(--border-color); margin-top: 5px; padding-top: 15px; display: flex; flex-direction: column; gap: 5px;">
+                            <span style="font-size: 13px; color: var(--text-sub);">整体应用图标大小比例: <span id="val-icon-scale">0.85</span></span>
+                            <input type="range" min="0.5" max="1.5" step="0.01" value="0.85" id="ui-app-icon-scale" style="accent-color: var(--accent);" oninput="updateIconFontParams()">
+                        </div>
+                        <!-- 👆 新增结束 👆 -->
 
                     </div>
                     <!-- 👆 新增区域结束 👆 -->
@@ -5422,14 +5446,15 @@ enableNarration: false   // 气泡外神动开关，默认关闭
             currentActive.classList.add('closing');
             setTimeout(() => {
                 currentActive.classList.remove('closing');
-            }, 250);
+            }, 200); // 👇 提速至 200ms
         }
         
         const target = document.getElementById(appId);
         target.classList.remove('closing');
         target.classList.add('active');
         
-        setTimeout(() => { document.getElementById('os-home').style.display = 'none'; }, 300);
+        // 👇 【核心修复】：使用 visibility 替代 display: none，保护毛玻璃渲染层防卡顿白屏
+        setTimeout(() => { document.getElementById('os-home').style.visibility = 'hidden'; }, 200);
 
         if(appId === 'contacts-app') renderContacts();
         if(appId === 'settings-app') renderCharList();
@@ -5447,7 +5472,7 @@ enableNarration: false   // 气泡外神动开关，默认关闭
             currentActive.classList.add('closing');
             setTimeout(() => {
                 currentActive.classList.remove('closing');
-            }, 250);
+            }, 200); // 👇 提速至 200ms
         }
 
         if (navStack.length > 0) {
@@ -5456,7 +5481,8 @@ enableNarration: false   // 气泡外神动开关，默认关闭
             prevApp.classList.remove('closing');
             prevApp.classList.add('active');
         } else {
-            document.getElementById('os-home').style.display = ''; 
+            // 👇 【核心修复】：重新设置为可见，不引起结构重排
+            document.getElementById('os-home').style.visibility = 'visible'; 
             navStack = []; 
         }
     }
@@ -5470,12 +5496,14 @@ enableNarration: false   // 气泡外神动开关，默认关闭
             currentActive.classList.add('closing');
             setTimeout(() => {
                 currentActive.classList.remove('closing');
-            }, 250);
+            }, 200); // 👇 提速至 200ms
         }
 
         navStack = []; 
-        document.getElementById('os-home').style.display = ''; 
+        // 👇 【核心修复】：重新设置为可见，不引起结构重排
+        document.getElementById('os-home').style.visibility = 'visible'; 
     }
+
 
 
     const gestureArea = document.getElementById('home-indicator');
@@ -5577,13 +5605,14 @@ enableNarration: false   // 气泡外神动开关，默认关闭
         } 
     }
 
+    // 辅助悬浮球操作
     function assistiveAction(action) { 
         toggleAssistiveMenu(); 
         setTimeout(() => { 
             if(action === 'home') goHome(); 
             else if(action === 'gesture') document.getElementById('gesture-pad').style.display = 'flex'; 
             else openApp(action + '-app'); 
-        }, 250); 
+        }, 200); // 👇 提速至 200ms
     }
 
     const gesturePad = document.getElementById('gesture-pad'); 
@@ -8058,12 +8087,15 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
              // ==========================================
     // 🎨 全局美化中心核心逻辑 (带持久化修复 & 数据库扩容)
     // ==========================================
-        let uiSettings = { 
-        iconRadius: 20, glassBlur: 25, iconScale: 1.0, bubbleRadius: 20, bubbleOpacity: 0.92, 
+                let uiSettings = { 
+        iconRadius: 20, glassBlur: 25, iconScale: 0.85, bubbleRadius: 20, bubbleOpacity: 0.92, 
         cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
         liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
-        iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 72, timeWeight: 200 // 👈 新增 timeWeight
+        iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 56, timeWeight: 200,
+        timeOpacity: 1.0, iconShadow: true, hideTimePanel: true
     };
+
+
 
 
     function hexToRgba(hex, opacity) {
@@ -8097,13 +8129,32 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         // 1. 基础 UI 变量注入
         root.style.setProperty('--ui-icon-radius', `${uiSettings.iconRadius}px`);
         root.style.setProperty('--ui-glass-blur', `${uiSettings.glassBlur}px`);
-        root.style.setProperty('--ui-icon-scale', uiSettings.iconScale || 1);
+        root.style.setProperty('--ui-icon-scale', uiSettings.iconScale || 0.85);
+
         root.style.setProperty('--ui-bubble-radius', `${uiSettings.bubbleRadius}px`);
         root.style.setProperty('--ui-bubble-opacity', uiSettings.bubbleOpacity || 0.92);
         root.style.setProperty('--ui-time-size', `${uiSettings.timeSize}px`);
         root.style.setProperty('--ui-time-color', uiSettings.timeColor || '#ffffff');
         // 👇 新增这一行：注入时间粗细的 CSS 变量 👇
         root.style.setProperty('--ui-time-weight', uiSettings.timeWeight || 200);
+        // 👇 新增：透明度注入 👇
+        root.style.setProperty('--ui-time-opacity', uiSettings.timeOpacity !== undefined ? uiSettings.timeOpacity : 1.0);
+               
+        
+        // 👇 新增：阴影模式的开关控制 👇
+        if(uiSettings.iconShadow !== false) document.body.classList.remove('no-icon-shadow');
+        else document.body.classList.add('no-icon-shadow');
+        // 👇 新增：通过 CSS 变量优雅控制面板显隐，彻底告别权重叠加冲突 👇
+        if(uiSettings.hideTimePanel) {
+            root.style.setProperty('--time-panel-bg', 'transparent');
+            root.style.setProperty('--time-panel-shadow', 'none');
+            root.style.setProperty('--time-panel-border', 'none');
+        } else {
+            root.style.removeProperty('--time-panel-bg');
+            root.style.removeProperty('--time-panel-shadow');
+            root.style.removeProperty('--time-panel-border');
+        }
+        
         
 
         // 2. 特效开关应用
@@ -8140,10 +8191,17 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         const saved = localStorage.getItem('ai_os_ui_settings');
         if(saved) uiSettings = Object.assign(uiSettings, JSON.parse(saved));
 
-        // 容错处理
+                // 容错处理
         if(typeof uiSettings.liquidTime === 'undefined') uiSettings.liquidTime = true;
-        if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 72;
+        if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 56;
+
          if(typeof uiSettings.timeWeight === 'undefined') uiSettings.timeWeight = 200; // 👈 新增这行容错
+                if(typeof uiSettings.timeOpacity === 'undefined') uiSettings.timeOpacity = 1.0; // 👈 新增
+                if(typeof uiSettings.iconShadow === 'undefined') uiSettings.iconShadow = true; // 👈 新增
+                if(typeof uiSettings.hideTimePanel === 'undefined') uiSettings.hideTimePanel = true; // 👈 增加开关容错
+
+
+
         if(typeof uiSettings.liquidIcon === 'undefined') uiSettings.liquidIcon = true;
         if(typeof uiSettings.customIconColor === 'undefined') uiSettings.customIconColor = false;
         if(typeof uiSettings.iconBgOpacity === 'undefined') uiSettings.iconBgOpacity = 0.15;
@@ -8187,6 +8245,10 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         const iconBgPicker = document.getElementById('ui-icon-bg'); if(iconBgPicker) iconBgPicker.value = uiSettings.iconBgColor;
         const iconColorPicker = document.getElementById('ui-icon-color'); if(iconColorPicker) iconColorPicker.value = uiSettings.iconColor;
         const iconBorderPicker = document.getElementById('ui-icon-border'); if(iconBorderPicker) iconBorderPicker.value = uiSettings.iconBorderColor;
+        // 👇 新增阴影开关 UI 的回显 👇
+        const shadowToggle = document.getElementById('ui-icon-shadow-toggle'); if(shadowToggle) shadowToggle.checked = uiSettings.iconShadow;
+                const hidePanelToggle = document.getElementById('ui-hide-time-panel-toggle'); if(hidePanelToggle) hidePanelToggle.checked = uiSettings.hideTimePanel; // 👈 增加开关 UI 回显
+
 
         // 6. 回显底部的自定义 CSS 文本框
         if(document.getElementById('css-bubble-input')) document.getElementById('css-bubble-input').value = uiSettings.cssBubble || "";
@@ -13812,6 +13874,76 @@ function startGuessSong() {
         _originalLoadCharacterStateForBlock(id, isFromHub);
         setTimeout(updateToolsPanelUI, 50);
     };
+
+
+
+        // ==========================================
+    // 🔠 APP 内部图案与文字调节引擎
+    // ==========================================
+    function updateIconFontParams() {
+        const hideFont = document.getElementById('ui-hide-icon-font').checked;
+        const fontSize = document.getElementById('ui-icon-font-size').value;
+        const hideLabel = document.getElementById('ui-hide-app-label').checked;
+        const labelSize = document.getElementById('ui-app-label-size').value;
+        const iconScale = document.getElementById('ui-app-icon-scale').value; // 👈 抓取缩放值
+
+        // 动态回显数值
+        document.getElementById('val-icon-font-size').innerText = fontSize;
+        document.getElementById('val-app-label-size').innerText = labelSize;
+        document.getElementById('val-icon-scale').innerText = iconScale; // 👈 回显缩放值
+
+        // 实时应用到 CSS 变量
+        const root = document.documentElement;
+        root.style.setProperty('--ui-icon-font-display', hideFont ? 'none' : 'block');
+        root.style.setProperty('--ui-icon-font-size', fontSize + 'px');
+        root.style.setProperty('--ui-label-display', hideLabel ? 'none' : 'block');
+        root.style.setProperty('--ui-label-font-size', labelSize + 'px');
+        root.style.setProperty('--ui-icon-scale', iconScale); // 👈 直接缩放图标外观
+
+        // 持久化保存
+        const iconConfig = { hideFont, fontSize, hideLabel, labelSize, iconScale };
+        localStorage.setItem('ai_os_icon_text_config', JSON.stringify(iconConfig));
+        
+        // 👈 同步覆盖全局美化中心的变量，防止被美化中心重新覆盖
+        if (typeof uiSettings !== 'undefined') {
+            uiSettings.iconScale = parseFloat(iconScale);
+            const lightSettings = { ...uiSettings };
+            delete lightSettings.cssBubble;
+            delete lightSettings.cssInputBar;
+            delete lightSettings.cssLayout;
+            localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
+        }
+    }
+
+    // 系统启动时恢复保存的文字与图标状态
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = JSON.parse(localStorage.getItem('ai_os_icon_text_config'));
+        if (saved) {
+            const root = document.documentElement;
+            root.style.setProperty('--ui-icon-font-display', saved.hideFont ? 'none' : 'block');
+            root.style.setProperty('--ui-icon-font-size', saved.fontSize + 'px');
+            root.style.setProperty('--ui-label-display', saved.hideLabel ? 'none' : 'block');
+            root.style.setProperty('--ui-label-font-size', saved.labelSize + 'px');
+            if (saved.iconScale) root.style.setProperty('--ui-icon-scale', saved.iconScale); // 👈 恢复图标大小
+
+            // 延迟一点以等待 DOM 渲染，然后同步给滑块和开关UI
+            setTimeout(() => {
+                const elHideFont = document.getElementById('ui-hide-icon-font');
+                if (elHideFont) {
+                    elHideFont.checked = saved.hideFont;
+                    document.getElementById('ui-icon-font-size').value = saved.fontSize;
+                    document.getElementById('ui-hide-app-label').checked = saved.hideLabel;
+                    document.getElementById('ui-app-label-size').value = saved.labelSize;
+                    if (saved.iconScale) document.getElementById('ui-app-icon-scale').value = saved.iconScale; // 👈 恢复滑块
+                    
+                    document.getElementById('val-icon-font-size').innerText = saved.fontSize;
+                    document.getElementById('val-app-label-size').innerText = saved.labelSize;
+                    if (saved.iconScale) document.getElementById('val-icon-scale').innerText = saved.iconScale; // 👈 恢复数值
+                }
+            }, 600);
+        }
+    });
+
 
 
 
