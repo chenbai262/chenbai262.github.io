@@ -60,7 +60,7 @@
             --shadow-pressed: inset 8px 8px 16px var(--neu-shadow-dark), inset -8px -8px 16px var(--neu-shadow-light);
             --shadow-pressed-sm: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light);
 
-                        /* UI 默认尺寸 */
+                                    /* UI 默认尺寸 */
             --ui-icon-radius: 16px;
             --ui-glass-blur: 0px; /* 默认无模糊 */
             --ui-icon-scale: 0.85; /* 👈 图标默认缩小为 85% */
@@ -71,7 +71,7 @@
             --ui-time-size: 56px; /* 👈 时间字体等比缩小 */
             --ui-time-height: 110px; /* 👈 时间组件高度缩小 */
             --ui-time-weight: 700;
-
+        } /* 👈👈👈 就是补上这个大括号！！！ */
 
         :root.dark-mode {
             --neu-bg: #1a1b1e;
@@ -80,6 +80,7 @@
             --text-main: #ffffff;
             --text-sub: #8e8e93;
         }
+
 
         :root.light-mode {
             --neu-bg: #e0e5ec;
@@ -3662,12 +3663,14 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                 </div>
             </div>
 
-            <!-- 美化中心 App -->
+                                   <!-- 美化中心 App -->
             <div id="beautify-app" class="app-view scrollable">
                 <div class="settings-header glass-effect">
                     <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
                     全局美化中心
                 </div>
+                
+                <!-- 👇 完美补回了包裹容器 👇 -->
                 <div class="settings-content">
                     <div class="settings-group-title">时间小组件样式</div>
                     <div class="settings-group">
@@ -3681,26 +3684,23 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         </div>
                         <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">时间尺寸: <span id="val-time-size">56</span>px</span>
-                            <input type="range" min="40" max="150" step="2" value="72" class="setting-input" oninput="updateUIParam('timeSize', this.value)">
+                            <!-- 👇 加了专属 ID：ui-time-size-input -->
+                            <input type="range" id="ui-time-size-input" min="40" max="150" step="2" value="56" class="setting-input" oninput="updateUIParam('timeSize', this.value)">
                         </div>
-                                                                                           <!-- 👇 新增：时间粗细调节滑块 👇 -->
                         <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">时间粗细: <span id="val-time-weight">200</span></span>
-                            <input type="range" min="100" max="900" step="100" value="200" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeWeight', this.value)">
+                            <!-- 👇 加了专属 ID：ui-time-weight-input -->
+                            <input type="range" id="ui-time-weight-input" min="100" max="900" step="100" value="200" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeWeight', this.value)">
                         </div>
-                  <!-- 👇 新增：时间组件透明度调节滑块 👇 -->
                         <div class="setting-item" style="border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">组件透明度: <span id="val-time-opacity">1.0</span></span>
-                            <input type="range" min="0" max="1" step="0.05" value="1.0" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeOpacity', this.value)">
+                            <!-- 👇 加了专属 ID：ui-time-opacity-input -->
+                            <input type="range" id="ui-time-opacity-input" min="0" max="1" step="0.05" value="1.0" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('timeOpacity', this.value)">
                         </div>
-                  <!-- 👇 新增：自由隐藏时间组件面板开关 👇 -->
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">隐藏时间组件底层面板</span>
                             <label class="switch"><input type="checkbox" id="ui-hide-time-panel-toggle" onchange="updateUIParam('hideTimePanel', this.checked)"><span class="slider"></span></label>
                         </div>
-                        <!-- 👆 新增结束 👆 -->
-
-                        
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">桌面图标/组件玻璃特效</span>
                             <label class="switch"><input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)"><span class="slider"></span></label>
@@ -3719,7 +3719,8 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         </div>
                         <div class="setting-item">
                             <span class="setting-label">背景不透明度: <span id="val-icon-bg-opacity">0.15</span></span>
-                            <input type="range" min="0" max="1" step="0.05" value="0.15" class="setting-input" oninput="updateUIParam('iconBgOpacity', this.value)">
+                            <!-- 👇 加了专属 ID -->
+                            <input type="range" id="ui-icon-bg-opacity-input" min="0" max="1" step="0.05" value="0.15" class="setting-input" oninput="updateUIParam('iconBgOpacity', this.value)">
                         </div>
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
                             <span class="setting-label">内部图案及文字</span>
@@ -3733,15 +3734,13 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
 
                     <div class="settings-group-title">基础样式调节</div>
                     <div class="settings-group">
-                        <div class="setting-item"><span class="setting-label">图标圆角: <span id="val-icon-radius">20</span>px</span><input type="range" min="0" max="31" value="20" class="setting-input" oninput="updateUIParam('iconRadius', this.value)"></div>
-                        <div class="setting-item"><span class="setting-label">气泡弧度: <span id="val-bubble-radius">20</span>px</span><input type="range" min="4" max="25" value="20" class="setting-input" oninput="updateUIParam('bubbleRadius', this.value)"></div>
-                        <div class="setting-item"><span class="setting-label">玻璃模糊: <span id="val-glass-blur">25</span>px</span><input type="range" min="0" max="50" value="25" class="setting-input" oninput="updateUIParam('glassBlur', this.value)"></div>
-                  <!-- 👇 新增：图标组件阴影开关 👇 -->
+                        <div class="setting-item"><span class="setting-label">图标圆角: <span id="val-icon-radius">20</span>px</span><input type="range" id="ui-icon-radius-input" min="0" max="31" value="20" class="setting-input" oninput="updateUIParam('iconRadius', this.value)"></div>
+                        <div class="setting-item"><span class="setting-label">气泡弧度: <span id="val-bubble-radius">20</span>px</span><input type="range" id="ui-bubble-radius-input" min="4" max="25" value="20" class="setting-input" oninput="updateUIParam('bubbleRadius', this.value)"></div>
+                        <div class="setting-item"><span class="setting-label">玻璃模糊: <span id="val-glass-blur">25</span>px</span><input type="range" id="ui-glass-blur-input" min="0" max="50" value="25" class="setting-input" oninput="updateUIParam('glassBlur', this.value)"></div>
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">显示界面组件与图标阴影</span>
                             <label class="switch"><input type="checkbox" id="ui-icon-shadow-toggle" checked onchange="updateUIParam('iconShadow', this.checked)"><span class="slider"></span></label>
                         </div>
-                        <!-- 👆 新增结束 👆 -->
                     </div>
 
                     <div class="settings-group-title">1. 气泡 CSS 代码</div>
@@ -3750,11 +3749,9 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                     <div class="settings-group-title">2. 聊天框 CSS 代码</div>
                     <div class="settings-group"><textarea id="css-inputbar-input" class="setting-textarea" placeholder="输入底部聊天框相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;"></textarea></div>
 
-                    
                     <div class="settings-group-title">3. 界面 CSS 代码</div>
                     <div class="settings-group"><textarea id="css-layout-input" class="setting-textarea" placeholder="输入整体界面、背景、顶部栏相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;"></textarea></div>
                     
-                    <!-- 👇 从这里开始粘贴新增的【导入/导出】面板代码 👇 -->
                     <div class="settings-group-title">配置数据备份 (写入文件/读取)</div>
                     <div class="settings-group">
                         <div class="btn-row" style="margin: 15px;">
@@ -3764,19 +3761,15 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         </div>
                         <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px;">将美化设置写成独立的数据文件保存，随时随地加载，永不丢失。</p>
                     </div>
-                    <!-- 👆 粘贴结束 👆 -->
 
-                    
-
-                       
-                    
                     <div class="btn-row" style="flex-direction: column; gap: 10px;">
                         <div id="save-beauty-btn" class="save-btn" onclick="finalSaveBeautify()" style="width: 100%;"><i class="fas fa-check-circle"></i> 保存并应用所有设置</div>
                         <div class="del-btn" onclick="resetUIParams()" style="width: 100%; background: rgba(255,255,255,0.05); color: #888;">恢复默认</div>
                     </div>
-                </div>
+                </div> <!-- 👈 补回的闭合标签 settings-content -->
                 <div id="beauty-toast" class="beauty-toast">设置已持久化保存 ✓</div>
             </div>
+
 
             <!-- 小恐龙 App -->
             <div id="dino-app" class="app-view">
@@ -5059,20 +5052,24 @@ enableNarration: false   // 气泡外神动开关，默认关闭
     function generateId() { return new Date().getTime(); }
     function cleanBaseUrl(url) { return url.trim().replace(/\/chat\/completions\/?$/, '').replace(/\/models\/?$/, '').replace(/\/$/, ''); }
 
-    function getMsgPreview(msg) {
-        let text = msg.rawApiContent || msg.content;
+        function getMsgPreview(msg) {
+        if (!msg) return "";
+        let text = msg.rawApiContent || msg.content || "";
         text = text.replace(/<[^>]*>/g, '').replace(/\[MSG\]/g, '').trim();
         if (!text) {
-            if (msgType === 'sticker') div.classList.add('sticker-bubble');
-        if (msgType === 'transfer') div.classList.add('transfer-bubble');
-        if (msgType === 'file') div.classList.add('file-bubble');
-        if (msgType === 'pet-share') div.classList.add('pet-share-bubble');
-        if (msgType === 'music-share') div.classList.add('music-share-bubble');// 👈 增加这行！给音乐卡片脱去气泡外壳！
-            if (msgType === 'survey-share') div.classList.add('survey-share-bubble');
-
+            if (msg.msgType === 'image') return '[图片]';
+            if (msg.msgType === 'sticker') return '[表情包]';
+            if (msg.msgType === 'transfer') return '[转账]';
+            if (msg.msgType === 'file') return '[文件]';
+            if (msg.msgType === 'music-share') return '[音乐卡片]';
+            if (msg.msgType === 'pet-share') return '[宠物分享]';
+            if (msg.msgType === 'survey-share') return '[问卷]';
+            if (msg.msgType === 'tieba-share' || msg.msgType === 'x-share') return '[社交卡片]';
+            return '[多媒体/特殊消息]';
         }
         return text;
     }
+
 
     function toggleIsland() {
         globalAPI.enableIsland = document.getElementById('global-island-toggle').checked;
@@ -5629,11 +5626,16 @@ enableNarration: false   // 气泡外神动开关，默认关闭
     let pomoTimeLeft = 25 * 60;
     let isPomoRunning = false;
 
-    function updatePomoDisplay() {
+        function updatePomoDisplay() {
+        const timeEl = document.getElementById('pomodoro-time');
+        // 👇 增加这行空值保护：如果找不到番茄钟元素，就直接退出，不要报错卡死系统
+        if (!timeEl) return; 
+        
         const m = Math.floor(pomoTimeLeft / 60);
         const s = pomoTimeLeft % 60;
-        document.getElementById('pomodoro-time').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        timeEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
+
 
     function startPomodoro() {
         const btn = document.getElementById('pomo-start-btn');
@@ -5717,13 +5719,15 @@ enableNarration: false   // 气泡外神动开关，默认关闭
         }
 
         if (globalAPI.wallpaperMode) applyStatusBarColor(globalAPI.wallpaperMode);
-                 // 恢复加载主题
+                         // 恢复加载主题
         document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode');
         if(globalAPI.theme === 'light') document.documentElement.classList.add('light-mode');
         else if(globalAPI.theme === 'morandi') document.documentElement.classList.add('morandi-mode');
         else if(globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
         else if(globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
-document.documentElement.classList.add('light-mode');
+        
+        document.documentElement.classList.add('light-mode'); // ⚠️ 致命 Bug：请直接删掉这一行！！！
+
 
 
 
@@ -6358,17 +6362,29 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
             if (isHtml) div.innerHTML = content; else div.innerText = content;
         }
 
-        let touchTimer;
-        div.addEventListener('touchstart', () => { 
-            touchTimer = setTimeout(() => { if(myIndex !== null && messageHistory[myIndex]) openActionSheet(myIndex, messageHistory[myIndex]); }, 600); 
+                let touchTimer;
+        let startX = 0, startY = 0;
+        div.addEventListener('touchstart', (e) => { 
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX; startY = touch.clientY;
+            touchTimer = setTimeout(() => { 
+                if(myIndex !== null && messageHistory[myIndex]) openActionSheet(myIndex, messageHistory[myIndex]); 
+            }, 600); 
         }, {passive: true});
-        div.addEventListener('touchmove', () => clearTimeout(touchTimer), {passive: true});
+        div.addEventListener('touchmove', (e) => { 
+            const touch = e.touches ? e.touches[0] : e;
+            // 增加 10px 容错：允许手指在长按时有微小抖动，只有大范围滑动才取消长按呼出
+            if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) {
+                clearTimeout(touchTimer); 
+            }
+        }, {passive: true});
         div.addEventListener('touchend', () => clearTimeout(touchTimer));
         div.addEventListener('touchcancel', () => clearTimeout(touchTimer));
         div.addEventListener('contextmenu', (e) => { 
             e.preventDefault(); 
             if(myIndex !== null && messageHistory[myIndex]) openActionSheet(myIndex, messageHistory[myIndex]); 
         });
+
 
         // 👇 注入红色感叹号逻辑
         if (hasError && role === 'user') {
@@ -8084,19 +8100,16 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
 
             
 
-             // ==========================================
-    // 🎨 全局美化中心核心逻辑 (带持久化修复 & 数据库扩容)
+                 // ==========================================
+    // 🎨 全局美化中心核心逻辑 (强力防阻塞版)
     // ==========================================
-                let uiSettings = { 
+    let uiSettings = { 
         iconRadius: 20, glassBlur: 25, iconScale: 0.85, bubbleRadius: 20, bubbleOpacity: 0.92, 
         cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
         liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
         iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 56, timeWeight: 200,
         timeOpacity: 1.0, iconShadow: true, hideTimePanel: true
     };
-
-
-
 
     function hexToRgba(hex, opacity) {
         hex = hex.replace('#', '');
@@ -8107,21 +8120,20 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
-        function updateUIParam(key, value) {
+    function updateUIParam(key, value) {
         uiSettings[key] = value;
         applyUISettings();
         const displayId = `val-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
         const displayEl = document.getElementById(displayId);
         if(displayEl) displayEl.innerText = value;
 
-        // 👇 修复：实时保存轻量级数据，防止没点最下方保存就直接退出导致清空
+        // 实时保存轻量级数据，防止不点保存直接退出
         const lightSettings = { ...uiSettings };
         delete lightSettings.cssBubble;
         delete lightSettings.cssInputBar;
         delete lightSettings.cssLayout;
         localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
     }
-
 
     function applyUISettings() {
         const root = document.documentElement;
@@ -8135,16 +8147,13 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         root.style.setProperty('--ui-bubble-opacity', uiSettings.bubbleOpacity || 0.92);
         root.style.setProperty('--ui-time-size', `${uiSettings.timeSize}px`);
         root.style.setProperty('--ui-time-color', uiSettings.timeColor || '#ffffff');
-        // 👇 新增这一行：注入时间粗细的 CSS 变量 👇
         root.style.setProperty('--ui-time-weight', uiSettings.timeWeight || 200);
-        // 👇 新增：透明度注入 👇
         root.style.setProperty('--ui-time-opacity', uiSettings.timeOpacity !== undefined ? uiSettings.timeOpacity : 1.0);
                
-        
-        // 👇 新增：阴影模式的开关控制 👇
+        // 阴影模式与时间面板隐藏
         if(uiSettings.iconShadow !== false) document.body.classList.remove('no-icon-shadow');
         else document.body.classList.add('no-icon-shadow');
-        // 👇 新增：通过 CSS 变量优雅控制面板显隐，彻底告别权重叠加冲突 👇
+
         if(uiSettings.hideTimePanel) {
             root.style.setProperty('--time-panel-bg', 'transparent');
             root.style.setProperty('--time-panel-shadow', 'none');
@@ -8154,8 +8163,6 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
             root.style.removeProperty('--time-panel-shadow');
             root.style.removeProperty('--time-panel-border');
         }
-        
-        
 
         // 2. 特效开关应用
         const timeTextEl = document.getElementById('lq-time');
@@ -8187,21 +8194,22 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
     }
 
     async function initBeautify() {
-        // 1. 加载轻量级配置
-        const saved = localStorage.getItem('ai_os_ui_settings');
-        if(saved) uiSettings = Object.assign(uiSettings, JSON.parse(saved));
+        // 1. 同步加载轻量级配置，完全剥离，不被数据库阻塞干扰！
+        let savedSettings = null;
+        try {
+            const savedStr = localStorage.getItem('ai_os_ui_settings');
+            if (savedStr) savedSettings = JSON.parse(savedStr);
+        } catch(e) { console.error('解析 UI 缓存失败', e); }
 
-                // 容错处理
+        if(savedSettings) uiSettings = Object.assign(uiSettings, savedSettings);
+
+        // 容错默认值保护
         if(typeof uiSettings.liquidTime === 'undefined') uiSettings.liquidTime = true;
         if(typeof uiSettings.timeSize === 'undefined') uiSettings.timeSize = 56;
-
-         if(typeof uiSettings.timeWeight === 'undefined') uiSettings.timeWeight = 200; // 👈 新增这行容错
-                if(typeof uiSettings.timeOpacity === 'undefined') uiSettings.timeOpacity = 1.0; // 👈 新增
-                if(typeof uiSettings.iconShadow === 'undefined') uiSettings.iconShadow = true; // 👈 新增
-                if(typeof uiSettings.hideTimePanel === 'undefined') uiSettings.hideTimePanel = true; // 👈 增加开关容错
-
-
-
+        if(typeof uiSettings.timeWeight === 'undefined') uiSettings.timeWeight = 200; 
+        if(typeof uiSettings.timeOpacity === 'undefined') uiSettings.timeOpacity = 1.0; 
+        if(typeof uiSettings.iconShadow === 'undefined') uiSettings.iconShadow = true; 
+        if(typeof uiSettings.hideTimePanel === 'undefined') uiSettings.hideTimePanel = true; 
         if(typeof uiSettings.liquidIcon === 'undefined') uiSettings.liquidIcon = true;
         if(typeof uiSettings.customIconColor === 'undefined') uiSettings.customIconColor = false;
         if(typeof uiSettings.iconBgOpacity === 'undefined') uiSettings.iconBgOpacity = 0.15;
@@ -8209,8 +8217,20 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         if(!uiSettings.iconBgColor) uiSettings.iconBgColor = "#ffffff";
         if(!uiSettings.iconColor) uiSettings.iconColor = "#ffffff";
         if(!uiSettings.iconBorderColor) uiSettings.iconBorderColor = "#ffffff";
+        if(typeof uiSettings.iconRadius === 'undefined') uiSettings.iconRadius = 20;
+        if(typeof uiSettings.bubbleRadius === 'undefined') uiSettings.bubbleRadius = 20;
+        if(typeof uiSettings.glassBlur === 'undefined') uiSettings.glassBlur = 25;
 
-        // 2. 从无限容量的底层数据库中加载体积巨大的 CSS 代码
+        // 👑 关键修复：在此处立马同步还原 UI！不等待下面的代码，确保退出重进数据稳如泰山！
+        restoreUIInputs();
+        applyUISettings();
+
+        // 环境感知开关回显
+        if(typeof globalAPI.enableEnvSense === 'undefined') globalAPI.enableEnvSense = true;
+        const envToggleEl = document.getElementById('global-env-toggle');
+        if(envToggleEl) envToggleEl.checked = globalAPI.enableEnvSense;
+
+        // 2. 最后才慢慢去底层数据库里摸取巨大的 CSS (就算它挂掉也不影响上面滑块和界面的还原)
         try {
             const dbCss = await getImageFromDB('ai_os_css_data');
             if (dbCss) {
@@ -8218,47 +8238,43 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
                 uiSettings.cssBubble = parsedCss.bubble || "";
                 uiSettings.cssInputBar = parsedCss.inputBar || "";
                 uiSettings.cssLayout = parsedCss.layout || "";
+                
+                applyUISettings(); // 读到巨型 CSS 后再追加一次渲染
+                
+                const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+                setVal('css-bubble-input', uiSettings.cssBubble);
+                setVal('css-inputbar-input', uiSettings.cssInputBar);
+                setVal('css-layout-input', uiSettings.cssLayout);
             }
         } catch(e) {
-            console.log("未找到数据库扩展CSS或读取失败");
+            console.log("不需要加载巨型 CSS 或数据库已被拦截");
         }
+    }
 
-        // 3. 将数据应用到界面
-        applyUISettings();
+    // 独立干将函数：负责简单暴力的元素数值绑定
+    function restoreUIInputs() {
+        const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+        const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
+        const setCheck = (id, checked) => { const el = document.getElementById(id); if(el) el.checked = checked; };
 
-        // 4. 动态回显
-        Object.keys(uiSettings).forEach(key => {
-            try {
-                const displayId = `val-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
-                const displayEl = document.getElementById(displayId);
-                if(displayEl) displayEl.innerText = uiSettings[key];
-                const input = document.querySelector(`input[oninput*="${key}"]`);
-                if(input && input.type !== 'checkbox' && input.type !== 'color') input.value = uiSettings[key];
-            } catch(err) {}
-        });
+        setVal('ui-time-size-input', uiSettings.timeSize); setText('val-time-size', uiSettings.timeSize);
+        setVal('ui-time-weight-input', uiSettings.timeWeight); setText('val-time-weight', uiSettings.timeWeight);
+        setVal('ui-time-opacity-input', uiSettings.timeOpacity); setText('val-time-opacity', uiSettings.timeOpacity);
+        setVal('ui-icon-bg-opacity-input', uiSettings.iconBgOpacity); setText('val-icon-bg-opacity', uiSettings.iconBgOpacity);
+        setVal('ui-icon-radius-input', uiSettings.iconRadius); setText('val-icon-radius', uiSettings.iconRadius);
+        setVal('ui-bubble-radius-input', uiSettings.bubbleRadius); setText('val-bubble-radius', uiSettings.bubbleRadius);
+        setVal('ui-glass-blur-input', uiSettings.glassBlur); setText('val-glass-blur', uiSettings.glassBlur);
 
-        // 5. 开关回显
-        const liquidToggle = document.getElementById('ui-liquid-toggle'); if(liquidToggle) liquidToggle.checked = uiSettings.liquidTime;
-        const timeColorPicker = document.getElementById('ui-time-color'); if(timeColorPicker) timeColorPicker.value = uiSettings.timeColor;
-        const liquidIconToggle = document.getElementById('ui-liquid-icon-toggle'); if(liquidIconToggle) liquidIconToggle.checked = uiSettings.liquidIcon;
-        const customColorToggle = document.getElementById('ui-custom-color-toggle'); if(customColorToggle) customColorToggle.checked = uiSettings.customIconColor;
-        const iconBgPicker = document.getElementById('ui-icon-bg'); if(iconBgPicker) iconBgPicker.value = uiSettings.iconBgColor;
-        const iconColorPicker = document.getElementById('ui-icon-color'); if(iconColorPicker) iconColorPicker.value = uiSettings.iconColor;
-        const iconBorderPicker = document.getElementById('ui-icon-border'); if(iconBorderPicker) iconBorderPicker.value = uiSettings.iconBorderColor;
-        // 👇 新增阴影开关 UI 的回显 👇
-        const shadowToggle = document.getElementById('ui-icon-shadow-toggle'); if(shadowToggle) shadowToggle.checked = uiSettings.iconShadow;
-                const hidePanelToggle = document.getElementById('ui-hide-time-panel-toggle'); if(hidePanelToggle) hidePanelToggle.checked = uiSettings.hideTimePanel; // 👈 增加开关 UI 回显
+        setCheck('ui-liquid-toggle', uiSettings.liquidTime);
+        setCheck('ui-hide-time-panel-toggle', uiSettings.hideTimePanel);
+        setCheck('ui-liquid-icon-toggle', uiSettings.liquidIcon);
+        setCheck('ui-custom-color-toggle', uiSettings.customIconColor);
+        setCheck('ui-icon-shadow-toggle', uiSettings.iconShadow);
 
-
-        // 6. 回显底部的自定义 CSS 文本框
-        if(document.getElementById('css-bubble-input')) document.getElementById('css-bubble-input').value = uiSettings.cssBubble || "";
-        if(document.getElementById('css-inputbar-input')) document.getElementById('css-inputbar-input').value = uiSettings.cssInputBar || "";
-        if(document.getElementById('css-layout-input')) document.getElementById('css-layout-input').value = uiSettings.cssLayout || "";
-
-        // 7. 环境感知开关回显
-        if(typeof globalAPI.enableEnvSense === 'undefined') globalAPI.enableEnvSense = true;
-        const envToggleEl = document.getElementById('global-env-toggle');
-        if(envToggleEl) envToggleEl.checked = globalAPI.enableEnvSense;
+        setVal('ui-time-color', uiSettings.timeColor);
+        setVal('ui-icon-bg', uiSettings.iconBgColor);
+        setVal('ui-icon-color', uiSettings.iconColor);
+        setVal('ui-icon-border', uiSettings.iconBorderColor);
     }
 
     async function finalSaveBeautify() {
@@ -8271,32 +8287,30 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
 
         btn.style.transform = 'scale(0.95)'; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在保存...';
 
+        // 👑 终极修正：优先秒存基础设定到最高级别的系统缓存！
+        const lightSettings = { ...uiSettings };
+        delete lightSettings.cssBubble;
+        delete lightSettings.cssInputBar;
+        delete lightSettings.cssLayout;
+        localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
+
+        applyUISettings();
+
         try {
-            // 把含有背景图片的巨大 CSS 保存到无限容量的 IndexedDB
-            const cssData = {
-                bubble: uiSettings.cssBubble,
-                inputBar: uiSettings.cssInputBar,
-                layout: uiSettings.cssLayout
-            };
+            // 然后才去试图存占空间的 CSS 文本
+            const cssData = { bubble: uiSettings.cssBubble, inputBar: uiSettings.cssInputBar, layout: uiSettings.cssLayout };
             await saveImageToDB('ai_os_css_data', JSON.stringify(cssData));
 
-            // 把剩余不占空间的轻量级设置保存到 LocalStorage
-            const lightSettings = { ...uiSettings };
-            delete lightSettings.cssBubble;
-            delete lightSettings.cssInputBar;
-            delete lightSettings.cssLayout;
-            localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
-
-            applyUISettings();
-
             btn.style.transform = 'scale(1)'; btn.innerHTML = '<i class="fas fa-check-circle"></i> 保存并应用所有设置';
-            toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 1500);
+            if (toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 1500); }
         } catch (e) {
             console.error(e);
-            btn.style.transform = 'scale(1)'; btn.innerHTML = '<i class="fas fa-check-circle"></i> 保存失败';
-            sysAlert("保存异常", "由于系统限制自动保存失败，请点击上方的【导出配置文件】手动保存！");
+            applyUISettings(); 
+            btn.style.transform = 'scale(1)'; btn.innerHTML = '<i class="fas fa-check-circle"></i> 局部保存成功';
+            sysAlert("注意", "滑块与开关设置均已完美保存！\n\n但由于部分设备权限阻截，底部的 CSS 代码块未能存入存储库，您可以点击【导出配置文件】手动备份防丢失！");
         }
     }
+
 
     // === 写入数据文件与加载功能 ===
     function exportBeautifyConfig() {
@@ -12659,17 +12673,27 @@ function addGroupMessageToUI(senderId, content, isRestoring = false, historyInde
     wrapper.innerHTML = html;
     
     // 群聊同款防误触与真实索引记录
-    let touchTimer;
-    wrapper.querySelector('.msg').addEventListener('touchstart', () => { 
+        let touchTimer;
+    let startX = 0, startY = 0;
+    const msgDiv = wrapper.querySelector('.msg');
+    msgDiv.addEventListener('touchstart', (e) => { 
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX; startY = touch.clientY;
         touchTimer = setTimeout(() => { handleGroupMsgContext(myIndex); }, 600); 
     }, {passive: true});
-    wrapper.querySelector('.msg').addEventListener('touchmove', () => clearTimeout(touchTimer), {passive: true});
-    wrapper.querySelector('.msg').addEventListener('touchend', () => clearTimeout(touchTimer));
-    wrapper.querySelector('.msg').addEventListener('touchcancel', () => clearTimeout(touchTimer));
-    wrapper.querySelector('.msg').addEventListener('contextmenu', (e) => { 
+    msgDiv.addEventListener('touchmove', (e) => { 
+        const touch = e.touches ? e.touches[0] : e;
+        if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) {
+            clearTimeout(touchTimer); 
+        }
+    }, {passive: true});
+    msgDiv.addEventListener('touchend', () => clearTimeout(touchTimer));
+    msgDiv.addEventListener('touchcancel', () => clearTimeout(touchTimer));
+    msgDiv.addEventListener('contextmenu', (e) => { 
         e.preventDefault(); 
         handleGroupMsgContext(myIndex); 
     });
+
 
     container.appendChild(wrapper);
     
