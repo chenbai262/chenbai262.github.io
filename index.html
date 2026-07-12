@@ -40,8 +40,7 @@
             --theme-dark: #333333;
             --accent: var(--neu-accent);
             --app-bg: var(--neu-bg);
-            --screen-bg: var(--neu-bg); /* 默认纯色背景，可被壁纸覆盖 */
-            
+--screen-bg: url('https://img.cdn1.vip/i/6a51b7408a6e4_1783740224.webp'); /* 默认壁纸，可被自定义壁纸覆盖 */            
             --bg-base: var(--neu-bg);
             --bg-panel: var(--neu-bg);
             --bg-glass: var(--neu-bg);
@@ -803,6 +802,15 @@
         .chat-icon-btn:active { transform: scale(0.85); opacity: 0.6; }
         .quote-status-bar { position: absolute; top: -35px; left: 0; right: 0; height: 35px; background: var(--bg-glass); border-top: 0.5px solid var(--border-color); display: none; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; color: var(--text-main); z-index: 5; }
         .chat-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border-color); padding: 10px 15px; border-radius: 22px; color: var(--text-main); font-size: 15px; outline: none; transition: background 0.3s; width: 100%;}
+                              /* 底部发送键：没有文字就隐藏，有文字再出现 (增强权重以兼容微信主题) */
+html body #chat-app #user-input:placeholder-shown ~ .fa-arrow-circle-up,
+html body #chat-app.layout-wechat #user-input:placeholder-shown ~ .fa-arrow-circle-up,
+html body #group-chat-app #group-user-input:placeholder-shown ~ .fa-arrow-circle-up,
+html body #heart-chat-app #heart-input:placeholder-shown ~ .fa-pen-nib {
+    display: none !important;
+}
+ 
+
 
         /* --- 我的人设 --- */
         #persona-app { background: var(--bg-base); }
@@ -1772,128 +1780,119 @@ html body #chat-app .msg-time {
         .tl-check { position: absolute; top: 15px; right: 15px; font-size: 20px; color: var(--accent); display: none; }
         .theme-layout-card.active .tl-check { display: block; }
 
-                                /* ========================================== */
-        /* 1. WeChat 完完整整仿微信 (纯色扁平化气泡) */
+                                                /* ========================================== */
+        /* 1. WeChat 完完整整仿微信 (包含新增的三款变体颜色) */
         /* ========================================== */
-        html body #chat-app.layout-wechat { background: #EDEDED !important; }
+        html body #chat-app.layout-wechat { background-color: #EDEDED !important; } /* 修复：不再用 background 简写，防止遮盖自定义聊天壁纸 */
         html body #chat-app.layout-wechat::before { display: none !important; }
+        
+        /* 微信头部 */
         html body #chat-app.layout-wechat .chat-header { background: #EDEDED !important; border-bottom: 0.5px solid #D8D8D8 !important; position: relative !important; align-items: center !important; height: 90px !important; padding-bottom: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
         
-        /* 微信头部居中 */
+        /* 1. 修复：微信顶部左上角返回键位置居中，并改为简约左箭头 */
+        html body #chat-app.layout-wechat .chat-header-left { display: flex !important; align-items: center !important; height: 100% !important; margin-top: 15px !important; }
+        /* 强制声明字体库和粗细，防止变方块 */
+        html body #chat-app.layout-wechat .chat-header-left i.fa-chevron-left::before { 
+            content: "\f104" !important; 
+            font-family: "Font Awesome 6 Free" !important; 
+            font-weight: 900 !important; 
+        } 
+        html body #chat-app.layout-wechat .chat-header-left i { color: #181818 !important; margin-bottom: 0 !important; font-size: 26px !important; }
+        
+        /* 微信头部中间文字 */
         html body #chat-app.layout-wechat .chat-info { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
         html body #chat-app.layout-wechat .chat-info h3 { font-size: 17px !important; font-weight: 500 !important; color: #000 !important; letter-spacing: 0.5px; margin: 0 !important; }
+        html body #chat-app.layout-wechat .chat-info h3 i { display: none !important; } /* 隐藏名字旁边的特殊小徽章图标 */
         html body #chat-app.layout-wechat .chat-info p { display: none !important; } 
-        html body #chat-app.layout-wechat .chat-header-left i { color: #181818 !important; margin-bottom: 0 !important; font-size: 20px !important; font-weight: 400 !important; }
         html body #chat-app.layout-wechat .fa-phone-alt { color: #181818 !important; margin-bottom: 0 !important; display: none !important; }
         
-        html body #chat-app.layout-wechat .msg-avatar { border-radius: 6px !important; width: 40px !important; height: 40px !important; border: none !important; margin-top: 0 !important;}
-        html body #chat-app.layout-wechat .msg-wrapper { gap: 12px !important; margin-bottom: 16px !important; align-items: flex-start !important; }
+        /* 2. 修复：恢复正常的微信适中间隔与头像 (改为 16px) */
+        html body #chat-app.layout-wechat #chat-container .msg-avatar { border-radius: 6px !important; width: 40px !important; height: 40px !important; border: none !important; margin-top: 0 !important;}
+html body #chat-app.layout-wechat #chat-container .msg-wrapper { gap: 12px !important; margin-bottom: 12px !important; align-items: flex-start !important; }
+
+
+
         
-        /* 微信气泡核心重构：纯色扁平化 */
+        /* ================= 气泡核心重构：纯色扁平化 ================= */
+        
         /* 对方气泡 - 纯净白 */
         html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
-            background-color: #ffffff !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-radius: 8px !important; /* 微信标准的圆角大小 */
-            box-shadow: none !important; /* 去除所有阴影 */
-            border: none !important;
-            padding: 10px 14px !important;
-            text-align: left !important;
-            color: #111111 !important; /* 纯黑文字 */
-            font-size: 16px !important;
-            line-height: 1.5 !important;
-            position: relative !important;
-            overflow: visible !important; /* 允许显示小尾巴 */
-            margin-left: 6px !important;
+            background-color: #ffffff !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+            border-radius: 8px !important; box-shadow: none !important; border: none !important;
+            padding: 10px 14px !important; text-align: left !important; color: #111111 !important; 
+            font-size: 16px !important; line-height: 1.5 !important; position: relative !important;
+            overflow: visible !important; margin-left: 6px !important;
         }
-
-        /* 对方气泡的小尾巴（左侧指向头像） */
+        /* 对方气泡的小尾巴 */
         html body #chat-app.layout-wechat #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
-            content: '';
-            position: absolute;
-            top: 14px; /* 尾巴距离顶部的距离 */
-            left: -6px; /* 尾巴伸出气泡外部 */
-            border-width: 6px 8px 6px 0;
-            border-style: solid;
-            border-color: transparent #ffffff transparent transparent !important;
-            display: block !important;
-            width: 0; height: 0; background: transparent !important;
+            content: ''; position: absolute; top: 14px; left: -6px; 
+            border-width: 6px 8px 6px 0; border-style: solid; border-color: transparent #ffffff transparent transparent !important;
+            display: block !important; width: 0; height: 0; background: transparent !important;
         }
         /* 强行抹除右侧残影 */
         html body #chat-app.layout-wechat #chat-container .msg.char::after { display: none !important; }
 
-        /* 自己气泡 - 现代微信绿 */
+        /* 自己气泡 - 现代微信绿 (默认) */
         html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
-            background-color: #95ec69 !important; /* 灵魂注入：现代微信标准绿 */
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-radius: 8px !important;
-            box-shadow: none !important; /* 去除深色阴影 */
-            border: none !important;
-            padding: 10px 14px !important;
-            text-align: left !important;
-            color: #111111 !important; /* 重点注意：微信绿底的文字是黑色的，不是白色！ */
-            font-size: 16px !important;
-            line-height: 1.5 !important;
-            position: relative !important;
-            overflow: visible !important; 
-            margin-right: 6px !important;
+            background-color: #95ec69 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+            border-radius: 8px !important; box-shadow: none !important; border: none !important;
+            padding: 10px 14px !important; text-align: left !important; color: #111111 !important; 
+            font-size: 16px !important; line-height: 1.5 !important; position: relative !important;
+            overflow: visible !important; margin-right: 6px !important;
+        }
+        /* 自己气泡的小尾巴 (默认绿色) */
+        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            content: ''; position: absolute; top: 14px; right: -6px; left: auto;
+            border-width: 6px 0 6px 8px; border-style: solid; border-color: transparent transparent transparent #95ec69 !important; 
+            display: block !important; width: 0; height: 0; background: transparent !important;
         }
 
-        /* 自己气泡的小尾巴（右侧指向头像） */
-        html body #chat-app.layout-wechat #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
-            content: '';
-            position: absolute;
-            top: 14px; 
-            right: -6px; 
-            left: auto;
-            border-width: 6px 0 6px 8px;
-            border-style: solid;
-            border-color: transparent transparent transparent #95ec69 !important; /* 颜色与气泡绿一致 */
-            display: block !important;
-            width: 0; height: 0; background: transparent !important;
+        /* 3. 新增微信变体色 ① 灰-白 */
+        html body #chat-app.theme-wechat-gray #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: #999999 !important; color: #FFFFFF !important;
         }
+        html body #chat-app.theme-wechat-gray #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            border-color: transparent transparent transparent #999999 !important;
+        }
+
+        /* 3. 新增微信变体色 ② 水蓝-白 */
+        html body #chat-app.theme-wechat-blue #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: #A1CAFF !important; color: #FFFFFF !important;
+        }
+        html body #chat-app.theme-wechat-blue #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            border-color: transparent transparent transparent #A1CAFF !important;
+        }
+
+        /* 3. 新增微信变体色 ③ 黑-白 */
+        html body #chat-app.theme-wechat-black #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: #1A1A1A !important; color: #FFFFFF !important;
+        }
+        html body #chat-app.theme-wechat-black #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::before {
+            border-color: transparent transparent transparent #1A1A1A !important;
+        }
+
         /* 强行抹除左侧残影 */
         html body #chat-app.layout-wechat #chat-container .msg.user::after { display: none !important; }
 
-        /* 已发送标识 - 隐藏（微信没有文字版“已发送”） */
-        html body #chat-app.layout-wechat #chat-container .msg-wrapper.user .msg-content-box::after {
-            display: none !important; 
-        }
-
-        /* 单条气泡时间戳 - 隐藏 */
+        /* 隐藏功能 */
+        html body #chat-app.layout-wechat #chat-container .msg-wrapper.user .msg-content-box::after { display: none !important; }
         html body #chat-app.layout-wechat #chat-container .msg-time { display: none !important; }
 
         /* 悬停光泽（模拟微弱变暗） */
-        html body #chat-app.layout-wechat #chat-container .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover {
-            box-shadow: none !important;
-            background-color: #f5f5f5 !important;
-            transition: background-color 0.2s ease !important;
-        }
+        html body #chat-app.layout-wechat #chat-container .msg.char:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover { box-shadow: none !important; background-color: #f5f5f5 !important; transition: background-color 0.2s ease !important; }
+        html body #chat-app.layout-wechat #chat-container .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover { box-shadow: none !important; filter: brightness(0.95) !important; transition: filter 0.2s ease !important; }
 
-        html body #chat-app.layout-wechat #chat-container .msg.user:not(.sticker-bubble):not(.transfer-bubble):not(.image-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):hover {
-            box-shadow: none !important;
-            background-color: #89d961 !important;
-            transition: background-color 0.2s ease !important;
-        }
-
-        /* 微信发送栏 */
+        /* 微信发送栏与系统提示 */
         html body #chat-app.layout-wechat .chat-input-area { background: #F7F7F7 !important; border-top: 0.5px solid #D8D8D8 !important; padding: 10px 15px 35px !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
         html body #chat-app.layout-wechat .chat-input { background: #FFFFFF !important; border-radius: 4px !important; border: none !important; color: #000 !important; height: 40px !important; font-size: 16px !important;}
         html body #chat-app.layout-wechat .chat-icon-btn { color: #181818 !important; font-size: 26px !important; }
         html body #chat-app.layout-wechat .fa-arrow-circle-up { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important; font-size: 15px !important; font-weight: 500 !important; background: #07C160 !important; color: #fff !important; border-radius: 4px !important; width: 60px !important; height: 32px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin-left: 10px !important; letter-spacing: 2px;}
         html body #chat-app.layout-wechat .fa-arrow-circle-up::before { content: '发送' !important; }
-html body #chat-app.layout-wechat .fa-robot { 
-    display: flex !important; 
-    align-items: center !important;
-    color: #07C160 !important; /* 微信绿 */
-    font-size: 26px !important; 
-    margin-left: 12px !important; 
-} 
+        html body #chat-app.layout-wechat .fa-robot { display: flex !important; align-items: center !important; color: #07C160 !important; font-size: 26px !important; margin-left: 12px !important; } 
         html body #chat-app.layout-wechat .msg-system { background: #DADADA !important; color: #FFFFFF !important; padding: 4px 10px !important; border-radius: 4px !important; display: inline-block !important; font-size: 12px !important; font-weight: normal !important; margin: 15px auto !important; width: auto !important; max-width: 80% !important; border: none !important; }
         html body #chat-app.layout-wechat .ins-sys-msg { background: #DADADA !important; color: #FFFFFF !important; }
         html body #chat-app.layout-wechat .image-bubble img.chat-upload-img { border-radius: 4px !important; border: none !important; box-shadow: none !important; }
+
 
 
                         /* ========================================== */
@@ -2035,7 +2034,7 @@ html body #chat-app.layout-wechat .fa-robot {
                          /* ========================================== */
 /* 6. 仿 iMessage 精致版 (带异形尾巴) */
 /* ========================================== */
-html body #chat-app.layout-imessage2 { background: #FFFFFF !important; }
+html body #chat-app.layout-imessage2 { background-color: #FFFFFF !important; }
 html body #chat-app.layout-imessage2::before { display: none !important; }
 
 html body #chat-app.layout-imessage2 .chat-header {
@@ -2140,7 +2139,7 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
         /* ========================================== */
         /* 2. QQ 炫彩气泡 (左侧排版大字) */
         /* ========================================== */
-        html body #chat-app.layout-qq { background: #F5F6FA !important; }
+html body #chat-app.layout-qq { background-color: #F5F6FA !important; }
         html body #chat-app.layout-qq::before { display: none !important; }
         html body #chat-app.layout-qq .chat-header { background: #00CAFC !important; border: none !important; padding-bottom: 20px !important; }
         
@@ -2165,7 +2164,7 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                        /* ========================================== */
         /* 3. iOS iMessage 极简短信 (毛玻璃、真头像、经典颜色) */
         /* ========================================== */
-        html body #chat-app.layout-imessage { background: #FFFFFF !important; }
+html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
         html body #chat-app.layout-imessage::before { display: none !important; }
         
         /* 顶部毛玻璃 (降低背景透明度，让气泡滑过时毛玻璃效果更明显) */
@@ -4222,7 +4221,7 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         <i class="fas fa-check-circle tl-check" id="check-default"></i>
                     </div>
 
-                    <!-- 微信 -->
+                                        <!-- WeChat 经典微信 (默认绿) -->
                     <div class="theme-layout-card" onclick="applyChatLayout('wechat')">
                         <div class="tl-title">WeChat 经典微信</div>
                         <div class="tl-preview">
@@ -4231,6 +4230,37 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
                         </div>
                         <i class="fas fa-check-circle tl-check" id="check-wechat"></i>
                     </div>
+
+                    <!-- 微信变体：灰-白 -->
+                    <div class="theme-layout-card" onclick="applyChatLayout('wechat-gray')">
+                        <div class="tl-title">WeChat 微信 (灰-白)</div>
+                        <div class="tl-preview">
+                            <div class="tl-msg char">经典微信的灰色变体。</div>
+                            <div class="tl-msg user" style="background:#999999; color:#fff;">灰色背景，白色文字。</div>
+                        </div>
+                        <i class="fas fa-check-circle tl-check" id="check-wechat-gray"></i>
+                    </div>
+
+                    <!-- 微信变体：水蓝-白 -->
+                    <div class="theme-layout-card" onclick="applyChatLayout('wechat-blue')">
+                        <div class="tl-title">WeChat 微信 (水蓝-白)</div>
+                        <div class="tl-preview">
+                            <div class="tl-msg char">经典微信的水蓝色变体。</div>
+                            <div class="tl-msg user" style="background:#A1CAFF; color:#fff;">水蓝色背景，白色文字。</div>
+                        </div>
+                        <i class="fas fa-check-circle tl-check" id="check-wechat-blue"></i>
+                    </div>
+
+                    <!-- 微信变体：黑-白 -->
+                    <div class="theme-layout-card" onclick="applyChatLayout('wechat-black')">
+                        <div class="tl-title">WeChat 微信 (黑-白)</div>
+                        <div class="tl-preview">
+                            <div class="tl-msg char">经典微信的黑色变体。</div>
+                            <div class="tl-msg user" style="background:#1A1A1A; color:#fff;">黑色背景，白色文字。</div>
+                        </div>
+                        <i class="fas fa-check-circle tl-check" id="check-wechat-black"></i>
+                    </div>
+
 
                     <!-- QQ -->
                     <div class="theme-layout-card" onclick="applyChatLayout('qq')">
@@ -5012,7 +5042,7 @@ html body #chat-app.layout-imessage2 .ins-sys-msg { background: rgba(0,0,0,0.04)
         contextLength: 25,
         modelList: [], 
         theme: 'dark', 
-        homeWallpaper: '', 
+        homeWallpaper: 'https://img.cdn1.vip/i/6a51b7408a6e4_1783740224.webp', 
         wallpaperMode: 'dark', 
         portraitLock: false,
         enableIsland: true,
@@ -10892,14 +10922,21 @@ openApp = function(appId) {
         // ==========================================
     // 聊天主题布局 & 缩放引擎
     // ==========================================
-    function applyChatLayout(layout) {
+        function applyChatLayout(layout) {
         const chatApp = document.getElementById('chat-app');
         if(!chatApp) return;
         
-chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layout-telegram', 'layout-imessage2');
+        // 清除旧的布局类和新加的微信变体类
+        chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layout-telegram', 'layout-imessage2', 'theme-wechat-gray', 'theme-wechat-blue', 'theme-wechat-black');
         document.querySelectorAll('.theme-layout-card').forEach(c => c.classList.remove('active'));
         
-        if (layout !== 'default') {
+        if (layout.startsWith('wechat-')) {
+            // 如果是微信的特殊变体，需要先继承微信的基础框架，再加变体颜色
+            chatApp.classList.add('layout-wechat');
+            chatApp.classList.add('theme-' + layout);
+            const checkEl = document.getElementById('check-' + layout);
+            if(checkEl) checkEl.parentElement.classList.add('active');
+        } else if (layout !== 'default') {
             chatApp.classList.add('layout-' + layout);
             const checkEl = document.getElementById('check-' + layout);
             if(checkEl) checkEl.parentElement.classList.add('active');
@@ -10914,6 +10951,7 @@ chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layou
             sysAlert('主题切换', '聊天布局已成功切换并保存！\n\n可前往桌面打开【短信】应用查看实际效果。');
         }
     }
+
 
         function applyChatSize(size) {
         const chatApp = document.getElementById('chat-app');
