@@ -15633,17 +15633,34 @@ function applyCustomFont(base64Data) {
         fontStyle.id = 'custom-font-style';
         document.head.appendChild(fontStyle);
     }
-    // 强制使用 !important 剥夺原系统字体的所有权重
+    // 精准定位聊天界面内的文本元素，避开 * 全局选择器以防止滑动卡顿，并防止污染图标字体（保护特殊字符）
     fontStyle.innerHTML = `
         @font-face {
             font-family: 'UserCustomFont';
             src: url('${base64Data}');
+            font-display: swap; /* 优化渲染防卡顿 */
         }
-        * {
+        html body #chat-app .msg,
+        html body #chat-app .chat-input,
+        html body #chat-app .chat-info h3,
+        html body #chat-app .chat-info p,
+        html body #chat-app .msg-time-center,
+        html body #chat-app .msg-system,
+        html body #chat-app .ins-sys-msg,
+        html body #chat-app .typing-indicator,
+        html body #chat-app .tool-item span,
+        html body #chat-app .quote-status-bar,
+        html body #chat-app .msg-quote,
+        html body #group-chat-app .msg,
+        html body #group-chat-app .chat-input,
+        html body #group-chat-app .group-msg-name,
+        html body #heart-chat-app .novel-text,
+        html body #heart-chat-app .chat-input {
             font-family: 'UserCustomFont', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important;
         }
     `;
 }
+
 
 function resetCustomFont() {
     localStorage.removeItem('ai_os_font_enabled');
