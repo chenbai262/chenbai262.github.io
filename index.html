@@ -15633,33 +15633,50 @@ function applyCustomFont(base64Data) {
         fontStyle.id = 'custom-font-style';
         document.head.appendChild(fontStyle);
     }
-    // 精准定位聊天界面内的文本元素，避开 * 全局选择器以防止滑动卡顿，并防止污染图标字体（保护特殊字符）
+
+    // 🚀 核心性能修复：将高达数兆的 Base64 字体实时转换为本地 Blob URL。
+    // 这将从根本上解决将巨大 Base64 字符串塞入 style 标签造成的 DOM 解析崩溃和滑动卡顿！
+    let fontUrl = base64Data;
+    if (base64Data.startsWith('data:')) {
+        try {
+            const parts = base64Data.split(',');
+            const mime = parts[0].match(/:(.*?);/)[1];
+            const bstr = atob(parts[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            const blob = new Blob([u8arr], { type: mime });
+            fontUrl = URL.createObjectURL(blob);
+        } catch (e) {
+            console.error("字体转 Blob 失败，回退使用 Base64", e);
+        }
+    }
+
+    // 🚀 利用极简的高层级继承机制，彻底抛弃耗费性能的星号 (*) 和长后代选择器。
+    // 继承的属性天然优先级极低，绝对不会覆盖带有特殊字符库（如 FontAwesome）自身的字体声明，完美保护图标。
     fontStyle.innerHTML = `
         @font-face {
             font-family: 'UserCustomFont';
-            src: url('${base64Data}');
-            font-display: swap; /* 优化渲染防卡顿 */
+            src: url('${fontUrl}');
+            font-display: swap; 
         }
-        html body #chat-app .msg,
-        html body #chat-app .chat-input,
-        html body #chat-app .chat-info h3,
-        html body #chat-app .chat-info p,
-        html body #chat-app .msg-time-center,
-        html body #chat-app .msg-system,
-        html body #chat-app .ins-sys-msg,
-        html body #chat-app .typing-indicator,
-        html body #chat-app .tool-item span,
-        html body #chat-app .quote-status-bar,
-        html body #chat-app .msg-quote,
-        html body #group-chat-app .msg,
-        html body #group-chat-app .chat-input,
-        html body #group-chat-app .group-msg-name,
-        html body #heart-chat-app .novel-text,
-        html body #heart-chat-app .chat-input {
+        /* 仅给三个聊天 App 的主容器赋予字体，让内部文本自然继承，将匹配性能损耗降至0 */
+        #chat-app, 
+        #group-chat-app, 
+        #heart-chat-app {
             font-family: 'UserCustomFont', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important;
+        }
+        /* 表单控件默认是不继承字体的，这里强制让它们也乖乖继承父级 */
+        #chat-app input, #chat-app textarea,
+        #group-chat-app input, #group-chat-app textarea,
+        #heart-chat-app input, #heart-chat-app textarea {
+            font-family: inherit !important;
         }
     `;
 }
+
 
 
 function resetCustomFont() {
