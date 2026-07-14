@@ -23,6 +23,9 @@
     <!-- 👆 新增结束 👆 -->
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <!-- 引入 JSZip 用于解析 EPUB 文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <style>
     
 
@@ -2353,6 +2356,7 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
         :root:not(.light-mode) .reader-header { color: #888; border-color: rgba(255,255,255,0.05); }
         .reader-body { flex: 1; padding: 25px 20px 80px; overflow-y: auto; font-size: 18px; line-height: 2.0; color: #333; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; text-align: justify; letter-spacing: 1px; white-space: pre-wrap;}
         :root:not(.light-mode) .reader-body { color: #aaa; }
+        
 
 
                                                       /* ========================================== */
@@ -2660,7 +2664,9 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
 
 
 /* 分享到聊天的卡片脱去外壳 (神级权重防包裹与防变形) */
-html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble { 
+html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble,
+html body #chat-app#chat-app#chat-app #chat-container .msg.health-share-bubble,
+html body #chat-app#chat-app#chat-app #chat-container .msg.shop-share-bubble { 
     background: transparent !important; 
     box-shadow: none !important; 
     padding: 0 !important; 
@@ -2676,9 +2682,14 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble {
 }
 /* 强行抹杀所有主题带来的三角小尾巴 */
 html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::before,
-html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::after {
+html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::after,
+html body #chat-app#chat-app#chat-app #chat-container .msg.health-share-bubble::before,
+html body #chat-app#chat-app#chat-app #chat-container .msg.health-share-bubble::after,
+html body #chat-app#chat-app#chat-app #chat-container .msg.shop-share-bubble::before,
+html body #chat-app#chat-app#chat-app #chat-container .msg.shop-share-bubble::after {
     display: none !important;
 }
+
 
 
 /* 渲染结果视图全屏 */
@@ -2871,6 +2882,20 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
         .ssc-footer { font-size: 11px; opacity: 0.7; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 6px; margin-top: 2px; }
         :root.light-mode .ssc-footer { border-top: 0.5px solid rgba(0,0,0,0.1); }
 
+        /* 彻底隐藏所有模式下的 AI 机器人图标，将其变为隐形触发区。
+   既保障界面沉浸感，又能盲点右下角空白处进行原有的交互 */
+html body #chat-app .fa-robot,
+html body #group-chat-app .fa-robot {
+    opacity: 0 !important;
+    background: transparent !important;
+    color: transparent !important;
+    filter: none !important;
+    text-shadow: none !important;
+    -webkit-text-fill-color: transparent !important;
+    /* 保持原来的宽高和位置占位，不破坏排版 */
+}
+
+
 
 
 
@@ -2931,6 +2956,8 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
         <input type="file" id="chat-file-upload-input" style="display:none;" onchange="handleChatFileUpload(event)">
         <!-- 👇 新增这一行：表情包专属上传接口 -->
         <input type="file" id="sticker-upload-input" accept="image/*" style="display:none;" onchange="handleStickerUpload(event)">
+        <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
+
                         <!-- 世界书 App -->
             <div id="worldbook-app" class="app-view scrollable">
                <div class="settings-header header-with-icon">
@@ -3142,6 +3169,14 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
                         <div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);"><i class="fas fa-shopping-bag" style="color: rgba(255,255,255,0.95);"></i></div>
                         <div class="app-label">西海购物</div>
                     </div>
+
+                    <div class="app-container" onclick="openApp('story-relay-app')" data-drag-id="sys-storyrelay">
+    <div class="app-icon" style="background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <i class="fas fa-book-open" style="color: #fff;"></i>
+    </div>
+    <div class="app-label">故事接龙</div>
+</div>
+
 
 
 
@@ -3811,6 +3846,18 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
                             <span class="setting-label">液态玻璃文字特效</span>
                             <label class="switch"><input type="checkbox" id="ui-liquid-toggle" checked onchange="updateUIParam('liquidTime', this.checked)"><span class="slider"></span></label>
                         </div>
+                        <div class="settings-group-title">全局字体自定义</div>
+<div class="settings-group">
+    <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+        <span class="setting-label">导入本地字体 (TTF/OTF)</span>
+        <div class="save-btn" style="margin: 0; padding: 6px 12px; font-size: 12px; border-radius: 8px; flex: none;" onclick="document.getElementById('font-upload-input').click()">选择文件</div>
+    </div>
+    <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+        <span class="setting-label">恢复默认系统字体</span>
+        <div class="del-btn" style="margin: 0; padding: 6px 12px; font-size: 12px; border-radius: 8px; flex: none;" onclick="resetCustomFont()">恢复默认</div>
+    </div>
+</div>
+
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
                             <span class="setting-label">自定义时间颜色</span>
                             <input type="color" id="ui-time-color" value="#ffffff" onchange="updateUIParam('timeColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
@@ -4508,10 +4555,10 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
                         <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
                         <span class="novel-title" id="novel-top-title">我的书架</span>
                     </div>
-                    <div style="display:flex; gap: 15px; align-items:center;" id="novel-shelf-actions">
+                                        <div style="display:flex; gap: 15px; align-items:center;" id="novel-shelf-actions">
                         <i class="fas fa-magic" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="promptGenerateNovel()" title="AI 生成自己想看的小说"></i>
-                        <i class="fas fa-file-import" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="document.getElementById('novel-import-input').click()" title="导入本地TXT"></i>
-                        <input type="file" id="novel-import-input" accept=".txt" style="display:none;" onchange="importNovelFile(event)">
+                        <i class="fas fa-file-import" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="document.getElementById('novel-import-input').click()" title="导入本地 TXT / EPUB"></i>
+                        <input type="file" id="novel-import-input" accept=".txt,.epub" style="display:none;" onchange="importNovelFile(event)">
                     </div>
                 </div>
 
@@ -4555,15 +4602,35 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
                 <div id="novel-reader-view">
                     <div class="reader-header">
                         <i class="fas fa-chevron-left" onclick="closeNovelReader()" style="font-size: 20px; cursor:pointer;"></i>
-                        <span id="reader-title" style="font-size: 15px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">小说标题</span>
+                        <span id="reader-title" style="font-size: 15px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 45%;">小说标题</span>
                         <div style="display: flex; gap: 15px; align-items: center;">
+                            <i class="fas fa-comments" onclick="openNovelMiniChat()" style="font-size: 18px; cursor: pointer; color: var(--accent);" title="与TA共读探讨"></i>
                             <i class="fas fa-pen-fancy" onclick="continueNovel()" style="font-size: 18px; cursor: pointer; color: var(--accent);" title="AI 续写下一章"></i>
                             <i class="fas fa-share-square" onclick="shareNovelToChat()" style="font-size: 18px; cursor: pointer; color: var(--accent);" title="分享这本小说给TA"></i>
                         </div>
                     </div>
                     <div class="reader-body scrollable" id="reader-body"></div>
+                    
+                    <!-- 共读探讨小窗聊天 -->
+                    <div id="novel-mini-chat" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:65%; background:var(--bg-glass-header); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); border-top:0.5px solid var(--border-color); flex-direction:column; z-index: 300; border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);">
+                        <div style="padding: 18px 20px; display:flex; justify-content:space-between; align-items: center; border-bottom:0.5px solid var(--border-color); font-weight:bold; color:var(--text-main); font-size: 16px;">
+                            <div style="display:flex; align-items:center; gap:8px;"><i class="fas fa-book-reader" style="color:var(--accent);"></i> <span>共读探讨</span></div>
+                            <i class="fas fa-chevron-down" onclick="closeNovelMiniChat()" style="cursor:pointer; color:var(--text-sub); padding: 5px;"></i>
+                        </div>
+                        <div id="novel-mini-chat-body" class="scrollable" style="flex:1; padding: 20px 15px; display:flex; flex-direction:column; gap:15px;">
+                        </div>
+                        <div style="padding: 12px 15px 35px; display:flex; gap:12px; border-top:0.5px solid var(--border-color); background: transparent;">
+                            <input type="text" id="novel-mini-input" style="flex:1; padding:12px 16px; border-radius:20px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); outline:none; font-size: 14px;" placeholder="聊聊刚才看的剧情..." onkeydown="if(event.key==='Enter') sendNovelMiniMessage()">
+                            <div style="background: var(--accent); color: #000; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="sendNovelMiniMessage()">
+                                <i class="fas fa-arrow-up" style="font-size: 18px;"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div> <!-- 👈 ！！！就是在这里，补上这一行 </div>，把小说 App 彻底闭合！！！ -->
+            </div> 
+            <!-- 👆 小说 App 彻底闭合 -->
+
+
 
 
                                 <!-- 仿知乎 App -->
@@ -5003,6 +5070,45 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.survey-share-bubble::
                     <div style="height: 10px;"></div>
                 </div>
             </div>
+
+
+                        <!-- 脑洞故事接龙 App -->
+            <div id="story-relay-app" class="app-view">
+                <div class="settings-header glass-effect" style="position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);">
+                    <i class="fas fa-chevron-left" onclick="handleStoryRelayBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                    脑洞故事接龙
+                </div>
+                
+                <!-- 设定页 -->
+                <div id="sr-setup-view" class="scrollable" style="padding: 20px; padding-bottom: 80px;">
+                    <div style="background: var(--bg-panel); border-radius: 16px; padding: 20px; border: 0.5px solid var(--border-color); margin-bottom: 20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; font-weight:bold; color: var(--text-main);">故事要素设定</span>
+                            <div class="save-btn" style="margin:0; padding:6px 12px; font-size:12px; border-radius:8px; flex:none; background:rgba(135,192,202,0.2); color:var(--accent);" onclick="randomizeStoryElements()"><i class="fas fa-dice"></i> 随机抽取</div>
+                        </div>
+                        <div class="setting-item"><span class="setting-label">时间</span><input type="text" id="sr-time" class="setting-input" placeholder="例如：公元2077年"></div>
+                        <div class="setting-item"><span class="setting-label">地点</span><input type="text" id="sr-loc" class="setting-input" placeholder="例如：赛博精神病院"></div>
+                        <div class="setting-item"><span class="setting-label">人物</span><input type="text" id="sr-char" class="setting-input" placeholder="例如：一个只会说阿巴阿巴的霸总"></div>
+                        <div class="setting-item"><span class="setting-label">起因/事件</span><input type="text" id="sr-event" class="setting-input" placeholder="例如：突然被外星人抓去相亲"></div>
+                    </div>
+                    <div class="save-btn" style="width: 100%; background: var(--accent); color: #000; margin: 0;" onclick="startStoryRelay()">🚀 开始接龙挑战</div>
+                    <p style="font-size:12px; color:var(--text-sub); text-align:center; margin-top:15px;">一人一句续写故事，看看谁写的结局最离谱</p>
+                </div>
+
+                <!-- 接龙游玩页 -->
+                <div id="sr-play-view" style="display: none; flex-direction: column; height: calc(100vh - 90px);">
+                    <div id="sr-chat-body" class="scrollable" style="flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                        <!-- 对话气泡由JS渲染 -->
+                    </div>
+                    <div class="chat-input-area glass-effect" style="padding: 12px 15px 35px; display:flex; gap:10px; border-top: 0.5px solid var(--border-color);">
+                        <input type="text" id="sr-input" class="chat-input" placeholder="输入你的神展开..." onkeydown="if(event.key==='Enter') sendStoryRelayMsg()">
+                        <div style="background: var(--accent); color: #000; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="sendStoryRelayMsg()">
+                            <i class="fas fa-paper-plane" style="font-size: 18px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
 
 
@@ -6322,7 +6428,7 @@ html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble)
                 canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+const base64Url = canvas.toDataURL('image/png');
 
                 const imgId = 'cbg_' + Date.now();
                 await saveImageToDB(imgId, base64Url); // 存入数据库
@@ -11893,26 +11999,69 @@ openApp = function(appId) {
         grid.innerHTML = html;
     }
 
-    // 导入本地 TXT 文件
-    function importNovelFile(e) {
+        // 导入本地 TXT / EPUB 文件
+    async function importNovelFile(e) {
         const file = e.target.files[0];
         if (!file) return;
         const title = file.name.replace(/\.[^/.]+$/, ""); // 去除后缀
+        const ext = file.name.split('.').pop().toLowerCase();
         
-        sysAlert("正在读取", "正在解析本地文本，稍等...");
+        sysAlert("正在读取", "正在解析本地书籍，稍等...");
         
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const content = event.target.result;
-novelData.unshift({ title: title, content: content, chapterCount: 1 });            saveNovelData();
-            renderNovelShelf();
-            document.getElementById('sys-dialog-overlay').style.display = 'none';
-            sysAlert("导入成功", `小说《${title}》已成功上架！`);
-        };
-        // 以 UTF-8 解析，如果乱码请自行确保本地txt为 utf8
-        reader.readAsText(file, 'utf-8');
+        if (ext === 'epub') {
+            try {
+                if (typeof JSZip === 'undefined') {
+                    return sysAlert("错误", "JSZip 库未加载，无法解析 epub！");
+                }
+                const zip = await JSZip.loadAsync(file);
+                let fullText = "";
+                
+                // 按顺序读取可能的文件
+                let htmlFiles = [];
+                zip.forEach(function (relativePath, zipEntry) {
+                    if (relativePath.endsWith('.html') || relativePath.endsWith('.xhtml') || relativePath.endsWith('.htm')) {
+                        htmlFiles.push(zipEntry);
+                    }
+                });
+                
+                // 排序以确保章节顺序大致正确
+                htmlFiles.sort((a, b) => a.name.localeCompare(b.name));
+                
+                for (let i = 0; i < htmlFiles.length; i++) {
+                    const content = await htmlFiles[i].async('string');
+                    // 粗略清洗 HTML
+                    let text = content.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                                      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                                      .replace(/<\/p>|<br\s*\/?>/gi, '\n')
+                                      .replace(/<[^>]+>/g, '')
+                                      .replace(/&nbsp;/g, ' ')
+                                      .trim();
+                    if(text) fullText += text + "\n\n";
+                }
+                
+                novelData.unshift({ title: title, content: fullText, chapterCount: 1 });
+                saveNovelData();
+                renderNovelShelf();
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                sysAlert("导入成功", `小说《${title}》 (EPUB) 已成功上架！`);
+            } catch (err) {
+                sysAlert("导入失败", "EPUB 解析失败：" + err.message);
+            }
+        } else {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const content = event.target.result;
+                novelData.unshift({ title: title, content: content, chapterCount: 1 });            
+                saveNovelData();
+                renderNovelShelf();
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                sysAlert("导入成功", `小说《${title}》已成功上架！`);
+            };
+            reader.readAsText(file, 'utf-8');
+        }
         e.target.value = '';
     }
+
 
     // AI 生成定制小说
     async function promptGenerateNovel() {
@@ -15177,6 +15326,343 @@ openApp = function(appId) {
         renderShopFeed();
     }
 };
+
+
+    // ==========================================
+    // 小说共读探讨引擎 (实时捕获阅读进度与 AI 交流)
+    // ==========================================
+    function getCurrentlyVisibleNovelText() {
+        const body = document.getElementById('reader-body');
+        const text = body.innerText;
+        const totalHeight = body.scrollHeight;
+        const clientHeight = body.clientHeight;
+        const scrollTop = body.scrollTop;
+        
+        if (totalHeight === 0) return text.substring(0, 1000);
+        
+        const scrollRatio = scrollTop / totalHeight;
+        const visibleRatio = clientHeight / totalHeight;
+        
+        const totalChars = text.length;
+        const startIndex = Math.floor(scrollRatio * totalChars);
+        const visibleChars = Math.floor(visibleRatio * totalChars);
+        
+        // 动态抓取当前屏幕停留的文字片段，并扩充上下文防断层
+        let snippet = text.substring(Math.max(0, startIndex - 100), startIndex + visibleChars + 200);
+        return snippet.trim();
+    }
+
+    function openNovelMiniChat() {
+        if (currentNovelIdx === null) return;
+        const book = novelData[currentNovelIdx];
+        const snippet = getCurrentlyVisibleNovelText();
+        
+        document.getElementById('novel-mini-chat').style.display = 'flex';
+        
+        // 自动发送一条隐藏的系统消息给后台，同步当前的阅读进度给AI看
+        const sysText = `[系统交互：用户当前正在和你一起阅读小说《${book.title}》。TA的视线正停留在这一段情节：\n“${snippet}”\n接下来TA会和你探讨这段情节，请你凭借视觉/阅读记忆，代入你的身份，表达你对这段剧情或人物的看法！]`;
+        
+        messageHistory.push({ role: 'system', content: sysText, isHtml: false, time: new Date().toLocaleString(), rawApiContent: sysText, msgType: 'system' });
+        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+        
+        renderNovelMiniChat();
+    }
+
+    function closeNovelMiniChat() {
+        document.getElementById('novel-mini-chat').style.display = 'none';
+    }
+
+    function renderNovelMiniChat() {
+        const container = document.getElementById('novel-mini-chat-body');
+        // 取最近 8 条正常的文本消息显示在小窗中
+        const recent = messageHistory.filter(m => m.msgType === 'text' || m.msgType === 'voice').slice(-8);
+        container.innerHTML = recent.map(m => {
+            const isUser = m.role === 'user';
+            const bg = isUser ? 'var(--accent)' : 'var(--bg-panel)';
+            const color = isUser ? '#000' : 'var(--text-main)';
+            const align = isUser ? 'flex-end' : 'flex-start';
+            return `<div style="display:flex; justify-content:${align}; width:100%;">
+                        <div style="background:${bg}; color:${color}; padding:10px 14px; border-radius:16px; max-width:85%; font-size:14px; line-height:1.5; border:0.5px solid var(--border-color);">${m.content}</div>
+                    </div>`;
+        }).join('');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendNovelMiniMessage() {
+        const input = document.getElementById('novel-mini-input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        // 渲染到迷你框
+        addNovelMiniMsg('user', text);
+        input.value = '';
+        
+        // 存入主记录，保证退出后短信界面也能看见探讨内容
+        messageHistory.push({ role: 'user', content: text, isHtml: false, time: new Date().toLocaleString(), rawApiContent: text, msgType: 'text' });
+        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+        
+        const typingId = 'mini-typing-' + Date.now();
+        addNovelMiniMsg('char', '<i class="fas fa-spinner fa-spin"></i> TA正在看书思考...', typingId);
+        
+        await triggerAIResponseForMiniChat(typingId);
+    }
+
+    function addNovelMiniMsg(role, content, id = null) {
+        const container = document.getElementById('novel-mini-chat-body');
+        const isUser = role === 'user';
+        const bg = isUser ? 'var(--accent)' : 'var(--bg-panel)';
+        const color = isUser ? '#000' : 'var(--text-main)';
+        const align = isUser ? 'flex-end' : 'flex-start';
+        const div = document.createElement('div');
+        div.style.cssText = `display:flex; justify-content:${align}; width:100%;`;
+        if(id) div.id = id;
+        div.innerHTML = `<div style="background:${bg}; color:${color}; padding:10px 14px; border-radius:16px; max-width:85%; font-size:14px; line-height:1.5; border:0.5px solid var(--border-color);">${content}</div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function triggerAIResponseForMiniChat(typingId) {
+        const activeChar = characters.find(c => c.id === activeCharId);
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) { document.getElementById(typingId).innerHTML = 'API未配置'; return; }
+        
+        const snippet = getCurrentlyVisibleNovelText();
+        let apiMessages = [{ 
+            role: "system", 
+            content: activeChar.prompt + `\n\n【共读互动要求】：你们正在一起看小说。目前目光停留在的片段是：\n"${snippet}"\n请像真实朋友一样，使用简短的一两句话与我探讨这部分剧情，不要长篇大论！` 
+        }];
+        
+        const recent = messageHistory.slice(-15).map(m => ({ 
+            role: m.role==='user'?'user':'assistant', 
+            content: m.rawApiContent || m.content 
+        }));
+        apiMessages = apiMessages.concat(recent);
+        
+        try {
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, temperature: 0.85 })
+            });
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            
+            // 剥离AI自带的包裹符防污染
+            reply = reply.replace(/\[MSG\]/g, '').replace(/\[.*?\]/g, '');
+            
+            document.getElementById(typingId).remove();
+            addNovelMiniMsg('char', reply);
+            
+            // 存入主聊天记录
+            messageHistory.push({ role: 'char', content: reply, isHtml: false, time: new Date().toLocaleString(), rawApiContent: reply, msgType: 'text' });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            
+            // 如果主聊天框开着，顺便重绘一下底部
+            if (document.getElementById('chat-app').classList.contains('active')) {
+                loadChatHistory();
+            }
+        } catch(e) {
+            document.getElementById(typingId).innerHTML = '网络错误...';
+        }
+    }
+
+
+    // ==========================================
+// 全局字体自定义引擎 (突破跨域与存储限制)
+// ==========================================
+async function handleFontUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    sysAlert("处理中", "正在解析并将字体存入本地私有库，字体越大所需时间越长...");
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        const fontBase64 = event.target.result;
+        try {
+            // 复用底层的高级 IndexedDB 存大文件，绝不会爆内存
+            await saveImageToDB('ai_os_custom_font', fontBase64); 
+            localStorage.setItem('ai_os_font_enabled', 'true');
+            applyCustomFont(fontBase64);
+            document.getElementById('sys-dialog-overlay').style.display = 'none';
+            sysAlert("成功", "全局字体已成功更换！");
+        } catch(err) {
+            sysAlert("失败", "字体文件过大或存储系统受限。");
+        }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
+function applyCustomFont(base64Data) {
+    let fontStyle = document.getElementById('custom-font-style');
+    if (!fontStyle) {
+        fontStyle = document.createElement('style');
+        fontStyle.id = 'custom-font-style';
+        document.head.appendChild(fontStyle);
+    }
+    // 强制使用 !important 剥夺原系统字体的所有权重
+    fontStyle.innerHTML = `
+        @font-face {
+            font-family: 'UserCustomFont';
+            src: url('${base64Data}');
+        }
+        * {
+            font-family: 'UserCustomFont', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important;
+        }
+    `;
+}
+
+function resetCustomFont() {
+    localStorage.removeItem('ai_os_font_enabled');
+    const fontStyle = document.getElementById('custom-font-style');
+    if (fontStyle) fontStyle.remove();
+    sysAlert("已恢复", "已恢复为默认系统字体。");
+}
+
+// 在系统初始化时自动挂载保存过的字体
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('ai_os_font_enabled') === 'true') {
+        getImageFromDB('ai_os_custom_font').then(fontData => {
+            if (fontData) applyCustomFont(fontData);
+        });
+    }
+});
+
+
+// ==========================================
+// 📖 脑洞故事接龙 App 核心逻辑
+// ==========================================
+let srHistory = [];
+
+const srTimes = ["上古时代", "2077年", "昨晚半夜", "世界末日的前一天", "丧尸危机爆发时", "一万年后的宇宙", "修仙历233年", "侏罗纪"];
+const srLocs = ["公共厕所", "太空电梯里", "霸总的800平米大床上", "修仙宗门的茅房", "精神病院", "传销窝点", "海底两万里", "魔法学院的食堂"];
+const srChars = ["一个精神状态极不稳定的打工人", "一只会说唱的哈士奇", "拥有八块腹肌的林黛玉", "刚刑满释放的奥特曼", "只会阿巴阿巴的霸总", "患有重度社恐的外星人", "复活的秦始皇", "一个绝美的光头"];
+const srEvents = ["突然开始跳广场舞", "被当成祭品献给邪神", "发现自己其实是个NPC", "被逼着去相亲", "突然变异成了一根黄瓜", "捡到了可以毁灭地球的遥控器", "因为左脚先踏出门被开除", "收到了霍格沃茨的退学通知"];
+
+function randomizeStoryElements() {
+    document.getElementById('sr-time').value = srTimes[Math.floor(Math.random() * srTimes.length)];
+    document.getElementById('sr-loc').value = srLocs[Math.floor(Math.random() * srLocs.length)];
+    document.getElementById('sr-char').value = srChars[Math.floor(Math.random() * srChars.length)];
+    document.getElementById('sr-event').value = srEvents[Math.floor(Math.random() * srEvents.length)];
+}
+
+function handleStoryRelayBack() {
+    if (document.getElementById('sr-play-view').style.display === 'flex') {
+        document.getElementById('sr-play-view').style.display = 'none';
+        document.getElementById('sr-setup-view').style.display = 'block';
+    } else {
+        goBack();
+    }
+}
+
+async function startStoryRelay() {
+    const t = document.getElementById('sr-time').value.trim() || "某天";
+    const l = document.getElementById('sr-loc').value.trim() || "某地";
+    const c = document.getElementById('sr-char').value.trim() || "某人";
+    const e = document.getElementById('sr-event').value.trim() || "发生了一件事";
+    
+    srHistory = [{
+        role: "system",
+        content: `我们正在玩“脑洞故事接龙”游戏。你和我轮流续写故事，一人接一段，看谁的脑洞更大、剧情更离谱！
+        故事的初始背景设定为：
+        【时间】：${t}
+        【地点】：${l}
+        【人物】：${c}
+        【起因】：${e}
+        请你作为发起人，用50-100字左右的篇幅写出故事的开头。
+        要求：文风幽默、荒诞、有强烈的画面感，留下一个反转或悬念让我来接。直接输出故事正文即可，不要输出任何其他的废话！`
+    }];
+    
+    document.getElementById('sr-setup-view').style.display = 'none';
+    document.getElementById('sr-play-view').style.display = 'flex';
+    document.getElementById('sr-chat-body').innerHTML = '';
+    
+    await triggerStoryRelayAI();
+}
+
+function appendStoryRelayUI(role, text, id=null) {
+    const container = document.getElementById('sr-chat-body');
+    const isUser = role === 'user';
+    const bg = isUser ? 'var(--accent)' : 'var(--bg-panel)';
+    const color = isUser ? '#000' : 'var(--text-main)';
+    const align = isUser ? 'flex-end' : 'flex-start';
+    const name = isUser ? globalUser.name : characters.find(char => char.id === activeCharId).name;
+    const avatar = isUser ? globalUser.avatar : characters.find(char => char.id === activeCharId).avatar;
+
+    const div = document.createElement('div');
+    if(id) div.id = id;
+    div.style.cssText = `display:flex; justify-content:${align}; width:100%; gap:10px; align-items:flex-start;`;
+    div.innerHTML = `
+        ${!isUser ? `<img src="${avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">` : ''}
+        <div style="display:flex; flex-direction:column; align-items:${isUser?'flex-end':'flex-start'}; max-width:75%;">
+            <span style="font-size:11px; color:var(--text-sub); margin-bottom:4px;">${name}</span>
+            <div style="background:${bg}; color:${color}; padding:12px 16px; border-radius:16px; font-size:14px; line-height:1.6; border:0.5px solid var(--border-color); box-shadow:0 2px 10px rgba(0,0,0,0.05);">${text}</div>
+        </div>
+        ${isUser ? `<img src="${avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">` : ''}
+    `;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendStoryRelayMsg() {
+    const input = document.getElementById('sr-input');
+    const text = input.value.trim();
+    if(!text) return;
+    
+    appendStoryRelayUI('user', text);
+    srHistory.push({ role: 'user', content: text });
+    input.value = '';
+    
+    await triggerStoryRelayAI();
+}
+
+async function triggerStoryRelayAI() {
+    const container = document.getElementById('sr-chat-body');
+    const typingId = 'sr-typing-' + Date.now();
+    appendStoryRelayUI('assistant', '<i class="fas fa-spinner fa-spin"></i> 头脑风暴中...', typingId);
+
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) {
+        document.getElementById(typingId).innerText = "API未配置！";
+        return;
+    }
+    
+    let apiMessages = [...srHistory];
+    if (srHistory.length > 1) {
+        apiMessages.push({
+            role: "system",
+            content: "请根据上文，继续用50-100字的篇幅接龙这个故事。尽情发挥你的脑洞，让情节变得荒诞、搞笑或细思极恐，把巨大的悬念或烂摊子踢给用户！直接输出故事正文，绝对不要任何废话。"
+        });
+    }
+
+    try {
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, temperature: 0.95 })
+        });
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        
+        document.getElementById(typingId).remove();
+        appendStoryRelayUI('assistant', reply);
+        srHistory.push({ role: 'assistant', content: reply });
+    } catch(e) {
+        document.getElementById(typingId).innerText = "脑洞卡壳了，网络超时...";
+    }
+}
+
+// 拦截应用开启状态以初始化接龙界面
+const _originalOpenAppStory = openApp;
+openApp = function(appId) {
+    _originalOpenAppStory(appId);
+    if (appId === 'story-relay-app') {
+        randomizeStoryElements();
+        document.getElementById('sr-play-view').style.display = 'none';
+        document.getElementById('sr-setup-view').style.display = 'block';
+    }
+};
+
+
+
 
 
 
