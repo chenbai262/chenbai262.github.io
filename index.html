@@ -1681,17 +1681,7 @@ html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble)
     font-weight: 400 !important;
 }
 
-/* 角色气泡：高级浅灰，黑字 */
-html body #chat-app #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble) {
-    background: #F4F4F4 !important;
-    color: #111111 !important;
-}
 
-/* 用户气泡：深邃纯黑，白字 */
-html body #chat-app #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble) {
-    background: #151515 !important;
-    color: #FFFFFF !important;
-}
 
 
 
@@ -6470,12 +6460,21 @@ document.getElementById('chat-app').style.setProperty('--chat-avatar', `url('${c
 
 
         document.getElementById('memory-book-title').innerText = `${char.name} 的专属记忆书`;
-                        let styleEl = document.getElementById('dynamic-char-style'); 
+                                let styleEl = document.getElementById('dynamic-char-style'); 
         if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'dynamic-char-style'; document.head.appendChild(styleEl); }
-                styleEl.innerHTML = `
-html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.shop-share-bubble) { ... }
-  html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.shop-share-bubble) { ... }
-      `;
+        
+        // 动态注入用户在角色工坊里设置的气泡颜色 (仅在默认系统主题下生效，不破坏微信/iMessage等固定经典布局)
+        styleEl.innerHTML = `
+        html body #chat-app:not([class*="layout-"]) #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.shop-share-bubble):not(.health-share-bubble):not(.survey-share-bubble) {
+            background-color: ${char.charColor} !important;
+            color: ${char.charTextColor} !important;
+        }
+        html body #chat-app:not([class*="layout-"]) #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.shop-share-bubble):not(.health-share-bubble):not(.survey-share-bubble) {
+            background-color: ${char.userColor} !important;
+            color: ${char.userTextColor} !important;
+        }
+        `;
+
 
 
 
