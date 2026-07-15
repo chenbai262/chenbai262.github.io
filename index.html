@@ -16,10 +16,10 @@
     <meta name="mobile-web-app-capable" content="yes">
         <!-- 👇 新增：多端适配的主屏幕快捷桌面图标 👇 -->
     <!-- 针对 iOS Safari -->
-    <link rel="apple-touch-icon" href="https://img.cdn1.vip/i/6a487bec7394c_1783135212.webp">
+    <link rel="apple-touch-icon" href="https://img.cdn1.vip/i/6a56fa41a4381_1784085057.webp">
     <!-- 针对 Android Chrome 及其他标准浏览器 -->
-    <link rel="icon" type="image/webp" href="https://img.cdn1.vip/i/6a487bec7394c_1783135212.webp">
-    <link rel="shortcut icon" href="https://img.cdn1.vip/i/6a487bec7394c_1783135212.webp">
+    <link rel="icon" type="image/webp" href="https://img.cdn1.vip/i/6a56fa41a4381_1784085057.webp">
+    <link rel="shortcut icon" href="https://img.cdn1.vip/i/6a56fa41a4381_1784085057.webp">
     <!-- 👆 新增结束 👆 -->
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -84,11 +84,12 @@
             
             --text-main: hsl(var(--apple-foreground));
             --text-sub: hsl(var(--apple-muted-foreground));
-            --border-color: hsl(var(--apple-border));
+                        --border-color: hsl(var(--apple-border));
             --input-bg: hsl(var(--apple-input));
-            --chat-bg: var(--app-bg);
+            --chat-bg: url('https://img.cdn1.vip/i/6a56edff42574_1784081919.webp');
             --chat-overlay: transparent;
             --modal-bg: var(--neu-bg);
+
 
             /* Apple 阴影引擎 */
             --shadow-raised: 0 4px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -1201,9 +1202,35 @@ input:checked + .slider:before {
         @keyframes sheetFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes sheetSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        #assistive-touch { position: absolute; width: 60px; height: 60px; border-radius: 50%; background: rgba(45, 45, 45, 0.7); backdrop-filter: blur(15px); z-index: 3000; display: flex; justify-content: center; align-items: center; top: 60%; right: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.15); transition: opacity 0.3s ease, transform 0.2s ease; }
-        #assistive-touch::after { content: ''; width: 34px; height: 34px; border-radius: 50%; border: 3.5px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.25); box-shadow: inset 0 0 8px rgba(0,0,0,0.2); }
-        #assistive-touch.idle { opacity: 0.35; }
+                        /* --- 动态可配的悬浮球 --- */
+        #assistive-touch { 
+            position: absolute; 
+            width: var(--at-size, 60px); 
+            height: var(--at-size, 60px); 
+            border-radius: 50%; 
+            /* 👇 默认颜色改为了蓝色 👇 */
+            background: var(--at-bg, rgba(11, 132, 255, 0.7)); 
+            background-image: var(--at-img, none);
+            background-size: cover; 
+            background-position: center;
+            backdrop-filter: blur(var(--at-blur, 15px)); 
+            -webkit-backdrop-filter: blur(var(--at-blur, 15px)); 
+            z-index: 3000; display: flex; justify-content: center; align-items: center; 
+            top: 60%; right: 10px; cursor: pointer; 
+            box-shadow: var(--at-shadow, 0 4px 15px rgba(0,0,0,0.3)), var(--at-border, inset 0 0 0 1px rgba(255,255,255,0.15)); 
+            transition: opacity 0.3s ease, transform 0.2s ease; 
+        }
+        #assistive-touch::after { 
+            content: ''; 
+            width: calc(var(--at-size, 60px) * 0.56); 
+            height: calc(var(--at-size, 60px) * 0.56); 
+            border-radius: 50%; border: 3.5px solid rgba(255,255,255,0.6); 
+            background: rgba(255,255,255,0.25); box-shadow: inset 0 0 8px rgba(0,0,0,0.2); 
+            display: var(--at-inner-display, block);
+        }
+        #assistive-touch.idle { opacity: var(--at-idle-opacity, 0.35); }
+
+
         #assistive-touch:active { transform: scale(0.9); opacity: 1; }
         #assistive-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2999; display: none; opacity: 0; transition: opacity 0.2s ease; pointer-events: auto; }
         #assistive-menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 290px; height: 290px; background: rgba(35, 35, 35, 0.75); backdrop-filter: blur(35px); border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 0 1.5px rgba(255,255,255,0.1); z-index: 3001; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding: 20px; gap: 10px; }
@@ -4036,6 +4063,41 @@ html body #group-chat-app .fa-robot {
                             <input type="color" id="ui-icon-border" value="#ffffff" onchange="updateUIParam('iconBorderColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
                         </div>
                     </div>
+                                        <div class="settings-group-title">悬浮球自定义</div>
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <span class="setting-label">悬浮球尺寸: <span id="val-at-size">60</span>px</span>
+                            <input type="range" id="ui-at-size" min="30" max="120" value="60" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('atSize', this.value)">
+                        </div>
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                            <span class="setting-label">背景颜色</span>
+ <input type="color" id="ui-at-bg-color" value="#0b84ff" onchange="updateUIParam('atBgColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+                       </div>
+                        <div class="setting-item">
+                            <span class="setting-label">背景透明度 (0 为全透明): <span id="val-at-bg-opacity">0.7</span></span>
+                            <input type="range" id="ui-at-bg-opacity" min="0" max="1" step="0.05" value="0.7" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('atBgOpacity', this.value)">
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">玻璃模糊强度: <span id="val-at-blur">15</span>px</span>
+                            <input type="range" id="ui-at-blur" min="0" max="50" value="15" class="setting-input" style="accent-color: var(--accent);" oninput="updateUIParam('atBlur', this.value)">
+                        </div>
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+                            <span class="setting-label">显示外圈阴影与边框</span>
+                            <label class="switch"><input type="checkbox" id="ui-at-shadow-toggle" checked onchange="updateUIParam('atShadow', this.checked)"><span class="slider"></span></label>
+                        </div>
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+                            <div style="display: flex; flex-direction: column;">
+                                <span class="setting-label">自定义图片 (取代内圈)</span>
+                                <span style="font-size:11px; color:var(--text-sub); margin-top:4px;">配合上方全透明，可获得纯贴图悬浮球</span>
+                            </div>
+                            <input type="file" id="at-img-upload-input" accept="image/*" style="display:none;" onchange="handleAssistiveImgUpload(event)">
+                            <div style="display:flex; gap:10px;">
+                                 <div class="del-btn" style="margin:0; padding:6px 12px; font-size:12px; border-radius:8px; flex:none;" onclick="clearAssistiveImg()">清除</div>
+                                 <div class="save-btn" style="margin:0; padding:6px 12px; font-size:12px; border-radius:8px; flex:none;" onclick="document.getElementById('at-img-upload-input').click()">导入图片</div>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="settings-group-title">基础样式调节</div>
                     <div class="settings-group">
@@ -5482,7 +5544,7 @@ html body #group-chat-app .fa-robot {
 
 
      
-        let globalAPI = { 
+                let globalAPI = { 
         apiType: 'siliconflow', 
         url: 'https://api.siliconflow.cn/v1', 
         key: '', 
@@ -5492,7 +5554,8 @@ html body #group-chat-app .fa-robot {
         contextLength: 25,
         modelList: [], 
         theme: 'dark', 
-        homeWallpaper: 'https://img.cdn1.vip/i/6a51b7408a6e4_1783740224.webp', 
+        // 👇 将这一行的链接替换为新的壁纸链接
+        homeWallpaper: 'https://img.cdn1.vip/i/6a56edff42574_1784081919.webp', 
         wallpaperMode: 'dark', 
         portraitLock: false,
         enableIsland: true,
@@ -5501,9 +5564,10 @@ html body #group-chat-app .fa-robot {
         enableHomeBar: true,     
         enableStream: true,      
         enableNarration: false,   
-        enableMcp: false,         // 👇 新增：MCP 开关
-        mcpUrl: ""                // 👇 新增：MCP 地址
+        enableMcp: false,         
+        mcpUrl: ""                
     };
+
 
 
     let globalUser = { name: "我", avatar: "https://ui-avatars.com/api/?name=Me&background=BDCBD2&color=fff", persona: "" };
@@ -6223,14 +6287,18 @@ html body #group-chat-app .fa-robot {
         
         updatePortraitLockUI();
 
-               if (globalAPI.homeWallpaper) {
+                      if (globalAPI.homeWallpaper) {
             if (globalAPI.homeWallpaper.startsWith('idb://')) {
                 getImageFromDB(globalAPI.homeWallpaper.replace('idb://', '')).then(realData => {
                     if (realData) document.documentElement.style.setProperty('--screen-bg', `url('${realData}')`);
+                    else document.documentElement.style.setProperty('--screen-bg', `var(--bg-base)`);
                 });
             } else {
                 document.documentElement.style.setProperty('--screen-bg', `url('${globalAPI.homeWallpaper}')`);
             }
+        } else {
+            // 👈 如果没有壁纸，强制使用当前主题的纯色背景
+            document.documentElement.style.setProperty('--screen-bg', `var(--bg-base)`);
         }
 
         if (globalAPI.wallpaperMode) applyStatusBarColor(globalAPI.wallpaperMode);
@@ -7328,12 +7396,16 @@ if (globalAPI.enableNarration) {
 
 
 // 👇 插入到 let apiMessages = ... 的上一行
-                let detailStatusRules = `\n\n【核心指令：实时状态面板更新】
-为了维持沉浸感，你必须在每一次回复的末尾，强制输出一段隐藏代码来实时更新你的当前状态。
-警告：绝对不允许出现“保密”、“无”、“未知”等敷衍字眼！必须根据每聊的一条新剧情，实时推演并更新所有的具体细节，一定要让用户看到！
-格式必须且只能是下面这样（包含 $$PANEL: 和结尾的 $$，中间严格使用竖线 | 分隔7个属性，绝对不要换行，不要用逗号！）：
-$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着状态|当前地点$$
-示例：$$PANEL:微微湿润|心跳加速，体温上升|Lana Del Rey - Video Games|www.amazon.com|他怎么还不主动一点呢...|黑色丝质吊带裙，肩带滑落|卧室柔软的大床上$$`;
+               // 👇 插入到 let apiMessages = ... 的上一行
+        let detailStatusRules = `\n\n【最高系统指令：实时状态面板强制数据通道】
+警告：你每一次的回复末尾，必须、绝对、不可省略地附带以下状态代码！这是底层系统数据交互的必经通道，如果你不输出或掉格式，系统将直接崩溃！
+每一项都必须填入详细具体的描写，绝对不准使用“未知”、“保密”、“无”、“没变”、“同上”、“-”等任何敷衍词汇，必须结合上一秒的剧情给出最新状态。
+格式严格如下（直接附加在你回复的最后，包含 $$PANEL: 和结尾的 $$，中间必须用竖线“|”严格分隔7个属性，不能多也不能少！）：
+$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|此时此刻的真实心声|衣着状态详细描写|当前具体地点$$
+
+✅ 正确示例：$$PANEL:微微湿润|心跳急促，体温微微上升|Lana Del Rey - Video Games|www.amazon.com/lingerie|他怎么还不主动一点呢，好着急...|黑色丝质半透明睡裙，左侧肩带滑落至手臂|主卧柔软的King Size大床上$$
+❌ 错误示例：$$PANEL:无|同上|无|无|开心|保密|未知$$（绝对禁止出现此类空泛回复）`;
+
 
         // ----------------- 🌟 完美的图片读取与多模态合并逻辑 🌟 -----------------
         let rawHistory = [];
@@ -7521,81 +7593,62 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
                 }
             }
 
-            let reply = fullReply || "（空白）";
+                        let reply = fullReply || "（空白）";
 
-            // --- 👑 终极高容错拦截指令正则表达式 (修复未转义的$、防丢失$$结尾、防中文冒号、兼容大小写与换行) ---
+            // --- 👑 终极状态面板分离提取术 (强制抽取，绝不污染正文气泡) ---
+            let extractedPanelData = null;
+            // 匹配 $$PANEL:...$$ 或者一直到文本结尾
+            const panelRegex = /\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/i;
+            const panelMatch = reply.match(panelRegex);
+            if (panelMatch) {
+                extractedPanelData = panelMatch[1];
+                // 从正文中彻底抹除，防止任何后续正则或拆句将其暴露在气泡中
+                reply = reply.replace(panelRegex, ''); 
+            }
+
+            // --- 👑 终极高容错拦截指令正则表达式 ---
+            
+            // 容忍各种奇葩的 MSG 占位符写法，防 AI 发病写成 {msg}、[msg]、{MSG} 导致切分失败泄漏指令
+            reply = reply.replace(/[\{\[<]MSG[\]\}>]/gi, '[MSG]');
 
             reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
             reply = reply.replace(/\$\$\s*NUDGE(?:\$\$|$)/gi, () => `[MSG][NUDGE][MSG]`);
             reply = reply.replace(/\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
-            
-            // 捕获 AI 备忘录指令
             reply = reply.replace(/\$\$\s*MEMO_ADD(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][MEMO_ADD:${text}][MSG]`);
             reply = reply.replace(/\$\$\s*MEMO_TOGGLE(?:[:：\s]*)(\d+)(?:\$\$|$)/gi, (match, idx) => `[MSG][MEMO_TOGGLE:${idx}][MSG]`);
-
-            // 捕获 AI 状态更新指令
             reply = reply.replace(/\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, statusText) => `[MSG][STATUS:${statusText}][MSG]`);
-
-            // 捕获 AI 详细状态面板更新指令 (高强度容错，哪怕AI没写完闭合符号也能拦截，绝不漏出脏数据)
+            // PANEL 已经被提前抽离，这里保留旧逻辑以防漏网之鱼
             reply = reply.replace(/\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/gi, (match, panelData) => `[MSG][PANEL:${panelData}][MSG]`);
-            // 捕获 AI 操作宠物指令
             reply = reply.replace(/\$\$\s*PET_ACTION(?:[:：\s]*)(feed|play|explore)(?:\$\$|$)/gi, (match, action) => `[MSG][PET_ACTION:${action}][MSG]`);
-                        // 捕获 AI 操作音乐的指令
             reply = reply.replace(/\$\$\s*MUSIC_ACTION(?:[:：\s]*)(play|pause|next|prev)(?:\$\$|$)/gi, (match, action) => `[MSG][MUSIC_ACTION:${action.toLowerCase()}][MSG]`);
-                        // 捕获 AI 发自拍请求
             reply = reply.replace(/\$\$\s*DRAW(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, desc) => `[MSG][DRAW:${desc}][MSG]`);
-                        // 捕获 AI 语音指令 (👇 新增这一行)
             reply = reply.replace(/\$\$\s*VOICE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][VOICE:${text}][MSG]`);
-
-            reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
-                        // 捕获屏幕锁定和解锁指令
             reply = reply.replace(/\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, reason) => `[MSG][LOCK_SCREEN:${reason}][MSG]`);
             reply = reply.replace(/\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, () => `[MSG][UNLOCK_SCREEN][MSG]`);
-            // 👇 新增：捕获朋友圈发布指令
-
             reply = reply.replace(/\$\$\s*MOMENT(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, content) => `[MSG][MOMENT:${content}][MSG]`);
-
-                        // 捕获 AI 提交问卷指令 (兼容跨行与多余空格)
-reply = reply.replace(/\$\$\s*SURVEY_SUBMIT(?:[:：\s]*)(.+?)\|\|\|([\s\S]+?)(?:\$\$|$)/gi, (match, surveyId, answersJson) => `[MSG][SURVEY_SUBMIT:${surveyId.trim()}|||${answersJson.trim()}][MSG]`);
-                        // 捕获拉黑与撤回指令
+            reply = reply.replace(/\$\$\s*SURVEY_SUBMIT(?:[:：\s]*)(.+?)\|\|\|([\s\S]+?)(?:\$\$|$)/gi, (match, surveyId, answersJson) => `[MSG][SURVEY_SUBMIT:${surveyId.trim()}|||${answersJson.trim()}][MSG]`);
             reply = reply.replace(/\$\$\s*BLOCK(?:\$\$|$)/gi, () => `[MSG][BLOCK][MSG]`);
             reply = reply.replace(/\$\$\s*UNBLOCK(?:\$\$|$)/gi, () => `[MSG][UNBLOCK][MSG]`);
             reply = reply.replace(/\$\$\s*DELETE_FRIEND(?:\$\$|$)/gi, () => `[MSG][DELETE_FRIEND][MSG]`);
             reply = reply.replace(/\$\$\s*ADD_FRIEND(?:\$\$|$)/gi, () => `[MSG][ADD_FRIEND][MSG]`);
             reply = reply.replace(/\$\$\s*RECALL(?:\$\$|$)/gi, () => `[MSG][RECALL][MSG]`);
-
-                        // 捕获 AI 转发相册图片指令
             reply = reply.replace(/\$\$\s*ALBUM_SHARE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][ALBUM_SHARE:${imgId.trim()}][MSG]`);
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
 
             // --- 强化聊天气泡强制分条逻辑 (完整句 + 随机活人感版) ---
             let msgs = [];
             
             // 先把 [NAR]...[/NAR] 转化为独立的 [MSG] 分隔块并标记类型
-reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (match, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
+            reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (match, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
 
-let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
+            let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
 
-            
             // 获取用户设置的连发条数下限，并做容错
             let baseTarget = Math.max(1, parseInt(globalAPI.multiMsgCount) || 1);
 
             blocks.forEach(block => {
-                // 如果这是一个特殊指令气泡(如 [NUDGE])，直接独立作为一条发出去，绝不合并打碎
-                if (block.startsWith('[') && block.endsWith(']')) {
+                // 🚨 更宽容的隐藏指令判定：只要是以系统关键字开头，就绝对不打碎，直接作为隐藏指令放行！
+                if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|MEMO_|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|SURVEY_SUBMIT|BLOCK|UNBLOCK|DELETE_FRIEND|ADD_FRIEND|RECALL|ALBUM_SHARE|NUDGE)/i)) {
+                    if (!block.endsWith(']')) block += ']'; // 强制闭合括号，防指令残留
                     msgs.push(block);
                     return;
                 }
@@ -7612,10 +7665,10 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                     }
                 }
 
-                // 引入随机性：以用户设置的上限为基准，允许 ±1 的浮动 (模拟真人有时话多有时话少)
+                // 引入随机性：以用户设置的上限为基准，允许 ±1 的浮动
                 let randomTarget = baseTarget;
                 if (baseTarget > 1) {
-                    let variation = Math.floor(Math.random() * 3) - 1; // 产生 -1, 0, 或 +1
+                    let variation = Math.floor(Math.random() * 3) - 1; 
                     randomTarget = Math.max(1, baseTarget + variation);
                 }
 
@@ -7623,28 +7676,21 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
                 let remainingBuckets = randomTarget;
                 let startIndex = 0;
 
-                // 2. 动态发牌算法：将完整的句子随机且完整地打包进确定的气泡数中
                 while (remainingBuckets > 0 && startIndex < sentences.length) {
-                    // 当前气泡基础该分到几句话
                     let fairShare = Math.max(1, Math.ceil(remainingSentences / remainingBuckets));
-                    let maxAllowed = remainingSentences - (remainingBuckets - 1); // 保证后面每个气泡至少有1句话
+                    let maxAllowed = remainingSentences - (remainingBuckets - 1); 
                     let minAllowed = 1;
                     
                     let actualShare = fairShare;
-                    // 在允许的范围内，再做一点句数的随机偏差，打破机械感
                     if (maxAllowed > minAllowed) {
-                        let offset = Math.floor(Math.random() * 3) - 1; // 产生 -1, 0, +1
+                        let offset = Math.floor(Math.random() * 3) - 1; 
                         actualShare = Math.min(maxAllowed, Math.max(minAllowed, fairShare + offset));
                     } else {
                         actualShare = minAllowed;
                     }
                     
-                    // 最后一个气泡做收尾，承接剩下的所有话
-                    if (remainingBuckets === 1) {
-                        actualShare = remainingSentences;
-                    }
+                    if (remainingBuckets === 1) actualShare = remainingSentences;
 
-                    // 抓取并组合当前气泡的完整段落
                     let chunk = sentences.slice(startIndex, startIndex + actualShare).join(" ");
                     if (chunk.trim()) msgs.push(chunk.trim());
 
@@ -7655,7 +7701,13 @@ let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
             });
             // ---------------------------
 
+            // 👑 如果提取到了状态面板，作为隐藏后台指令强行推入最后执行队列
+            if (extractedPanelData) {
+                msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
+            }
+
             ti.style.display = 'none';
+
 
 
             ti.style.display = 'none';
@@ -8949,7 +9001,7 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
     }
 
-    function applyUISettings() {
+        function applyUISettings() {
         const root = document.documentElement;
         
         // 1. 基础 UI 变量注入
@@ -8997,6 +9049,35 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
             document.body.classList.remove('custom-icon-colors');
         }
 
+        // ======= 修复并新增：悬浮球样式动态覆盖 =======
+        root.style.setProperty('--at-size', `${uiSettings.atSize || 60}px`);
+        root.style.setProperty('--at-blur', `${uiSettings.atBlur !== undefined ? uiSettings.atBlur : 15}px`);
+        
+        if (uiSettings.atShadow !== false) {
+            root.style.setProperty('--at-shadow', '0 4px 15px rgba(0,0,0,0.3)');
+            root.style.setProperty('--at-border', 'inset 0 0 0 1px rgba(255,255,255,0.15)');
+        } else {
+            root.style.setProperty('--at-shadow', 'none');
+            root.style.setProperty('--at-border', 'none');
+        }
+
+        if (uiSettings.atImg) {
+            if (uiSettings.atImg.startsWith('idb://')) {
+                getImageFromDB(uiSettings.atImg.replace('idb://', '')).then(b64 => {
+                    if (b64) root.style.setProperty('--at-img', `url('${b64}')`);
+                });
+            } else {
+                root.style.setProperty('--at-img', `url('${uiSettings.atImg}')`);
+            }
+            root.style.setProperty('--at-inner-display', 'none'); 
+            root.style.setProperty('--at-bg', 'transparent'); 
+        } else {
+            root.style.setProperty('--at-img', 'none');
+            root.style.setProperty('--at-inner-display', 'block');
+            // 👇 默认恢复时取蓝色 #0b84ff 👇
+            root.style.setProperty('--at-bg', hexToRgba(uiSettings.atBgColor || '#0b84ff', uiSettings.atBgOpacity !== undefined ? uiSettings.atBgOpacity : 0.7));
+        }
+
         // 3. 将 CSS 追加到底部优先渲染
         let styleTag = document.getElementById('user-injected-style');
         if(!styleTag) { 
@@ -9006,6 +9087,7 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         }
         styleTag.innerHTML = (uiSettings.cssLayout || "") + "\n" + (uiSettings.cssBubble || "") + "\n" + (uiSettings.cssInputBar || "");
     }
+
 
     async function initBeautify() {
         // 1. 同步加载轻量级配置，完全剥离，不被数据库阻塞干扰！
@@ -9062,11 +9144,40 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
             }
         } catch(e) {
             console.log("不需要加载巨型 CSS 或数据库已被拦截");
+            // ======= 新增：悬浮球样式动态覆盖 =======
+        root.style.setProperty('--at-size', `${uiSettings.atSize || 60}px`);
+        root.style.setProperty('--at-blur', `${uiSettings.atBlur !== undefined ? uiSettings.atBlur : 15}px`);
+        
+        if (uiSettings.atShadow !== false) {
+            root.style.setProperty('--at-shadow', '0 4px 15px rgba(0,0,0,0.3)');
+            root.style.setProperty('--at-border', 'inset 0 0 0 1px rgba(255,255,255,0.15)');
+        } else {
+            root.style.setProperty('--at-shadow', 'none');
+            root.style.setProperty('--at-border', 'none');
+        }
+
+        if (uiSettings.atImg) {
+            if (uiSettings.atImg.startsWith('idb://')) {
+                getImageFromDB(uiSettings.atImg.replace('idb://', '')).then(b64 => {
+                    if (b64) root.style.setProperty('--at-img', `url('${b64}')`);
+                });
+            } else {
+                root.style.setProperty('--at-img', `url('${uiSettings.atImg}')`);
+            }
+            root.style.setProperty('--at-inner-display', 'none'); // 隐藏原生白圈
+            root.style.setProperty('--at-bg', 'transparent'); // 强制背景透明，不遮挡图片
+        } else {
+            root.style.setProperty('--at-img', 'none');
+            root.style.setProperty('--at-inner-display', 'block');
+            root.style.setProperty('--at-bg', hexToRgba(uiSettings.atBgColor || '#2d2d2d', uiSettings.atBgOpacity !== undefined ? uiSettings.atBgOpacity : 0.7));
+        }
         }
     }
 
-    // 独立干将函数：负责简单暴力的元素数值绑定
-    function restoreUIInputs() {
+            
+
+
+        function restoreUIInputs() {
         const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
         const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
         const setCheck = (id, checked) => { const el = document.getElementById(id); if(el) el.checked = checked; };
@@ -9089,7 +9200,18 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         setVal('ui-icon-bg', uiSettings.iconBgColor);
         setVal('ui-icon-color', uiSettings.iconColor);
         setVal('ui-icon-border', uiSettings.iconBorderColor);
+
+        // 悬浮球回显配置
+        setVal('ui-at-size', uiSettings.atSize || 60); setText('val-at-size', uiSettings.atSize || 60);
+        setVal('ui-at-bg-color', uiSettings.atBgColor || '#0b84ff');
+        setVal('ui-at-bg-opacity', uiSettings.atBgOpacity !== undefined ? uiSettings.atBgOpacity : 0.7); setText('val-at-bg-opacity', uiSettings.atBgOpacity !== undefined ? uiSettings.atBgOpacity : 0.7);
+        setVal('ui-at-blur', uiSettings.atBlur !== undefined ? uiSettings.atBlur : 15); setText('val-at-blur', uiSettings.atBlur !== undefined ? uiSettings.atBlur : 15);
+        setCheck('ui-at-shadow-toggle', uiSettings.atShadow !== false);
     }
+
+
+            
+
 
     async function finalSaveBeautify() {
         const btn = document.getElementById('save-beauty-btn');
@@ -12608,7 +12730,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
     let individualIcons = JSON.parse(localStorage.getItem('ai_os_individual_icons')) || {};
     let targetAppOnclick = null;
 
-    // 扫描并在系统中替换独立图标
+        // 扫描并在系统中替换独立图标
     function applyIndividualIcons() {
         const containers = document.querySelectorAll('.app-container');
         containers.forEach(container => {
@@ -12623,10 +12745,12 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             if (iconDiv && customImg) {
                 const setStyles = (url) => {
                     iconDiv.style.setProperty('background-image', `url('${url}')`, 'important');
-                    iconDiv.style.setProperty('background-size', 'cover', 'important');
+                    iconDiv.style.setProperty('background-size', 'contain', 'important'); // 保证异形不被裁断
                     iconDiv.style.setProperty('background-position', 'center', 'important');
                     iconDiv.style.setProperty('background-blend-mode', 'normal', 'important');
-                    iconDiv.style.setProperty('background-color', 'transparent', 'important');
+                    iconDiv.style.setProperty('background-color', 'transparent', 'important'); // 强制透明底
+                    iconDiv.style.setProperty('box-shadow', 'none', 'important'); // 强制隐去阴影
+                    iconDiv.style.setProperty('border', 'none', 'important'); // 强制隐去边框
                     if(iTag) iTag.style.setProperty('display', 'none', 'important');
                     if(svgTag) svgTag.style.setProperty('display', 'none', 'important');
                 };
@@ -12641,6 +12765,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             }
         });
     }
+
 
     // 将系统里的 App 提取渲染到主题中心的面板中供用户修改
     function renderIndividualIconSettings() {
@@ -12687,8 +12812,9 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             if (customImg && customImg.startsWith('idb://')) {
                 getImageFromDB(customImg.replace('idb://', '')).then(r => {
                     if (r) {
-                        const el = document.getElementById(uid);
-                        if (el) el.style.cssText = `background: url('${r}') center/cover no-repeat !important; width: 45px; height: 45px; border-radius: 12px;`;
+                                                const el = document.getElementById(uid);
+                        if (el) el.style.cssText = `background: url('${r}') center/contain no-repeat !important; background-color: transparent !important; box-shadow: none !important; border: none !important; width: 45px; height: 45px; border-radius: 0;`;
+
                     }
                 });
             }
@@ -12704,6 +12830,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
     }
 
     // 图片处理：裁剪、压缩、存入数据库、渲染更新
+        // 图片处理：等比缩放、PNG透明压缩、存入数据库、渲染更新
     async function handleIndividualIconUpload(e) {
         const file = e.target.files[0];
         if (!file || !targetAppOnclick) return;
@@ -12715,19 +12842,31 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             const img = new Image();
             img.onload = async function() {
                 const canvas = document.createElement('canvas');
-                let size = Math.min(img.width, img.height);
+                let size = Math.max(img.width, img.height);
                 if (size > 300) size = 300; 
+                
+                // 等比缩放，绝不裁切，保证异形图完整
+                let w = img.width;
+                let h = img.height;
+                if (w > h) {
+                    h = Math.round((h * size) / w);
+                    w = size;
+                } else {
+                    w = Math.round((w * size) / h);
+                    h = size;
+                }
+                
                 canvas.width = size;
                 canvas.height = size;
-                
                 const ctx = canvas.getContext('2d');
-                // 居中智能裁切成正方形
-                const offsetX = (img.width - Math.min(img.width, img.height)) / 2;
-                const offsetY = (img.height - Math.min(img.width, img.height)) / 2;
                 
-                ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                // 将异形图片居中绘制到透明正方形画布上
+                const dx = (size - w) / 2;
+                const dy = (size - h) / 2;
+                ctx.drawImage(img, dx, dy, w, h);
                 
-                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+                // 核心：使用 PNG 格式，彻底保留透明通道！
+                const base64Url = canvas.toDataURL('image/png'); 
                 const imgId = 'ind_icon_' + Date.now();
                 
                 await saveImageToDB(imgId, base64Url);
@@ -12746,6 +12885,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         reader.readAsDataURL(file);
         e.target.value = ''; 
     }
+
 
     // 清除数据重置所有
     function resetAllIndividualIcons() {
@@ -15607,7 +15747,12 @@ async function handleFontUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
     
-    sysAlert("处理中", "正在解析并将字体存入本地私有库，字体越大所需时间越长...");
+    // 增加文件大小限制，防止巨大字体文件转 Base64 导致系统 OOM 卡死
+    if (file.size > 25 * 1024 * 1024) {
+        return sysAlert("失败", "字体文件过大，强行加载会导致手机或浏览器严重卡顿甚至死机，请选用 25MB 以下体积较小的字体文件！");
+    }
+
+    sysAlert("处理中", "正在解析并将字体存入本地私有库，字体越大所需时间越长，请耐心等待...");
     const reader = new FileReader();
     reader.onload = async function(event) {
         const fontBase64 = event.target.result;
@@ -15633,33 +15778,23 @@ function applyCustomFont(base64Data) {
         fontStyle.id = 'custom-font-style';
         document.head.appendChild(fontStyle);
     }
-    // 强制使用 !important 剥夺原系统字体的所有权重
+    // 强制限制字体作用域，避免使用通配符 * 导致浏览器在每次操作时进行全树重绘卡死
+    // 并且彻底排除所有的图标，防止乱码和黑条
     fontStyle.innerHTML = `
         @font-face {
             font-family: 'UserCustomFont';
             src: url('${base64Data}');
+            font-display: swap;
         }
-        * {
+        body, .app-view, .msg, input, textarea, button, select, div, span, p, h1, h2, h3, h4, h5, h6 {
             font-family: 'UserCustomFont', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important;
+        }
+        i, i::before, i::after, .fas, .far, .fab, .fa, svg, .app-icon i, .widget i {
+            font-family: "Font Awesome 6 Free", "FontAwesome" !important;
         }
     `;
 }
 
-function resetCustomFont() {
-    localStorage.removeItem('ai_os_font_enabled');
-    const fontStyle = document.getElementById('custom-font-style');
-    if (fontStyle) fontStyle.remove();
-    sysAlert("已恢复", "已恢复为默认系统字体。");
-}
-
-// 在系统初始化时自动挂载保存过的字体
-document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('ai_os_font_enabled') === 'true') {
-        getImageFromDB('ai_os_custom_font').then(fontData => {
-            if (fontData) applyCustomFont(fontData);
-        });
-    }
-});
 
 
 // ==========================================
@@ -15794,6 +15929,54 @@ openApp = function(appId) {
         document.getElementById('sr-setup-view').style.display = 'block';
     }
 };
+
+
+    // ==========================================
+    // 自定义悬浮球图片处理逻辑
+    // ==========================================
+    async function handleAssistiveImgUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        sysAlert("处理中", "正在压缩并生成您的专属悬浮球图片...");
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.min(img.width, img.height);
+                if (size > 200) size = 200; // 悬浮球图标不需要太大，防内存溢出
+                canvas.width = size;
+                canvas.height = size;
+                
+                const ctx = canvas.getContext('2d');
+                // 居中智能裁切
+                const offsetX = (img.width - Math.min(img.width, img.height)) / 2;
+                const offsetY = (img.height - Math.min(img.width, img.height)) / 2;
+                ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                
+                // 使用 PNG 保留透明底通道
+                const base64Url = canvas.toDataURL('image/png'); 
+                const imgId = 'at_img_' + Date.now();
+                
+                // 复用强大的 IndexedDB 私有图库不掉画质
+                await saveImageToDB(imgId, base64Url);
+                updateUIParam('atImg', 'idb://' + imgId);
+                
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = ''; 
+    }
+
+    function clearAssistiveImg() {
+        updateUIParam('atImg', '');
+        sysAlert("已清除", "已撤销自定义图片，恢复为默认悬浮球样式！");
+    }
+
 
 
 
