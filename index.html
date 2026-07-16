@@ -23,8 +23,21 @@
     <!-- 👆 新增结束 👆 -->
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        <!-- 引入 JSZip 用于解析 EPUB 文件 -->
+            <!-- 引入 JSZip 用于解析 EPUB 文件 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- 👇 新增：引入 Word 和 PDF 解析库 👇 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        }
+    </script>
+    <!-- 👆 新增结束 👆 -->
+
+     
+    
 
     <style>
     
@@ -3047,6 +3060,12 @@ html body #group-chat-app .fa-robot {
     /* 保持原来的宽高和位置占位，不破坏排版 */
 }
 
+/* 开启气泡边框自定义时，强力接管所有主题下气泡的边缘线 */
+body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    border: 1px solid var(--ui-bubble-border-color) !important;
+}
+
+
 
 
 
@@ -3109,6 +3128,8 @@ html body #group-chat-app .fa-robot {
         <!-- 👇 新增这一行：表情包专属上传接口 -->
         <input type="file" id="sticker-upload-input" accept="image/*" style="display:none;" onchange="handleStickerUpload(event)">
         <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
+        <!-- 👇 新增：世界书多格式文件导入接口 👇 -->
+        <input type="file" id="wb-file-import-input" accept=".json,.txt,.docx,.doc,.pdf" style="display:none;" onchange="handleWbFileImport(event)">
 
                         <!-- 世界书 App -->
             <div id="worldbook-app" class="app-view scrollable">
@@ -3135,12 +3156,15 @@ html body #group-chat-app .fa-robot {
                                 </label>
                             </div>
                         </div>
-                        <div class="setting-item">
-                            <button class="import-btn" onclick="importWorldbook()">
-                                <svg style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                                导入条目到当前预设 (.json)
+                                                <div class="setting-item" style="flex-direction: row; gap: 10px;">
+                            <button class="import-btn" onclick="importWorldbook()" style="flex: 1; font-size: 13px; padding: 10px;" title="通过代码或链接导入">
+                                <i class="fas fa-paste"></i> 粘贴 JSON
+                            </button>
+                            <button class="import-btn" onclick="document.getElementById('wb-file-import-input').click()" style="flex: 1; font-size: 13px; padding: 10px;" title="解析 Word / PDF / TXT 文本文档">
+                                <i class="fas fa-file-import"></i> 本地文件导入
                             </button>
                         </div>
+
                     </div>
 
                     <!-- 👇 预设板块 👇 -->
@@ -4104,6 +4128,15 @@ html body #group-chat-app .fa-robot {
                         <div class="setting-item"><span class="setting-label">图标圆角: <span id="val-icon-radius">20</span>px</span><input type="range" id="ui-icon-radius-input" min="0" max="31" value="20" class="setting-input" oninput="updateUIParam('iconRadius', this.value)"></div>
                         <div class="setting-item"><span class="setting-label">气泡弧度: <span id="val-bubble-radius">20</span>px</span><input type="range" id="ui-bubble-radius-input" min="4" max="25" value="20" class="setting-input" oninput="updateUIParam('bubbleRadius', this.value)"></div>
                         <div class="setting-item"><span class="setting-label">玻璃模糊: <span id="val-glass-blur">25</span>px</span><input type="range" id="ui-glass-blur-input" min="0" max="50" value="25" class="setting-input" oninput="updateUIParam('glassBlur', this.value)"></div>
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
+    <span class="setting-label">开启气泡边框自定义</span>
+    <label class="switch"><input type="checkbox" id="ui-custom-bubble-border-toggle" onchange="updateUIParam('customBubbleBorder', this.checked)"><span class="slider"></span></label>
+</div>
+<div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+    <span class="setting-label">气泡边缘线颜色</span>
+    <input type="color" id="ui-bubble-border-color" value="#000000" onchange="updateUIParam('bubbleBorderColor', this.value)" style="width: 44px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+</div>
+
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">显示界面组件与图标阴影</span>
                             <label class="switch"><input type="checkbox" id="ui-icon-shadow-toggle" checked onchange="updateUIParam('iconShadow', this.checked)"><span class="slider"></span></label>
@@ -8969,13 +9002,15 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
                  // ==========================================
     // 🎨 全局美化中心核心逻辑 (强力防阻塞版)
     // ==========================================
-    let uiSettings = { 
+        let uiSettings = { 
         iconRadius: 20, glassBlur: 25, iconScale: 0.85, bubbleRadius: 20, bubbleOpacity: 0.92, 
         cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
         liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
         iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 56, timeWeight: 200,
-        timeOpacity: 1.0, iconShadow: true, hideTimePanel: true
+        timeOpacity: 1.0, iconShadow: true, hideTimePanel: true,
+        customBubbleBorder: false, bubbleBorderColor: "#000000" /* 👈 新增这两个 */
     };
+
 
     function hexToRgba(hex, opacity) {
         hex = hex.replace('#', '');
@@ -9029,6 +9064,14 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
             root.style.removeProperty('--time-panel-shadow');
             root.style.removeProperty('--time-panel-border');
         }
+                // 应用自定义气泡边框
+        if (uiSettings.customBubbleBorder) {
+            document.body.classList.add('custom-bubble-border');
+            root.style.setProperty('--ui-bubble-border-color', uiSettings.bubbleBorderColor || '#000000');
+        } else {
+            document.body.classList.remove('custom-bubble-border');
+        }
+
 
         // 2. 特效开关应用
         const timeTextEl = document.getElementById('lq-time');
@@ -9114,6 +9157,9 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         if(!uiSettings.iconColor) uiSettings.iconColor = "#ffffff";
         if(!uiSettings.iconBorderColor) uiSettings.iconBorderColor = "#ffffff";
         if(typeof uiSettings.iconRadius === 'undefined') uiSettings.iconRadius = 20;
+                if(typeof uiSettings.customBubbleBorder === 'undefined') uiSettings.customBubbleBorder = false;
+        if(!uiSettings.bubbleBorderColor) uiSettings.bubbleBorderColor = "#000000";
+
         if(typeof uiSettings.bubbleRadius === 'undefined') uiSettings.bubbleRadius = 20;
         if(typeof uiSettings.glassBlur === 'undefined') uiSettings.glassBlur = 25;
 
@@ -9195,6 +9241,9 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
         setCheck('ui-liquid-icon-toggle', uiSettings.liquidIcon);
         setCheck('ui-custom-color-toggle', uiSettings.customIconColor);
         setCheck('ui-icon-shadow-toggle', uiSettings.iconShadow);
+                setCheck('ui-custom-bubble-border-toggle', uiSettings.customBubbleBorder);
+        setVal('ui-bubble-border-color', uiSettings.bubbleBorderColor);
+
 
         setVal('ui-time-color', uiSettings.timeColor);
         setVal('ui-icon-bg', uiSettings.iconBgColor);
@@ -15976,6 +16025,99 @@ openApp = function(appId) {
         updateUIParam('atImg', '');
         sysAlert("已清除", "已撤销自定义图片，恢复为默认悬浮球样式！");
     }
+
+        // ==========================================
+    // 世界书文件解析引擎 (JSON, TXT, DOCX, PDF)
+    // ==========================================
+    async function handleWbFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const ext = file.name.split('.').pop().toLowerCase();
+        sysAlert("处理中", "正在解析文件并提取文本设定，可能需要一些时间...");
+        
+        try {
+            if (ext === 'json') {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.entries && Array.isArray(data.entries)) {
+                            data.entries.forEach(e => { if(typeof e.enabled === 'undefined') e.enabled = true; });
+                            const mergeConfirmed = await sysConfirm("导入确认", `发现 ${data.entries.length} 个条目。\n\n【确定】替换当前预设条目\n【取消】追加到当前预设末尾`);
+                            if (mergeConfirmed) worldbookPresets[activePresetIndex].entries = data.entries;
+                            else worldbookPresets[activePresetIndex].entries = [...worldbookPresets[activePresetIndex].entries, ...data.entries];
+                            
+                            saveWorldbookData(); renderWorldbookEntries();
+                            document.getElementById('sys-dialog-overlay').style.display = 'none';
+                            sysAlert("导入成功", `成功导入 ${data.entries.length} 个世界书条目到当前预设。`);
+                        } else throw new Error('JSON格式不正确，缺少 entries 数组');
+                    } catch (err) {
+                        document.getElementById('sys-dialog-overlay').style.display = 'none';
+                        sysAlert("导入失败", "JSON 解析出错：" + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                // 文本类解析 (TXT, DOCX, PDF)
+                let fullText = "";
+                if (ext === 'txt') {
+                    fullText = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve(event.target.result);
+                        reader.readAsText(file);
+                    });
+                } else if (ext === 'docx' || ext === 'doc') {
+                    if (typeof mammoth === 'undefined') throw new Error("解析库加载失败，请检查网络");
+                    const arrayBuffer = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve(event.target.result);
+                        reader.readAsArrayBuffer(file);
+                    });
+                    const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                    fullText = result.value;
+                } else if (ext === 'pdf') {
+                    if (typeof pdfjsLib === 'undefined') throw new Error("解析库加载失败，请检查网络");
+                    const arrayBuffer = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve(event.target.result);
+                        reader.readAsArrayBuffer(file);
+                    });
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let textContent = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        const strings = content.items.map(item => item.str);
+                        textContent += strings.join(" ") + "\n";
+                    }
+                    fullText = textContent;
+                }
+                
+                if (fullText && fullText.trim()) {
+                    // 将提取的所有文档内容作为一个新条目存入
+                    worldbookPresets[activePresetIndex].entries.push({ 
+                        enabled: true, 
+                        keywords: file.name.replace(/\.[^/.]+$/, ""), // 默认以文件名作为关键词备忘
+                        useRegex: false, caseSensitive: false, constant: false, 
+                        position: 'after_char', role: 'system', priority: 10, depth: 2, 
+                        content: fullText.trim()
+                    });
+                    saveWorldbookData(); 
+                    renderWorldbookEntries();
+                    document.getElementById('sys-dialog-overlay').style.display = 'none';
+                    sysAlert("导入成功", `文档已提取为新条目！\n\n注意：请手动前往该条目修改你的触发关键词（默认设为了文件名）。`);
+                } else {
+                    throw new Error("未能从文件中提取到有效文本");
+                }
+            }
+        } catch (e) {
+            document.getElementById('sys-dialog-overlay').style.display = 'none';
+            sysAlert("导入失败", `错误：${e.message}\n\n注：较老的 .doc 格式如解析失败，请将其转存为 .docx 后再试。`);
+        }
+        e.target.value = '';
+    }
+
 
 
 
