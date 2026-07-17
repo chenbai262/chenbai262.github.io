@@ -173,76 +173,47 @@
         .apple-style-accent-corner { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2rem), calc(100% - 2rem) 100%, 0 100%); }
         .apple-style-animate-in { animation: apple-style-fade-in 0.5s ease-out both; }
 
-        /* 玻璃效果同步为 Apple 级别的高毛玻璃饱和度 */
+                        /* --- 🌟 仿 iOS 极致液态玻璃特效 🌟 --- */
         .glass-effect {
-            backdrop-filter: blur(var(--ui-glass-blur, 16px)) saturate(180%);
-            -webkit-backdrop-filter: blur(var(--ui-glass-blur, 16px)) saturate(180%);
-            background: var(--bg-glass);
-            border: 0.5px solid var(--border-color); 
+            /* 丝滑的模糊与色彩透射 */
+            backdrop-filter: blur(var(--ui-glass-blur, 25px)) saturate(180%) brightness(1.1) contrast(1.05) !important;
+            -webkit-backdrop-filter: blur(var(--ui-glass-blur, 25px)) saturate(180%) brightness(1.1) contrast(1.05) !important;
+            
+            /* 清透的渐变背景 */
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0.05) 100%
+            ) !important;
+            
+            /* 极细的玻璃折射边框 */
+            border: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+            border-right-color: rgba(255, 255, 255, 0.05) !important;
+            
+            /* 柔和的环境阴影 + 内部高光，塑造立体厚度 */
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.05) !important;
+            
             transform: translateZ(0); 
+            will-change: transform;
         }
 
-        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
-        /* 原有的外层背景接管，并注入专属 Apple 默认字库与黑底设计 */
-        body { 
-            display: flex; justify-content: center; align-items: center; min-height:100vh; 
-            background: #000000; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; 
-            -webkit-font-smoothing: antialiased; 
-            -moz-osx-font-smoothing: grayscale; 
-            overflow: hidden; 
+        /* 浅色模式下的液态玻璃（防刺眼适配） */
+        :root.light-mode .glass-effect {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.65) 0%,
+                rgba(255, 255, 255, 0.3) 100%
+            ) !important;
+            border: 0.5px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.08),
+                inset 0 1px 2px rgba(255, 255, 255, 0.8) !important;
         }
 
-
-
-
-
-
-
-        :root.light-mode {
-            --neu-bg: #e0e5ec;
-            --neu-shadow-dark: #b8bcc2;
-            --neu-shadow-light: #ffffff;
-            --text-main: #333333;
-            --text-sub: #6b7280;
-        }
-
-        :root.morandi-mode {
-            --neu-bg: #d1d9e0;
-            --neu-shadow-dark: #b2bac1;
-            --neu-shadow-light: #f0f8ff;
-            --accent: #87C0CA;
-            --text-main: #4a5568;
-            --text-sub: #718096;
-        }
-
-        :root.monochrome-mode {
-            --neu-bg: #2d2d2d;
-            --neu-shadow-dark: #1f1f1f;
-            --neu-shadow-light: #3b3b3b;
-            --accent: #e5e7eb;
-            --text-main: #f3f4f6;
-            --text-sub: #9ca3af;
-        }
-
-        :root.aqua-mode {
-            --neu-bg: #e6f0f9;
-            --neu-shadow-dark: #c4ccd4;
-            --neu-shadow-light: #ffffff;
-            --accent: #4a90e2;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-        }
-
-         /* 玻璃效果，改为日系宣纸磨砂感 */
-        .glass-effect {
-            backdrop-filter: blur(var(--ui-glass-blur, 12px)) saturate(120%);
-            -webkit-backdrop-filter: blur(var(--ui-glass-blur, 12px)) saturate(120%);
-            background: var(--bg-glass);
-            border: 0.5px solid var(--border-color); /* 日系极细边框 */
-            transform: translateZ(0); 
-        }
 
 
 
@@ -695,18 +666,29 @@
         .app-container { display: flex; flex-direction: column; align-items: center; }
         .dock { position: absolute; bottom: 35px; left: 15px; right: 15px; height: 90px; background: rgba(255,255,255,0.15); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; }
 
-        /* --- 番茄钟 UI --- */
-        #pomodoro-app { background: var(--bg-base); }
-        .pomodoro-header { padding: 60px 20px 20px; font-size: 22px; font-weight: bold; color: var(--text-main); background: var(--bg-glass-header); display: flex; justify-content: space-between; align-items: center; z-index: 10;}
-        .pomodoro-header i { transition: transform 0.1s, opacity 0.1s; } .pomodoro-header i:active { transform: scale(0.8); opacity: 0.6; }
-        .pomodoro-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 80px; }
-        .pomodoro-circle { width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(135, 192, 202, 0.3); border-top-color: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(0,0,0,0.3); margin-bottom: 50px; position: relative; }
-        #pomodoro-time { font-size: 54px; font-weight: 300; color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, monospace; letter-spacing: 2px;}
-        #pomodoro-status { font-size: 15px; color: var(--text-sub); margin-top: 8px; font-weight: 500;}
-        .pomodoro-controls { display: flex; gap: 20px; }
-        .pomo-btn { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main); transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); border: 1px solid var(--border-color); }
-        .pomo-btn:active { transform: scale(0.85); }
-        .pomo-btn.primary { background: rgba(135, 192, 202, 0.2); color: var(--accent); border-color: rgba(135, 192, 202, 0.5); }
+               /* --- 自习室 App 专属样式 --- */
+        #study-app { background: var(--bg-base); min-height: 100vh; position: relative; }
+        .study-panel { display: none; padding: 15px 20px 80px; flex-direction: column; height: calc(100vh - 130px); overflow-y: auto; }
+        .study-panel.active { display: flex; }
+        
+        /* 顶部悬浮倒计时栏 */
+        .study-timer-bar { background: var(--bg-panel); border: 1px solid var(--accent); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex-shrink: 0;}
+        .st-time { font-size: 28px; font-weight: bold; color: var(--text-main); font-family: monospace; letter-spacing: 2px;}
+        .st-controls { display: flex; gap: 10px; }
+        .st-btn { background: var(--input-bg); color: var(--text-main); border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .st-btn.primary { background: var(--accent); color: #000; }
+        
+        /* 学习聊天区 */
+        .study-chat-container { flex: 1; overflow-y: auto; padding-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .study-msg { padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; max-width: 85%; }
+        .study-msg.ai { background: var(--bg-panel); color: var(--text-main); align-self: flex-start; border: 0.5px solid var(--border-color); border-top-left-radius: 4px; }
+        .study-msg.me { background: var(--accent); color: #000; align-self: flex-end; border-top-right-radius: 4px; }
+        
+        /* 打卡日历与资料区 */
+        .study-card { background: var(--bg-panel); border-radius: 16px; padding: 18px; border: 0.5px solid var(--border-color); margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .study-mat-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--input-bg); border-radius: 10px; margin-bottom: 10px; }
+        .study-mat-icon { font-size: 24px; color: var(--accent); margin-right: 12px; }
+
 
         /* --- 通讯录 --- */
         .contacts-header { padding: 60px 20px 20px; font-size: 28px; font-weight: bold; color: var(--text-main); background: var(--bg-glass-header); position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);}
@@ -2726,6 +2708,26 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
         .wg-cal-day { font-size: 10px; color: var(--text-sub); font-weight: bold; padding-bottom: 2px;}
         .wg-cal-date { font-size: 13px; color: var(--text-main); display: flex; justify-content: center; align-items: center; border-radius: 8px; transition: 0.2s;}
         .wg-cal-date.active { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+                /* 4. 拍立得小组件 */
+        .widget-polaroid {
+            grid-column: span 2; height: 180px; padding: 10px 10px 35px 10px !important;
+            background: #f8f8f8; border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; position: relative;
+        }
+        .wg-polaroid-img {
+            width: 100%; height: 100%; background-color: #ddd;
+            background-size: cover; background-position: center;
+            border: 1px solid rgba(0,0,0,0.1); cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            color: #888; font-size: 11px; text-align: center;
+        }
+        .wg-polaroid-text {
+            position: absolute; bottom: 8px; left: 0; width: 100%;
+            text-align: center; font-family: "Comic Sans MS", cursive, sans-serif;
+            color: #333; font-size: 13px; font-weight: bold; cursor: pointer;
+        }
+
 
 
                                               /* 图片单独删除悬浮小按钮 (黑色透明感) */
@@ -3066,6 +3068,89 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
 }
 
 
+/* ========================================== */
+/* 衣柜 App 专属样式 */
+/* ========================================== */
+#wardrobe-app { background: var(--bg-base); min-height: 100vh; }
+.wardrobe-header { padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
+.wardrobe-model-area { position: relative; width: 100%; height: 380px; background: var(--input-bg); display: flex; justify-content: center; align-items: flex-end; overflow: hidden; border-bottom: 0.5px solid var(--border-color); }
+.wardrobe-model-img { max-width: 100%; max-height: 100%; object-fit: contain; position: absolute; bottom: 0; z-index: 1; pointer-events: none;}
+/* 将原有的 .wardrobe-cloth-layer 替换为以下代码 */
+.wardrobe-cloth-layer { 
+    position: absolute; 
+    z-index: 2; 
+    transition: transform 0.1s, width 0.2s; 
+    cursor: grab; 
+    user-select: none; 
+    -webkit-user-drag: none; 
+    transform-origin: center center;
+}
+.wardrobe-cloth-layer:active { cursor: grabbing; }
+.wardrobe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; padding-bottom: 100px; }
+.wardrobe-item { background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; cursor: pointer; transition: transform 0.2s;}
+.wardrobe-item:active { transform: scale(0.95); }
+.wardrobe-item.wearing { border-color: var(--accent); background: rgba(135,192,202,0.15); box-shadow: inset 0 0 10px rgba(135,192,202,0.2); }
+.wardrobe-item-img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 8px; }
+.wardrobe-item-name { font-size: 12px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; }
+.wardrobe-del-btn { position: absolute; top: -5px; right: -5px; background: rgba(0,0,0,0.6); color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; border: 1px solid rgba(255,255,255,0.2); z-index: 5;}
+.wardrobe-actions { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+.wardrobe-action-btn { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 0.5px solid rgba(255,255,255,0.3); }
+
+/* ========================================== */
+/* 地图 App 专属样式 */
+/* ========================================== */
+#map-app { background: var(--bg-base); min-height: 100vh; }
+.map-header { padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
+.map-radar-area { position: relative; width: 100%; height: 250px; background: radial-gradient(circle, rgba(11, 132, 255, 0.1) 0%, var(--bg-base) 70%); border-bottom: 0.5px solid var(--border-color); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.map-radar-circle { position: absolute; width: 200px; height: 200px; border-radius: 50%; border: 1px dashed rgba(11, 132, 255, 0.3); animation: spin 10s linear infinite; }
+.map-radar-circle::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 50%; background: linear-gradient(to bottom, #0b84ff, transparent); transform-origin: bottom center; animation: radarScan 4s linear infinite; }
+@keyframes radarScan { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.map-char-pin { position: absolute; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 5; transition: all 0.5s; display: flex; flex-direction: column; align-items: center;}
+.map-char-pin::after { content: '📍'; color: #ff453a; font-size: 16px; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+.map-list-container { padding: 15px; padding-bottom: 100px; display: flex; flex-direction: column; gap: 12px; }
+.map-loc-item { background: var(--bg-panel); border-radius: 16px; padding: 15px; border: 0.5px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; }
+.map-loc-header { display: flex; justify-content: space-between; align-items: center; }
+.map-loc-title { font-size: 15px; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.map-loc-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+.map-loc-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; border-top: 0.5px solid var(--border-color); padding-top: 10px;}
+.map-btn-monitor { background: rgba(11, 132, 255, 0.1); color: #0b84ff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; border: 0.5px solid rgba(11, 132, 255, 0.3);}
+.map-btn-monitor:active { transform: scale(0.95); }
+.map-btn-del { color: #ff453a; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+/* 新增：地图地点可视节点 */
+.map-loc-node {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--accent);
+    cursor: grab;
+    z-index: 4;
+}
+.map-loc-node:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.2);
+}
+.map-loc-node-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-main);
+    white-space: nowrap;
+    margin-top: 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    pointer-events: none;
+}
+
+
+
+
+
 
 
 
@@ -3130,6 +3215,9 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
         <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
         <!-- 👇 新增：世界书多格式文件导入接口 👇 -->
         <input type="file" id="wb-file-import-input" accept=".json,.txt,.docx,.doc,.pdf" style="display:none;" onchange="handleWbFileImport(event)">
+        <input type="file" id="wardrobe-model-upload" accept="image/*" style="display:none;" onchange="handleWardrobeModelUpload(event)">
+<input type="file" id="wardrobe-cloth-upload" accept="image/*" style="display:none;" onchange="handleWardrobeClothUpload(event)">
+
 
                         <!-- 世界书 App -->
             <div id="worldbook-app" class="app-view scrollable">
@@ -3255,16 +3343,25 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                         <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
                         <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
                     </div>
+                                        <div class="widget widget-polaroid" id="wg-polaroid" data-drag-id="sys-wg-polaroid" ondblclick="openWidgetSettings('wg-polaroid')" title="双击自由定制样式大小">
+                        <div class="wg-polaroid-img" id="wg-polaroid-img" onclick="document.getElementById('wg-polaroid-upload').click()">
+                            <span id="wg-polaroid-hint">点击换图<br><span style="font-weight:normal; opacity:0.8; font-size:10px;">(双击改样式)</span></span>
+                        </div>
+                        <div class="wg-polaroid-text" id="wg-polaroid-text" onclick="editPolaroidText()">My Memory</div>
+                        <input type="file" id="wg-polaroid-upload" accept="image/*" style="display:none;" onchange="handleWidgetPolaroidUpload(event)">
+                    </div>
+
 
                     <!-- 第一页常用 APP -->
                     <div class="app-container" onclick="openApp('memory-app')" data-drag-id="sys-memory"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(195, 180, 190, 0.1) 100%);"><i class="fas fa-book"></i></div><div class="app-label">记忆书</div></div>
                     <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
                     <div class="app-container" onclick="changeHomeWallpaper()" data-drag-id="sys-wallpaper"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
-                    <div class="app-container" onclick="openApp('pomodoro-app')" data-drag-id="sys-pomo"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 215, 0.4) 0%, rgba(190, 185, 195, 0.1) 100%);"><i class="fas fa-stopwatch"></i></div><div class="app-label">番茄钟</div></div>
                     <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
                     <div class="app-container" onclick="openApp('beautify-app')" data-drag-id="sys-beauty"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);"><i class="fas fa-paint-brush"></i></div><div class="app-label">美化中心</div></div>
                     <div class="app-container" onclick="openApp('theme-app')" data-drag-id="sys-theme"><div class="app-icon" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"><i class="fas fa-paint-roller" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">主题布局</div></div>
                     <div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-coffee" style="color: rgba(0,0,0,0.6);"></i></div><div class="app-label">线下约会</div></div>
+                    <div class="app-container" onclick="openApp('study-app')" data-drag-id="sys-study"><div class="app-icon" style="background: linear-gradient(135deg, rgba(161, 140, 209, 0.4) 0%, rgba(251, 194, 235, 0.1) 100%);"><i class="fas fa-graduation-cap" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">自习室</div></div>
+
                 </div>
 
                 <!-- ============ 第二页 (进阶生活) ============ -->
@@ -3307,6 +3404,19 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                         </div>
                         <div class="app-label">共享相册</div>
                     </div>
+                    <div class="app-container" onclick="openApp('wardrobe-app')" data-drag-id="sys-wardrobe">
+    <div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-tshirt" style="color: rgba(255,255,255,0.95);"></i></div>
+    <div class="app-label">衣橱</div>
+</div>
+
+<div class="app-container" onclick="openApp('map-app')" data-drag-id="sys-map">
+    <div class="app-icon" style="background: linear-gradient(135deg, #1fa2ff 0%, #12d8fa 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <i class="fas fa-map-marked-alt" style="color: #fff;"></i>
+    </div>
+    <div class="app-label">地图雷达</div>
+</div>
+
+
 
 
                 </div>
@@ -3447,6 +3557,80 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                     </div>
                 </div>
             </div>
+
+                        <!-- 自习室 App (取代旧版番茄钟) -->
+            <div id="study-app" class="app-view">
+                <div class="settings-header glass-effect" style="position: sticky; top: 0; z-index: 10; border-bottom: 0.5px solid var(--border-color);">
+                    <div style="display:flex; align-items:center;">
+                        <!-- 这里的返回键绑定了专属防逃跑函数 -->
+                        <i class="fas fa-chevron-left" onclick="handleStudyBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+                        <span style="font-size:18px; font-weight:bold; color:var(--text-main);">沉浸自习室</span>
+                    </div>
+                </div>
+
+                <!-- 顶部 3 个 Tab -->
+                <div class="status-tabs" style="margin: 15px 20px 0; flex-shrink: 0;">
+                    <div class="tab-btn active" onclick="switchStudyTab('chat', this)">学习答疑</div>
+                    <div class="tab-btn" onclick="switchStudyTab('mine', this)">我的打卡</div>
+                    <div class="tab-btn" onclick="switchStudyTab('mat', this)">资料书架</div>
+                </div>
+
+                <!-- 1. 聊天答疑与番茄监督 -->
+                <div id="study-chat" class="study-panel active">
+                    <div class="study-timer-bar">
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">TA 正在注视着你</div>
+                            <div class="st-time" id="study-time-display">25:00</div>
+                        </div>
+                        <div class="st-controls">
+                            <button class="st-btn" onclick="setStudyTime()"><i class="fas fa-clock"></i> 设时</button>
+                            <button class="st-btn primary" id="study-start-btn" onclick="toggleStudyTimer()"><i class="fas fa-play"></i> 专注</button>
+                        </div>
+                    </div>
+                    
+                    <div class="study-chat-container" id="study-chat-box">
+                        <div style="text-align:center; font-size:12px; color:var(--text-sub); margin-bottom: 10px;">—— 遇到不懂的题，随时发给TA ——</div>
+                    </div>
+
+                    <div class="chat-input-area glass-effect" style="padding: 12px 0 0; background: transparent; border: none;">
+                        <i class="fas fa-image" style="color: var(--text-sub); font-size: 24px; cursor: pointer; margin-right: 10px;" onclick="document.getElementById('study-img-upload').click()" title="上传题目截图"></i>
+                        <input type="text" class="chat-input" id="study-input" placeholder="输入题目或提问..." onkeydown="if(event.key==='Enter') sendStudyMsg()">
+                        <i class="fas fa-arrow-circle-up" style="color: var(--accent); font-size: 28px; cursor: pointer; margin-left: 10px;" onclick="sendStudyMsg()"></i>
+                        <input type="file" id="study-img-upload" accept="image/*" style="display:none;" onchange="handleStudyImage(event)">
+                    </div>
+                </div>
+
+                <!-- 2. 我的进度与打卡 -->
+                <div id="study-mine" class="study-panel">
+                    <div class="study-card">
+                        <h3 style="font-size: 15px; color: var(--text-main); margin-bottom: 15px;"><i class="fas fa-calendar-check" style="color:#2ecc71;"></i> 今日学习进度</h3>
+                        <textarea id="study-progress-input" class="setting-textarea" style="height: 120px; font-size:14px; margin-bottom: 10px;" placeholder="今天学会了什么？遇到了什么困难？记录下来..."></textarea>
+                        <div class="save-btn" style="margin: 0; width: 100%; background: var(--accent); color: #000;" onclick="shareStudyProgress()"><i class="fas fa-share"></i> 打卡并分享给 TA</div>
+                    </div>
+                    
+                    <div class="study-card">
+                        <h3 style="font-size: 15px; color: var(--text-main); margin-bottom: 15px;"><i class="fas fa-medal" style="color:#f39c12;"></i> 历史打卡记录</h3>
+                        <div id="study-progress-list" style="display:flex; flex-direction:column; gap:10px;">
+                            <div style="font-size:13px; color:var(--text-sub); text-align:center;">暂无记录，快去完成第一次打卡吧！</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 学习资料库 -->
+                <div id="study-mat" class="study-panel">
+                    <div class="study-card" style="background: transparent; border: 1px dashed var(--accent); display:flex; flex-direction:column; align-items:center; cursor:pointer;" onclick="document.getElementById('study-doc-upload').click()">
+                        <i class="fas fa-file-upload" style="font-size:30px; color:var(--accent); margin-bottom:10px;"></i>
+                        <div style="font-size:14px; color:var(--text-main); font-weight:bold;">上传课本/题库资料</div>
+                        <div style="font-size:11px; color:var(--text-sub); margin-top:5px; text-align:center;">支持 TXT/PDF/Word。<br>上传后 AI 会通读全文，你可以随时就资料提问。</div>
+                        <input type="file" id="study-doc-upload" accept=".txt,.pdf,.doc,.docx" style="display:none;" onchange="handleStudyDoc(event)">
+                    </div>
+                    
+                    <div id="study-mat-list">
+                        <!-- 动态渲染资料列表 -->
+                    </div>
+                </div>
+            </div>
+
 
 
 
@@ -4388,6 +4572,15 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
             <span class="setting-label">背景透明度: <span id="val-wg-opacity" style="color:var(--accent)">0.15</span></span>
             <input type="range" min="0" max="1" step="0.05" value="0.15" id="wg-set-opacity" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-opacity').innerText=this.value">
         </div>
+                <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+            <span class="setting-label">整体透明度 (含图片): <span id="val-wg-all-opacity" style="color:var(--accent)">1.00</span></span>
+            <input type="range" min="0.1" max="1" step="0.05" value="1" id="wg-set-all-opacity" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-all-opacity').innerText=this.value">
+        </div>
+        <div class="setting-item" style="padding: 10px 0; border-bottom: none; flex-direction: row; justify-content: space-between; align-items: center;">
+            <span class="setting-label">开启玻璃特效 (毛玻璃底板)</span>
+            <label class="switch"><input type="checkbox" id="wg-set-glass"><span class="slider"></span></label>
+        </div>
+
         <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
             <span class="setting-label">边框圆角: <span id="val-wg-radius" style="color:var(--accent)">22</span>px</span>
             <input type="range" min="0" max="50" step="1" value="22" id="wg-set-radius" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-wg-radius').innerText=this.value">
@@ -5328,6 +5521,73 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                     </div>
                 </div>
             </div>
+
+            <!-- 衣橱 App -->
+<div id="wardrobe-app" class="app-view scrollable">
+    <div class="wardrobe-header">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">专属衣橱</span>
+        </div>
+        <div style="display:flex; gap: 15px; align-items:center;">
+            <i class="fas fa-magic" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="askAIToMatch()" title="AI 推荐搭配"></i>
+            <i class="fas fa-plus" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="document.getElementById('wardrobe-cloth-upload').click()" title="添加衣服(支持PNG透明图)"></i>
+        </div>
+    </div>
+
+        <div class="wardrobe-model-area" id="wardrobe-model-area">
+        <div style="position:absolute; top: 15px; left: 15px; font-size: 12px; color: var(--text-sub); z-index: 10; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+            <i class="fas fa-info-circle"></i> 选衣服后，可在人偶上拖拽移动。<br>&nbsp;&nbsp;&nbsp;&nbsp;双击衣服图片可改变大小。
+        </div>
+        <img src="" id="wardrobe-model-base" class="wardrobe-model-img">
+        <div id="wardrobe-clothes-layers" style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;"></div>
+        
+        <div class="wardrobe-actions">
+            <div class="wardrobe-action-btn" onclick="document.getElementById('wardrobe-model-upload').click()" title="更换模特底图"><i class="fas fa-user"></i></div>
+            <div class="wardrobe-action-btn" onclick="shareWardrobeToChat()" title="换好后，分享穿搭给TA"><i class="fas fa-share"></i></div>
+        </div>
+    </div>
+
+
+    <div class="wardrobe-grid" id="wardrobe-grid">
+        <!-- 动态渲染衣服列表 -->
+    </div>
+</div>
+
+
+<!-- 地图 App -->
+<div id="map-app" class="app-view scrollable">
+    <div class="map-header">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">地图雷达</span>
+        </div>
+        <div style="display:flex; gap: 15px; align-items:center;">
+            <i class="fas fa-plus" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="promptAddLocation()" title="添加新地点"></i>
+            <i class="fas fa-street-view" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="shareMyLocation()" title="发送我的位置"></i>
+        </div>
+    </div>
+
+    <div class="map-radar-area">
+        <div class="map-radar-circle"></div>
+        <div class="map-char-pin" id="map-char-pin" style="display:none;">
+            <img src="" id="map-char-avatar" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #fff;">
+            <span id="map-char-loc-name" style="margin-top:2px;">获取中...</span>
+        </div>
+        <div style="position:absolute; bottom: 10px; right: 15px; font-size: 10px; color: var(--text-sub);">
+            <i class="fas fa-satellite"></i> 卫星连接就绪
+        </div>
+    </div>
+
+    <div style="padding: 10px 20px 0; font-size: 12px; color: var(--text-sub); text-align: center;">
+        您可以自由添加地点并描述其用途，AI会记住这些设定。
+    </div>
+    <div class="map-list-container" id="map-loc-list">
+        <!-- 动态渲染地点列表 -->
+    </div>
+</div>
+
+
 
 
 
@@ -7422,6 +7682,22 @@ if (globalAPI.enableNarration) {
             homeInjectBlock += `\n【睡眠状态】：用户当前正处于睡眠状态。请在心里默默陪伴，放低姿态。`;
         }
 
+        // 👇 新增：AI 对衣柜的感知与后台强制换装权限 (带服装详细描述版)
+let wardrobeInjectBlock = "";
+if (typeof wardrobeData !== 'undefined' && wardrobeData.clothes.length > 0) {
+    let wearingInfos = wardrobeData.wearing.map(id => {
+        let c = wardrobeData.clothes.find(c => c.id === id);
+        return c ? `${c.name} (描述细节: ${c.desc || '暂无'})` : null;
+    }).filter(Boolean).join('、') || "未穿任何衣物";
+    
+    let allClothes = wardrobeData.clothes.map(c => c.name).join('、');
+    wardrobeInjectBlock = `\n\n【专属衣柜与穿搭换装系统】：
+目前系统的衣柜里存放了以下衣物：${allClothes}。当前这具身体正穿着：${wearingInfos}。
+如果你决定换衣服（比如要出门、睡觉、赴约，或者根据天气换装），你可以在聊天回复中独立输出 $$WARDROBE_WEAR:衣服名称$$ （如果换多件请用逗号分隔，如 $$WARDROBE_WEAR:白衬衫,破洞牛仔裤$$）。系统会自动为你完成后台穿脱！请结合刚换上的衣服细节，自然地在聊天中表现出你换了新衣服。`;
+}
+
+
+
 
 
 
@@ -7555,13 +7831,20 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
             }).join('\n');
             relationInjectBlock = `\n\n【核心人物关系网设定】：\n${relLines}\n请你在互动中必须严格遵循、记忆并代入上述所有人际关系。`;
         }
+
+        let mapLocsStr = typeof mapData !== 'undefined' ? mapData.map(m => m.name).join('、') : '';
+if (mapLocsStr) {
+    builtInRules += `\n【地图系统联动】：当前城市地图上已知的坐标点有：${mapLocsStr}。如果你在聊天中描述自己出门、改变了位置，请在回复中独立输出 $$LOC_UPDATE:地点名称$$ ，系统会将你的角色图标在地图雷达上实时移动到该地点。`;
+}
+
         // 👆 新增结束
 
 
         // 把 screenTimeInjectBlock 加入到最终拼接中
         // 把 relationInjectBlock 加入到最终拼接中
         // 👇 注意最后的 + mcpInjectBlock
-        let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + meetInjectBlock + envInjectBlock + homeInjectBlock + statusInjectBlock + petInjectBlock + musicInjectBlock + momentsInjectBlock + drawInjectBlock + screenTimeInjectBlock + relationInjectBlock + builtInRules + detailStatusRules + mcpInjectBlock }];
+// 保证将 wardrobeInjectBlock 放入拼接长句中：
+let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + meetInjectBlock + envInjectBlock + homeInjectBlock + wardrobeInjectBlock + statusInjectBlock /*...其余不变*/ }];
 
 
 
@@ -7666,6 +7949,10 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
             reply = reply.replace(/\$\$\s*ADD_FRIEND(?:\$\$|$)/gi, () => `[MSG][ADD_FRIEND][MSG]`);
             reply = reply.replace(/\$\$\s*RECALL(?:\$\$|$)/gi, () => `[MSG][RECALL][MSG]`);
             reply = reply.replace(/\$\$\s*ALBUM_SHARE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][ALBUM_SHARE:${imgId.trim()}][MSG]`);
+            reply = reply.replace(/\$\$\s*WARDROBE_WEAR(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, names) => `[MSG][WARDROBE_WEAR:${names}][MSG]`);
+            reply = reply.replace(/\$\$\s*LOC_UPDATE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, locName) => `[MSG][LOC_UPDATE:${locName.trim()}][MSG]`);
+
+
 
             // --- 强化聊天气泡强制分条逻辑 (完整句 + 随机活人感版) ---
             let msgs = [];
@@ -8025,6 +8312,33 @@ else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
                     // 在聊天框渲染这张图，作为 AI 发送的真实图片气泡
                     addMessageToUI('char', idbKey, true, null, idbKey, 'image');
                 }
+
+                // 执行 AI 衣橱强制换装操作
+else if (msgs[i].startsWith('[WARDROBE_WEAR:') && msgs[i].endsWith(']')) {
+    const clothNamesStr = msgs[i].substring(15, msgs[i].length - 1);
+    const clothNames = clothNamesStr.split(/[,，、]/).map(n => n.trim());
+    
+    let woreAnything = false;
+    wardrobeData.wearing = []; // 清空当前穿着，全部换新
+    clothNames.forEach(name => {
+        const matched = wardrobeData.clothes.find(c => c.name.includes(name));
+        if (matched) { wardrobeData.wearing.push(matched.id); woreAnything = true; }
+    });
+    
+    if (woreAnything) {
+        saveWardrobeData();
+        const actualNames = wardrobeData.wearing.map(id => wardrobeData.clothes.find(c=>c.id===id)?.name).join(' + ');
+        addMessageToUI('system', `${activeChar.name} 刚刚去衣橱里换上了：${actualNames}`, false, null, `[系统交互：你成功换上了 ${actualNames}]`);
+    }
+}
+
+else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
+    const locName = msgs[i].substring(12, msgs[i].length - 1);
+    updateCharLocationOnMap(locName);
+    addMessageToUI('system', `${activeChar.name} 已移动至：${locName}`, false, null, `[系统交互：你的雷达位置已同步更新至 ${locName}。]`);
+}
+
+
 
 
 
@@ -14348,13 +14662,76 @@ async function generateIfComments() {
         }
         grid.innerHTML = html;
     }
+        // --- 拍立得上传与渲染逻辑 ---
+    async function handleWidgetPolaroidUpload(e) {
+        if(e) e.stopPropagation();
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.max(img.width, img.height);
+                if (size > 1000) size = 1000;
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                // 拍立得等比正方形裁切
+                const offsetX = (img.width - Math.min(img.width, img.height)) / 2;
+                const offsetY = (img.height - Math.min(img.width, img.height)) / 2;
+                ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                
+                const base64Url = canvas.toDataURL('image/jpeg', 0.9);
+                const imgId = 'wg_polaroid_' + Date.now();
+                await saveImageToDB(imgId, base64Url); // 存入高级大容量图库防卡顿
+                localStorage.setItem('ai_os_wg_polaroid', 'idb://' + imgId);
+                
+                renderWidgetPolaroid();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    function renderWidgetPolaroid() {
+        const savedPhoto = localStorage.getItem('ai_os_wg_polaroid');
+        if(savedPhoto) {
+            const imgDiv = document.getElementById('wg-polaroid-img');
+            const hint = document.getElementById('wg-polaroid-hint');
+            if (savedPhoto.startsWith('idb://')) {
+                getImageFromDB(savedPhoto.replace('idb://', '')).then(r => {
+                    if(r && imgDiv) {
+                        imgDiv.style.backgroundImage = `url('${r}')`;
+                        if(hint) hint.style.display = 'none';
+                    }
+                });
+            }
+        }
+        const savedText = localStorage.getItem('ai_os_wg_polaroid_text');
+        if (savedText) {
+            const textDiv = document.getElementById('wg-polaroid-text');
+            if(textDiv) textDiv.innerText = savedText;
+        }
+    }
+
+    async function editPolaroidText() {
+        const oldText = document.getElementById('wg-polaroid-text').innerText;
+        const newText = await sysPrompt("修改拍立得文字", "请输入底部留白区域的文字：", oldText);
+        if(newText !== null) {
+            localStorage.setItem('ai_os_wg_polaroid_text', newText.trim());
+            renderWidgetPolaroid();
+        }
+    }
+
 
     // --- 4. 小组件自由定制大小与样式逻辑 ---
     let currentEditingWidgetId = null;
     let widgetCustomStyles = JSON.parse(localStorage.getItem('ai_os_widget_styles')) || {};
 
     // 双击任意组件触发该函数
-    window.openWidgetSettings = function(id) {
+        window.openWidgetSettings = function(id) {
         currentEditingWidgetId = id;
         const wg = document.getElementById(id);
         if(!wg) return;
@@ -14381,33 +14758,21 @@ async function generateIfComments() {
         document.getElementById('wg-set-radius').value = saved.radius !== undefined ? parseInt(saved.radius) : 22;
         document.getElementById('val-wg-radius').innerText = saved.radius !== undefined ? parseInt(saved.radius) : 22;
 
+        // 回显整体透明度和毛玻璃
+        document.getElementById('wg-set-all-opacity').value = saved.allOpacity !== undefined ? saved.allOpacity : 1.0;
+        document.getElementById('val-wg-all-opacity').innerText = saved.allOpacity !== undefined ? saved.allOpacity : 1.0;
+        const hasGlass = saved.glass !== undefined ? saved.glass : wg.classList.contains('glass-effect');
+        document.getElementById('wg-set-glass').checked = hasGlass;
+
         document.getElementById('widget-settings-modal').style.display = 'flex';
     };
-
-    window.closeWidgetSettings = function() {
+        window.closeWidgetSettings = function() {
         document.getElementById('widget-settings-modal').style.display = 'none';
         currentEditingWidgetId = null;
     };
 
-    window.applyWidgetSettings = function() {
+    window.hideCurrentWidget = function() {
         if(!currentEditingWidgetId) return;
-        
-        const width = document.getElementById('wg-set-width').value;
-        const height = document.getElementById('wg-set-height').value + 'px';
-        const bgColor = document.getElementById('wg-set-bg').value;
-        const opacity = document.getElementById('wg-set-opacity').value;
-        const radius = document.getElementById('wg-set-radius').value + 'px';
-
-        widgetCustomStyles[currentEditingWidgetId] = { width, height, bgColor, opacity, radius, hidden: false };
-        localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
-
-        applySingleWidgetStyle(currentEditingWidgetId);
-        closeWidgetSettings();
-    };
-
-        window.hideCurrentWidget = function() {
-        if(!currentEditingWidgetId) return;
-        // 👇 修改了这里的提示文案
         const c = confirm("确定要隐藏这个小组件吗？\n（隐藏后，在主屏幕的空白处长按即可恢复）");
         if(c) {
             widgetCustomStyles[currentEditingWidgetId] = widgetCustomStyles[currentEditingWidgetId] || {};
@@ -14419,22 +14784,51 @@ async function generateIfComments() {
     };
 
 
+    window.applyWidgetSettings = function() {
+        if(!currentEditingWidgetId) return;
+        
+        const width = document.getElementById('wg-set-width').value;
+        const height = document.getElementById('wg-set-height').value + 'px';
+        const bgColor = document.getElementById('wg-set-bg').value;
+        const opacity = document.getElementById('wg-set-opacity').value;
+        const radius = document.getElementById('wg-set-radius').value + 'px';
+        const allOpacity = document.getElementById('wg-set-all-opacity').value; 
+        const glass = document.getElementById('wg-set-glass').checked;
+
+        widgetCustomStyles[currentEditingWidgetId] = { width, height, bgColor, opacity, radius, allOpacity, glass, hidden: false };
+        localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+
+        applySingleWidgetStyle(currentEditingWidgetId);
+        closeWidgetSettings();
+    };
+
     function applySingleWidgetStyle(id) {
         const wg = document.getElementById(id);
         const saved = widgetCustomStyles[id];
         if(!wg || !saved) return;
 
-        if(saved.hidden) { wg.style.display = 'none'; return; } 
-        else { wg.style.display = 'flex'; }
+        if(saved.hidden) { 
+            wg.style.setProperty('display', 'none', 'important'); 
+            return; 
+        } else { 
+            wg.style.removeProperty('display'); 
+        }
 
         if(saved.width) wg.style.gridColumn = saved.width;
         if(saved.height) wg.style.height = saved.height;
         if(saved.radius) wg.style.borderRadius = saved.radius;
+        if(saved.allOpacity !== undefined) wg.style.opacity = saved.allOpacity;
+        
+        if(saved.glass !== undefined) {
+            if(saved.glass) wg.classList.add('glass-effect');
+            else wg.classList.remove('glass-effect');
+        }
+
         if(saved.bgColor && saved.opacity !== undefined) {
-            // 用最高优先级强制覆盖默认样式
             wg.style.setProperty('background', hexToRgba(saved.bgColor, saved.opacity), 'important');
         }
     }
+
 
             // --- 6. 桌面空白处长按出现加号添加组件 ---
     let emptyPressTimer = null;
@@ -14523,6 +14917,8 @@ async function generateIfComments() {
             // 2. 渲染新组件内部数据
             renderWidgetPhoto();
             renderWidgetCalendarPro();
+                        renderWidgetPolaroid(); 
+
         }, 500);
     });
 
@@ -16117,6 +16513,1006 @@ openApp = function(appId) {
         }
         e.target.value = '';
     }
+
+    // ==========================================
+// 🚨 强制接管并修复：小组件定制弹窗按钮失灵问题 
+// ==========================================
+window.closeWidgetSettings = function() {
+    const modal = document.getElementById('widget-settings-modal');
+    if(modal) modal.style.display = 'none';
+    if(typeof currentEditingWidgetId !== 'undefined') currentEditingWidgetId = null;
+};
+
+window.applyWidgetSettings = function() {
+    if(typeof currentEditingWidgetId === 'undefined' || !currentEditingWidgetId) return window.closeWidgetSettings();
+    
+    const width = document.getElementById('wg-set-width').value;
+    const height = document.getElementById('wg-set-height').value + 'px';
+    const bgColor = document.getElementById('wg-set-bg').value;
+    const opacity = document.getElementById('wg-set-opacity').value;
+    const radius = document.getElementById('wg-set-radius').value + 'px';
+    const allOpacity = document.getElementById('wg-set-all-opacity').value; 
+    const glass = document.getElementById('wg-set-glass').checked;
+
+    if(typeof widgetCustomStyles === 'undefined') window.widgetCustomStyles = {};
+    widgetCustomStyles[currentEditingWidgetId] = { width, height, bgColor, opacity, radius, allOpacity, glass, hidden: false };
+    localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+
+    // 强力重绘单个小组件
+    const wg = document.getElementById(currentEditingWidgetId);
+    if(wg) {
+        wg.style.removeProperty('display');
+        wg.style.gridColumn = width;
+        wg.style.height = height;
+        wg.style.borderRadius = radius;
+        wg.style.opacity = allOpacity;
+        if(glass) wg.classList.add('glass-effect');
+        else wg.classList.remove('glass-effect');
+        
+        // 16进制颜色转 rgba，防止出错
+        let hex = bgColor.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const r = parseInt(hex.substring(0, 2), 16), g = parseInt(hex.substring(2, 4), 16), b = parseInt(hex.substring(4, 6), 16);
+        wg.style.setProperty('background', `rgba(${r}, ${g}, ${b}, ${opacity})`, 'important');
+    }
+    window.closeWidgetSettings();
+};
+
+window.hideCurrentWidget = function() {
+    if(typeof currentEditingWidgetId === 'undefined' || !currentEditingWidgetId) return window.closeWidgetSettings();
+    const c = confirm("确定要隐藏这个小组件吗？\n（隐藏后，在主屏幕的空白处长按即可恢复）");
+    if(c) {
+        if(typeof widgetCustomStyles === 'undefined') window.widgetCustomStyles = {};
+        widgetCustomStyles[currentEditingWidgetId] = widgetCustomStyles[currentEditingWidgetId] || {};
+        widgetCustomStyles[currentEditingWidgetId].hidden = true;
+        localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+        
+        const wg = document.getElementById(currentEditingWidgetId);
+        if(wg) wg.style.setProperty('display', 'none', 'important'); 
+        window.closeWidgetSettings();
+    }
+};
+
+    // ==========================================
+    // 📚 沉浸自习室 App 核心逻辑
+    // ==========================================
+    let studyData = JSON.parse(localStorage.getItem('ai_os_study')) || {
+        timeLeft: 25 * 60,
+        isRunning: false,
+        chatHistory: [],
+        progressLogs: [],
+        materials: []
+    };
+    let studyTimerInterval = null;
+
+    function saveStudyData() { localStorage.setItem('ai_os_study', JSON.stringify(studyData)); }
+
+    function switchStudyTab(tabId, btnEl) {
+        document.querySelectorAll('#study-app .tab-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        document.querySelectorAll('#study-app .study-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`study-${tabId}`).classList.add('active');
+    }
+
+    // 1. 计时与防逃跑系统
+    function updateStudyTimerUI() {
+        const m = Math.floor(studyData.timeLeft / 60);
+        const s = studyData.timeLeft % 60;
+        document.getElementById('study-time-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    async function setStudyTime() {
+        if (studyData.isRunning) return sysAlert("提示", "正在专注中，请先暂停后再修改时间！");
+        const mins = await sysPrompt("设置专注时间", "请输入你想专注的分钟数：", "25");
+        if (mins && !isNaN(mins)) {
+            studyData.timeLeft = parseInt(mins) * 60;
+            updateStudyTimerUI();
+            saveStudyData();
+        }
+    }
+
+    function toggleStudyTimer() {
+        const btn = document.getElementById('study-start-btn');
+        if (studyData.isRunning) {
+            clearInterval(studyTimerInterval);
+            studyData.isRunning = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> 专注';
+            btn.classList.add('primary');
+            appendStudyMsg('system', '你暂停了自习倒计时。');
+        } else {
+            if (studyData.timeLeft <= 0) studyData.timeLeft = 25 * 60;
+            studyData.isRunning = true;
+            btn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+            btn.classList.remove('primary');
+            appendStudyMsg('system', '自习开始！TA 正在盯着你，切出界面或逃跑会被抓包哦！');
+            
+            studyTimerInterval = setInterval(() => {
+                if (studyData.timeLeft > 0) {
+                    studyData.timeLeft--;
+                    updateStudyTimerUI();
+                } else {
+                    clearInterval(studyTimerInterval);
+                    studyData.isRunning = false;
+                    btn.innerHTML = '<i class="fas fa-play"></i> 专注';
+                    btn.classList.add('primary');
+                    sysAlert("专注完成", "太棒了！专注时间结束，休息一下吧。");
+                    appendStudyMsg('system', '专注时间结束！快告诉 TA 你的学习成果吧。');
+                    setTimeout(() => triggerStudyAIResponse(true), 500); // 让AI主动夸奖
+                }
+            }, 1000);
+        }
+        saveStudyData();
+    }
+
+    // 🚨 核心防逃跑拦截：覆盖普通的返回逻辑
+    function handleStudyBack() {
+        if (studyData.isRunning) {
+            sysAlert("严厉警告", "专注倒计时还没结束！！\nTA 正在盯着你，不许退出自习室！");
+            appendStudyMsg('system', '【防逃跑机制触发】：用户试图切出自习室！请你严厉批评和监督用户，让TA滚回去学习！');
+            triggerStudyAIResponse(); // 让AI开口骂人
+            return;
+        }
+        goBack();
+    }
+
+    // 2. 自习室 AI 答疑聊天引擎
+    function appendStudyMsg(role, content, isHtml = false) {
+        const box = document.getElementById('study-chat-box');
+        const div = document.createElement('div');
+        
+        if (role === 'system') {
+            div.style.cssText = "text-align:center; font-size:11px; color:var(--text-sub); margin:5px 0;";
+            div.innerHTML = `<i class="fas fa-info-circle"></i> ${content}`;
+        } else {
+            div.className = `study-msg ${role === 'user' ? 'me' : 'ai'}`;
+            if (isHtml) div.innerHTML = content; else div.innerText = content;
+        }
+        
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+        
+        studyData.chatHistory.push({ role, content, isHtml });
+        saveStudyData();
+    }
+
+    function renderStudyChat() {
+        const box = document.getElementById('study-chat-box');
+        box.innerHTML = '<div style="text-align:center; font-size:12px; color:var(--text-sub); margin-bottom: 10px;">—— 遇到不懂的题，随时发给TA ——</div>';
+        studyData.chatHistory.forEach(m => {
+            const div = document.createElement('div');
+            if (m.role === 'system') {
+                div.style.cssText = "text-align:center; font-size:11px; color:var(--text-sub); margin:5px 0;";
+                div.innerHTML = `<i class="fas fa-info-circle"></i> ${m.content}`;
+            } else {
+                div.className = `study-msg ${m.role === 'user' ? 'me' : 'ai'}`;
+                if (m.isHtml) div.innerHTML = m.content; else div.innerText = m.content;
+            }
+            box.appendChild(div);
+        });
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendStudyMsg() {
+        const input = document.getElementById('study-input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        appendStudyMsg('user', text);
+        input.value = '';
+        await triggerStudyAIResponse();
+    }
+
+    async function handleStudyImage(e) {
+        const file = e.target.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height; const max = 800;
+                if(w>max||h>max){ if(w>h){h*=max/w;w=max} else{w*=max/h;h=max} }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                const b64 = canvas.toDataURL('image/jpeg', 0.8);
+                
+                // 压缩后直接发送
+                const html = `<img src="${b64}" style="max-width:100%; border-radius:8px;">`;
+                appendStudyMsg('user', html, true);
+                
+                // 伪造一条消息让 AI 具备视觉
+                studyData.chatHistory[studyData.chatHistory.length - 1].visionUrl = b64;
+                await triggerStudyAIResponse();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file); e.target.value = '';
+    }
+
+    async function triggerStudyAIResponse(isFinish = false) {
+        const char = characters.find(c => c.id === activeCharId);
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) return sysAlert("错误", "API未配置");
+
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'study-msg ai'; typingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 学霸思考中...';
+        document.getElementById('study-chat-box').appendChild(typingDiv);
+
+        let materialsContext = "";
+        if (studyData.materials.length > 0) {
+            materialsContext = "\n\n【用户上传的参考资料库】：\n" + studyData.materials.map(m => `[资料名：${m.name}]\n内容：${m.content.substring(0, 1000)}...`).join('\n\n');
+        }
+
+        let prompt = `你现在的身份是【${char.name}】（性格：${char.prompt}）。这里是沉浸自习室，你正在陪伴和监督用户（${globalUser.name}）学习。
+【你的职责】：
+1. 化身“学霸同桌”或“严师”，负责答疑解惑。
+2. 监督用户！如果系统提示用户试图逃跑切出界面，你必须狠狠地批评、嘲讽或用你的性格特点施压。
+3. 如果用户发了学习题目，请给出详细、易懂的解答步骤。如果有关联的【资料库】，请优先从资料库寻找答案。
+4. 如果你想惩罚用户加练，或者奖励用户休息，你可以输出隐藏指令 $$SET_TIMER:分钟数$$ 来强制修改倒计时（例如 $$SET_TIMER:30$$ 会将倒计时强行改为30分钟）。${materialsContext}`;
+
+        if (isFinish) prompt += "\n\n[系统提示：用户的自习倒计时刚刚完美结束了！请夸奖一下TA的坚持！]";
+
+        let apiMessages = [{ role: "system", content: prompt }];
+        
+        // 组装历史记录，支持视觉图
+        const recent = studyData.chatHistory.filter(m => m.role !== 'system').slice(-8);
+        for(const m of recent) {
+            if (m.visionUrl && globalAPI.enableVision !== false) {
+                apiMessages.push({ role: m.role==='user'?'user':'assistant', content: [ {type: "image_url", image_url: {url: m.visionUrl}}, {type:"text", text: "帮忙看看这道题/这张图！"} ] });
+            } else {
+                let txt = m.isHtml ? "[发送了一张图片/文档]" : m.content;
+                apiMessages.push({ role: m.role==='user'?'user':'assistant', content: txt });
+            }
+        }
+
+        try {
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, temperature: 0.7 })
+            });
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            typingDiv.remove();
+            
+            // 拦截时间修改指令
+            reply = reply.replace(/\$\$\s*SET_TIMER(?:[:：\s]*)(\d+)(?:\$\$|$)/gi, (match, mins) => {
+                studyData.timeLeft = parseInt(mins) * 60;
+                updateStudyTimerUI();
+                saveStudyData();
+                return `\n[系统：TA将倒计时强制修改为了 ${mins} 分钟]`;
+            });
+
+            appendStudyMsg('char', reply);
+        } catch(e) {
+            typingDiv.innerText = "网络断开，学霸走神了...";
+        }
+    }
+
+    // 3. 打卡与分享
+    function renderStudyProgress() {
+        const list = document.getElementById('study-progress-list');
+        if (studyData.progressLogs.length === 0) return;
+        list.innerHTML = studyData.progressLogs.map(log => `
+            <div style="border-bottom: 0.5px dashed var(--border-color); padding-bottom: 10px;">
+                <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">${log.time}</div>
+                <div style="font-size: 14px; color: var(--text-main); line-height: 1.5; white-space: pre-wrap;">${log.text}</div>
+            </div>
+        `).join('');
+    }
+
+    function shareStudyProgress() {
+        const input = document.getElementById('study-progress-input');
+        const text = input.value.trim();
+        if (!text) return sysAlert("提示", "心得不能为空哦！");
+
+        // 存入自习室打卡记录
+        studyData.progressLogs.unshift({ time: new Date().toLocaleString(), text: text });
+        saveStudyData();
+        renderStudyProgress();
+        input.value = '';
+        
+        // 生成极简卡片发送到聊天主界面
+        const html = `
+            <div class="x-share-card" style="background: rgba(35, 45, 55, 0.85); border-color: #a18cd1;">
+                <div class="xs-header" style="color: #fbc2eb;">
+                    <i class="fas fa-book-reader" style="font-size: 20px;"></i>
+                    <div style="font-weight: bold; font-size: 15px;">学习进度打卡</div>
+                </div>
+                <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                    <div style="color:#fff;">"${text}"</div>
+                </div>
+            </div>
+        `;
+        const rawText = `[系统交互：用户在【自习室】刚刚完成了打卡，TA的学习心得是：“${text}”。请你化身监督者或同桌，在回复中大力夸奖TA的努力，或者针对TA的心得给出建议！]`;
+        
+        openApp('chat-app');
+        addMessageToUI('user', html, true, null, rawText, 'x-share');
+        setTimeout(() => triggerAIResponse(), 500);
+    }
+
+    // 4. 资料库读取
+    async function handleStudyDoc(e) {
+        const file = e.target.files[0]; if (!file) return;
+        const ext = file.name.split('.').pop().toLowerCase();
+        sysAlert("解析中", "正在努力把知识灌进 AI 的脑子里...");
+
+        try {
+            let fullText = "";
+            if (ext === 'txt') {
+                fullText = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.readAsText(file);
+                });
+            } else if (ext === 'docx' || ext === 'doc') {
+                const arrayBuffer = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.readAsArrayBuffer(file);
+                });
+                const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                fullText = result.value;
+            } else if (ext === 'pdf') {
+                const arrayBuffer = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.readAsArrayBuffer(file);
+                });
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    fullText += content.items.map(item => item.str).join(" ") + "\n";
+                }
+            }
+
+            if (fullText && fullText.trim()) {
+                studyData.materials.push({
+                    id: Date.now(),
+                    name: file.name,
+                    content: fullText.trim()
+                });
+                saveStudyData();
+                renderStudyMaterials();
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                sysAlert("注入成功", "资料已加入书架！去【学习答疑】区提问，TA会参考这份资料回答你。");
+            } else { throw new Error("文本为空"); }
+        } catch (err) {
+            document.getElementById('sys-dialog-overlay').style.display = 'none';
+            sysAlert("解析失败", "格式暂不支持或文件损坏: " + err.message);
+        }
+        e.target.value = '';
+    }
+
+    function renderStudyMaterials() {
+        const list = document.getElementById('study-mat-list');
+        if (studyData.materials.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:var(--text-sub); margin-top:20px; font-size:13px;">书架空空，快传点资料吧~</div>';
+            return;
+        }
+        list.innerHTML = studyData.materials.map((m, idx) => `
+            <div class="study-mat-item">
+                <div style="display:flex; align-items:center; overflow:hidden;">
+                    <i class="fas fa-file-alt study-mat-icon"></i>
+                    <div style="font-size:14px; color:var(--text-main); font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.name}</div>
+                </div>
+                <i class="fas fa-trash-alt" style="color:#ff453a; cursor:pointer; padding:5px;" onclick="deleteStudyMat(${idx})"></i>
+            </div>
+        `).join('');
+    }
+
+    async function deleteStudyMat(idx) {
+        const c = await sysConfirm("删除资料", "确定要销毁这份学习资料吗？");
+        if(c) {
+            studyData.materials.splice(idx, 1);
+            saveStudyData();
+            renderStudyMaterials();
+        }
+    }
+
+        // 拦截 App 打开，初始化自习室
+    const _originalOpenAppStudy = openApp;
+    openApp = function(appId) {
+        _originalOpenAppStudy(appId);
+        if(appId === 'study-app') {
+            updateStudyTimerUI();
+            renderStudyChat();
+            renderStudyProgress();
+            renderStudyMaterials();
+        }
+    };
+
+    // ==========================================
+// 👗 衣柜 App 核心逻辑 (换衣、图层拖拽与分享)
+// ==========================================
+let wardrobeData = JSON.parse(localStorage.getItem('ai_os_wardrobe')) || {
+    modelImg: "",
+    clothes: [],
+    wearing: []
+};
+
+function saveWardrobeData() { localStorage.setItem('ai_os_wardrobe', JSON.stringify(wardrobeData)); }
+
+function renderWardrobe() {
+    const baseImg = document.getElementById('wardrobe-model-base');
+    if (wardrobeData.modelImg) {
+        if (wardrobeData.modelImg.startsWith('idb://')) {
+            getImageFromDB(wardrobeData.modelImg.replace('idb://', '')).then(b64 => { if (b64) baseImg.src = b64; });
+        } else {
+            baseImg.src = wardrobeData.modelImg;
+        }
+    } else {
+        baseImg.src = ""; 
+    }
+
+    // 渲染叠在身上的衣服层
+    const layersContainer = document.getElementById('wardrobe-clothes-layers');
+    layersContainer.innerHTML = '';
+    wardrobeData.wearing.forEach(id => {
+        const cloth = wardrobeData.clothes.find(c => c.id === id);
+        if (cloth) {
+            const imgEl = document.createElement('img');
+            imgEl.className = 'wardrobe-cloth-layer';
+            // 加载保存的位置与大小，默认居中
+            imgEl.style.top = cloth.top || '30%';
+            imgEl.style.left = cloth.left || '20%';
+            imgEl.style.width = cloth.width || '60%';
+            
+            if (cloth.image.startsWith('idb://')) {
+                getImageFromDB(cloth.image.replace('idb://', '')).then(b64 => { if (b64) imgEl.src = b64; });
+            } else { imgEl.src = cloth.image; }
+            
+            // 为每件穿上的衣服绑定独立的自由拖拽与双击事件
+            initClothDrag(imgEl, cloth);
+            layersContainer.appendChild(imgEl);
+        }
+    });
+
+    // 渲染下面的衣橱网格
+    const grid = document.getElementById('wardrobe-grid');
+    if (wardrobeData.clothes.length === 0) {
+        grid.innerHTML = '<div style="grid-column: span 3; text-align:center; color:var(--text-sub); padding:40px;"><i class="fas fa-tshirt" style="font-size:40px; margin-bottom:15px; opacity:0.3;"></i><br>衣橱空空如也<br>点击右上角 + 添加衣服(支持PNG透明背景图)</div>';
+        return;
+    }
+
+    grid.innerHTML = wardrobeData.clothes.map(c => {
+        const isWearing = wardrobeData.wearing.includes(c.id);
+        const imgSrc = c.image.startsWith('idb://') ? '' : c.image;
+        return `
+        <div class="wardrobe-item ${isWearing ? 'wearing' : ''}" onclick="toggleWearCloth('${c.id}')">
+            <div class="wardrobe-del-btn" onclick="deleteCloth('${c.id}', event)"><i class="fas fa-times"></i></div>
+            <img src="${imgSrc}" class="wardrobe-item-img" data-idb="${c.image.startsWith('idb://') ? c.image : ''}">
+            <div class="wardrobe-item-name">${c.name}</div>
+        </div>`;
+    }).join('');
+
+    // 异步加载 IDB 图像防卡顿
+    grid.querySelectorAll('.wardrobe-item-img').forEach(img => {
+        const idbKey = img.getAttribute('data-idb');
+        if (idbKey) { getImageFromDB(idbKey.replace('idb://', '')).then(b64 => { if (b64) img.src = b64; }); }
+    });
+}
+
+// 👑 贴纸自由拖拽与缩放引擎
+let activeDragCloth = null;
+function initClothDrag(imgEl, cloth) {
+    let startX, startY, initTop, initLeft;
+    const area = document.getElementById('wardrobe-model-area');
+
+    const handleStart = (e) => {
+        activeDragCloth = cloth;
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        initLeft = parseFloat(imgEl.style.left) || 20;
+        initTop = parseFloat(imgEl.style.top) || 30;
+    };
+
+    const handleMove = (e) => {
+        if (activeDragCloth !== cloth) return;
+        e.preventDefault();
+        const touch = e.touches ? e.touches[0] : e;
+        const dx = ((touch.clientX - startX) / area.clientWidth) * 100;
+        const dy = ((touch.clientY - startY) / area.clientHeight) * 100;
+        
+        imgEl.style.left = (initLeft + dx) + '%';
+        imgEl.style.top = (initTop + dy) + '%';
+    };
+
+    const handleEnd = () => {
+        if (activeDragCloth === cloth) {
+            cloth.left = imgEl.style.left;
+            cloth.top = imgEl.style.top;
+            saveWardrobeData();
+            activeDragCloth = null;
+        }
+    };
+
+    imgEl.addEventListener('touchstart', handleStart, {passive: false});
+    imgEl.addEventListener('mousedown', handleStart);
+    document.addEventListener('touchmove', handleMove, {passive: false});
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('mouseup', handleEnd);
+    
+    // 双击精确调整衣服大小
+    let lastTap = 0;
+    imgEl.addEventListener('touchend', async (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 400 && tapLength > 0) {
+            e.preventDefault();
+            const curWidth = parseFloat(cloth.width) || 60;
+            const newWidth = await sysPrompt("调整衣服大小", "请输入图片宽度占比(%)：\n(如 30、50、80、100)", curWidth);
+            if (newWidth && !isNaN(newWidth)) {
+                cloth.width = newWidth + '%';
+                imgEl.style.width = cloth.width;
+                saveWardrobeData();
+            }
+        }
+        lastTap = currentTime;
+    });
+    imgEl.addEventListener('dblclick', async () => {
+        const curWidth = parseFloat(cloth.width) || 60;
+        const newWidth = await sysPrompt("调整衣服大小", "请输入图片宽度占比(%)：\n(如 30、50、80、100)", curWidth);
+        if (newWidth && !isNaN(newWidth)) {
+            cloth.width = newWidth + '%';
+            imgEl.style.width = cloth.width;
+            saveWardrobeData();
+        }
+    });
+}
+
+// 模特图上传
+async function handleWardrobeModelUpload(e) {
+    const file = e.target.files[0]; if (!file) return;
+    sysAlert("处理中", "正在生成您的专属模特贴图底板...");
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        const img = new Image();
+        img.onload = async function() {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height; const maxDim = 1200;
+            if (w > maxDim || h > maxDim) { if (w > h) { h *= maxDim / w; w = maxDim; } else { w *= maxDim / h; h = maxDim; } }
+            canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const base64Url = canvas.toDataURL('image/png', 0.9); 
+
+            const imgId = 'wd_model_' + Date.now();
+            await saveImageToDB(imgId, base64Url);
+            wardrobeData.modelImg = 'idb://' + imgId;
+            saveWardrobeData(); renderWardrobe(); document.getElementById('sys-dialog-overlay').style.display = 'none';
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file); e.target.value = '';
+}
+
+// 衣服上传 (增加补充文字输入)
+async function handleWardrobeClothUpload(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const name = await sysPrompt("添加衣物", "给这件衣服/配饰起个名字：", "新款服装");
+    if (!name || !name.trim()) { e.target.value = ''; return; }
+
+    const desc = await sysPrompt("细节补充 (AI视角)", "请输入衣服的具体材质、风格等，这能让 AI 更好地感知并评价它：", "例如：纯棉材质、带有一点小性感的黑色蕾丝...");
+    if (desc === null) { e.target.value = ''; return; }
+
+    sysAlert("处理中", "正在将衣物收入衣柜...");
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        const img = new Image();
+        img.onload = async function() {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height; const maxDim = 1200;
+            if (w > maxDim || h > maxDim) { if (w > h) { h *= maxDim / w; w = maxDim; } else { w *= maxDim / h; h = maxDim; } }
+            canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            
+            const base64Url = canvas.toDataURL('image/png'); // 使用PNG保存透明通道
+            const imgId = 'wd_cloth_' + Date.now();
+            await saveImageToDB(imgId, base64Url);
+            
+            wardrobeData.clothes.unshift({ 
+                id: 'cloth_' + Date.now(), 
+                name: name.trim(), 
+                desc: desc.trim(),
+                image: 'idb://' + imgId,
+                top: '30%', left: '20%', width: '60%' // 默认位置大小
+            });
+            saveWardrobeData(); renderWardrobe(); document.getElementById('sys-dialog-overlay').style.display = 'none';
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file); e.target.value = '';
+}
+
+function toggleWearCloth(id) {
+    const idx = wardrobeData.wearing.indexOf(id);
+    if (idx > -1) wardrobeData.wearing.splice(idx, 1);
+    else wardrobeData.wearing.push(id);
+    saveWardrobeData(); renderWardrobe();
+}
+
+async function deleteCloth(id, e) {
+    e.stopPropagation();
+    const confirm = await sysConfirm("丢弃衣物", "确定要从衣橱里彻底删除这件衣服吗？");
+    if (confirm) {
+        wardrobeData.clothes = wardrobeData.clothes.filter(c => c.id !== id);
+        wardrobeData.wearing = wardrobeData.wearing.filter(wId => wId !== id);
+        saveWardrobeData(); renderWardrobe();
+    }
+}
+
+// 智能推荐搭配
+async function askAIToMatch() {
+    if (wardrobeData.clothes.length === 0) return sysAlert("提示", "衣柜里还没有衣服哦，请先去进货！");
+    const char = characters.find(c => c.id === activeCharId);
+    const url = cleanBaseUrl(globalAPI.url);
+    if(!url || !globalAPI.key) return sysAlert("错误", "API 未配置");
+
+    sysAlert("翻找衣柜中...", `${char.name} 正在为您挑选最适合今天的搭配...`);
+    const clothesList = wardrobeData.clothes.map(c => `- ${c.name} (${c.desc || '普通'})`).join('\n');
+    
+    const prompt = `你现在是【${char.name}】。从我目前的衣柜里，根据天气、心情或假设的约会计划，为我挑选一套合适的穿搭。
+衣柜里目前有这些单品：
+${clothesList}
+
+【输出要求】
+严格输出一段 JSON 字符串，格式如下：
+{
+  "selected": ["单品名1", "单品名2"],
+  "reason": "以你的口吻说一句为什么这么搭，比如：今天有点冷，这件外套刚好，快换上看好不好看。"
+}`;
+
+    try {
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.8 })
+        });
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        const firstBrace = reply.indexOf('{'); const lastBrace = reply.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+        
+        const result = JSON.parse(reply);
+        wardrobeData.wearing = [];
+        result.selected.forEach(name => {
+            const cloth = wardrobeData.clothes.find(c => c.name.includes(name));
+            if (cloth) wardrobeData.wearing.push(cloth.id);
+        });
+        saveWardrobeData(); renderWardrobe();
+        document.getElementById('sys-dialog-overlay').style.display = 'none';
+        sysAlert(`${char.name} 挑好啦！`, result.reason);
+    } catch(e) { sysAlert("失败", "AI 挑选搭配超时或格式出错..."); }
+}
+
+// 分享搭配给角色聊天
+function shareWardrobeToChat() {
+    if (wardrobeData.wearing.length === 0) return sysAlert("提示", "你什么都没穿呢！请先在下方点选衣物。");
+    
+    const wearingNames = wardrobeData.wearing.map(id => {
+        const c = wardrobeData.clothes.find(cloth => cloth.id === id);
+        return c ? `${c.name}` : null;
+    }).filter(Boolean);
+    const textDesc = wearingNames.join(" + ");
+
+    const html = `
+        <div class="x-share-card" style="background: rgba(45, 30, 40, 0.85); border-color: #fbc2eb;">
+            <div class="xs-header" style="color: #fbc2eb;">
+                <i class="fas fa-tshirt" style="font-size: 20px;"></i>
+                <div style="font-weight: bold; font-size: 15px;">OOTD 今日穿搭</div>
+            </div>
+            <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                <div style="font-weight:bold; color:#fff; margin-bottom:4px;">换上了：</div>
+                <div style="opacity:0.9;">${textDesc}</div>
+            </div>
+        </div>
+    `;
+
+    // 后台发给 AI 包含具体细节的文本
+    const detailedDescriptions = wardrobeData.wearing.map(id => {
+        const c = wardrobeData.clothes.find(cloth => cloth.id === id);
+        return c ? `${c.name}(${c.desc || '常规样式'})` : null;
+    }).filter(Boolean).join("，");
+    
+    const rawText = `[系统交互：我在衣柜里刚刚换好了一套衣服，详细穿搭及衣服材质款式细节是：【${detailedDescriptions}】。请你以当前角色的身份，留意我的衣服细节，狠狠地夸奖或毒舌评价一下我这身搭配！]`;
+
+    openApp('chat-app');
+    addMessageToUI('user', html, true, null, rawText, 'x-share');
+    addMemoryData(`今天换上了：${textDesc}，留下了美好的穿搭记录。`, 'manual'); // 写入记忆书
+    setTimeout(() => triggerAIResponse(), 500);
+}
+
+
+// 拦截应用加载
+const _originalOpenAppWardrobe = openApp;
+openApp = function(appId) {
+    _originalOpenAppWardrobe(appId);
+    if (appId === 'wardrobe-app') renderWardrobe();
+};
+
+
+// ==========================================
+// 🗺️ 地图 App 核心逻辑 (自定义地点、追踪查岗、反侦察)
+// ==========================================
+// 全局保存人物当前的所在地
+let currentCharLoc = localStorage.getItem('ai_os_char_loc') || "";
+
+let mapData = JSON.parse(localStorage.getItem('ai_os_map')) || [
+    { id: 'loc_1', name: "中心公园", desc: "城市中心的大型生态公园，有个人工湖和音乐喷泉，非常适合散步和浪漫约会。", x: 30, y: 30 },
+    { id: 'loc_2', name: "商业步行街", desc: "本市最繁华的购物街，有很多餐厅、高档服装店、奶茶店和电影院。", x: 70, y: 30 },
+    { id: 'loc_3', name: "TA的家", desc: "TA日常居住的地方，充满生活气息，有着属于TA的味道。", x: 30, y: 70 },
+    { id: 'loc_4', name: "我的家", desc: "我居住的地方，TA有时候会来做客。", x: 70, y: 70 }
+];
+
+function saveMapData() {
+    localStorage.setItem('ai_os_map', JSON.stringify(mapData));
+}
+
+function renderMapList() {
+    const list = document.getElementById('map-loc-list');
+    const radarArea = document.querySelector('.map-radar-area');
+    
+    // 清除雷达上的旧节点，保留探测动画和大头针
+    radarArea.querySelectorAll('.map-loc-node').forEach(el => el.remove());
+    
+    // 渲染雷达面板上的可拖拽节点
+    mapData.forEach((loc, idx) => {
+        if(loc.x === undefined) { loc.x = 20 + Math.random() * 60; loc.y = 20 + Math.random() * 60; }
+        
+        const node = document.createElement('div');
+        node.className = 'map-loc-node';
+        node.style.left = loc.x + '%';
+        node.style.top = loc.y + '%';
+        node.innerHTML = `<div class="map-loc-node-label">${loc.name}</div>`;
+        
+        // 赋予地点自由拖拽能力
+        let isDrag = false;
+        let startX, startY;
+        const startDrag = (e) => {
+            isDrag = true;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+        };
+        const moveDrag = (e) => {
+            if(!isDrag) return;
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const rect = radarArea.getBoundingClientRect();
+            let nx = ((clientX - rect.left) / rect.width) * 100;
+            let ny = ((clientY - rect.top) / rect.height) * 100;
+            nx = Math.max(5, Math.min(95, nx)); 
+            ny = Math.max(5, Math.min(95, ny));
+            loc.x = nx; loc.y = ny;
+            node.style.left = nx + '%'; node.style.top = ny + '%';
+            
+            // 如果TA正巧在这个地点，大头针跟着地点一起被拖拽
+            if (currentCharLoc === loc.name) {
+                const pin = document.getElementById('map-char-pin');
+                if (pin.style.display !== 'none') {
+                    pin.style.left = nx + '%'; pin.style.top = ny + '%';
+                }
+            }
+        };
+        const endDrag = () => { if(isDrag) { isDrag = false; saveMapData(); } };
+        
+        node.addEventListener('mousedown', startDrag);
+        node.addEventListener('touchstart', startDrag, {passive: false});
+        document.addEventListener('mousemove', moveDrag);
+        document.addEventListener('touchmove', moveDrag, {passive: false});
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+        
+        radarArea.appendChild(node);
+    });
+
+    if (mapData.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:40px;">暂无地点数据，点击右上角 + 添加</div>';
+        return;
+    }
+
+    list.innerHTML = mapData.map((loc, idx) => `
+        <div class="map-loc-item">
+            <div class="map-loc-header">
+                <div class="map-loc-title"><i class="fas fa-map-marker-alt" style="color:#ff453a;"></i> ${loc.name}</div>
+            </div>
+            <div class="map-loc-desc">${loc.desc}</div>
+            <div class="map-loc-actions">
+                <div class="map-btn-del" onclick="deleteLocation(${idx})"><i class="fas fa-trash"></i> 删除</div>
+                <div class="map-btn-monitor" onclick="monitorLocation(${idx})"><i class="fas fa-satellite-dish"></i> 监视 / 查岗</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function promptAddLocation() {
+    const name = await sysPrompt("添加新地点", "请输入地点名称（例如：星巴克、公司大楼、神秘废墟）：");
+    if (!name || !name.trim()) return;
+    
+    const desc = await sysPrompt("地点功能描述", "请描述这个地点的用途、环境或氛围，AI会记住这个设定：");
+    if (desc === null) return;
+    
+    mapData.push({
+        id: 'loc_' + Date.now(),
+        name: name.trim(),
+        desc: desc.trim() || "一个未知的地方，没什么特别的。",
+        x: 50, y: 50 // 默认放在中心，用户可自己拖走
+    });
+    saveMapData();
+    renderMapList();
+    sysAlert("添加成功", `已成功将地点：【${name.trim()}】加入地图！您可以直接在雷达上拖拽它。`);
+}
+
+// 新增：全局方法，控制大头针移动到指定地点
+function updateCharLocationOnMap(locName) {
+    currentCharLoc = locName;
+    localStorage.setItem('ai_os_char_loc', locName);
+    
+    const pin = document.getElementById('map-char-pin');
+    const avatar = document.getElementById('map-char-avatar');
+    const locNameEl = document.getElementById('map-char-loc-name');
+    if(!pin || !avatar || !locNameEl) return;
+    
+    const char = characters.find(c => c.id === activeCharId);
+    if(char) avatar.src = char.avatar;
+    
+    const targetLoc = mapData.find(m => m.name === locName);
+    if(targetLoc) {
+        pin.style.display = 'flex';
+        pin.style.opacity = '1';
+        pin.style.left = targetLoc.x + '%';
+        pin.style.top = targetLoc.y + '%';
+        locNameEl.innerText = targetLoc.name;
+    } else {
+        // 如果去了未录入的新地点，随机模糊定位在面板上
+        pin.style.display = 'flex';
+        pin.style.opacity = '0.7';
+        pin.style.left = (20 + Math.random() * 60) + '%';
+        pin.style.top = (20 + Math.random() * 60) + '%';
+        locNameEl.innerText = locName;
+    }
+}
+
+
+// 👑 雷达查岗核心逻辑 (带随机反侦察惩罚)
+function monitorLocation(idx) {
+    const loc = mapData[idx];
+    const char = characters.find(c => c.id === activeCharId);
+    
+    sysAlert("正在连接卫星...", `正在扫描【${loc.name}】的监控及通讯信号，尝试追踪 ${char.name} 的踪迹...`);
+    
+    const pin = document.getElementById('map-char-pin');
+    const avatar = document.getElementById('map-char-avatar');
+    const locName = document.getElementById('map-char-loc-name');
+    pin.style.display = 'none';
+    
+    setTimeout(() => {
+        pin.style.display = 'flex';
+        avatar.src = char.avatar;
+        
+        // 判定：如果明确在当前位置就直接锁定，否则如果毫无位置记录，就五五开随机。
+        let isHere = false;
+        if (currentCharLoc === loc.name) {
+            isHere = true;
+        } else if (!currentCharLoc) {
+            isHere = Math.random() > 0.5;
+        }
+        
+        const isNoticed = Math.random() < 0.3;
+        
+        if (isHere) {
+            locName.innerText = `发现目标: ${loc.name}`;
+            pin.style.top = loc.y + '%';
+            pin.style.left = loc.x + '%';
+            pin.style.opacity = '1';
+            
+            currentCharLoc = loc.name;
+            localStorage.setItem('ai_os_char_loc', currentCharLoc);
+        } else {
+            locName.innerText = `目标不在 ${loc.name}`;
+            pin.style.top = '10%';
+            pin.style.left = '80%';
+            pin.style.opacity = '0.5'; // 灰态显示
+        }
+        
+        let sysMsg = "";
+        let displayHtml = "";
+        
+        if (isHere) {
+            displayHtml = `
+                <div class="x-share-card" style="background: rgba(11, 132, 255, 0.15); border-color: #0b84ff;">
+                    <div class="xs-header" style="color: #0b84ff;"><i class="fas fa-satellite-dish"></i> 追踪报告</div>
+                    <div class="xs-content" style="font-size: 13px; margin-top:8px;">
+                        <div style="color:#fff; font-weight:bold;">📍 目标位置确认：${loc.name}</div>
+                        <div style="opacity:0.8; margin-top:4px;">地点信息：${loc.desc}</div>
+                        ${isNoticed ? `<div style="color:#ff453a; margin-top:8px; font-weight:bold;">⚠️ 警告：监控信号已被对方察觉！</div>` : `<div style="color:#2ecc71; margin-top:8px;">✓ 潜行模式：未被察觉</div>`}
+                    </div>
+                </div>
+            `;
+            if (isNoticed) {
+                sysMsg = `[系统最高优先事件：用户刚才通过手机的卫星定位系统偷偷查岗，发现你此时此刻正在【${loc.name}】（地点背景：${loc.desc}）。但是，你凭借敏锐的直觉或手机反追踪提示，察觉到了用户在偷偷监视你的位置！请你立刻在回复中直接质问、发脾气或吐槽用户的查岗行为！]`;
+            } else {
+                sysMsg = `[系统潜意识记录：用户偷偷查了你的岗，确认你现在确实在【${loc.name}】（地点背景：${loc.desc}），并且你没有察觉TA的监控。这只是一条后台记录，你暂时不需要做出被激怒的反应，但在之后的聊天中，你可以顺理成章地提到你现在就在这个地方。]`;
+            }
+        } else {
+            displayHtml = `
+                <div class="x-share-card" style="background: rgba(255, 69, 58, 0.15); border-color: #ff453a;">
+                    <div class="xs-header" style="color: #ff453a;"><i class="fas fa-satellite-dish"></i> 追踪报告</div>
+                    <div class="xs-content" style="font-size: 13px; margin-top:8px;">
+                        <div style="color:#fff; font-weight:bold;">❌ 目标不在：${loc.name}</div>
+                        ${isNoticed ? `<div style="color:#ff453a; margin-top:8px; font-weight:bold;">⚠️ 警告：对方截获了你的扫描请求！</div>` : `<div style="color:#2ecc71; margin-top:8px;">✓ 对方行踪隐秘，无法定位。</div>`}
+                    </div>
+                </div>
+            `;
+            if (isNoticed) {
+                sysMsg = `[系统最高优先事件：用户刚才怀疑你在【${loc.name}】并尝试对你进行定位追踪，但你根本不在那里。同时，你手机的反追踪系统提示有人偷偷查你的岗！请根据你的性格，立刻发短信质问用户为什么要偷偷定位你！]`;
+            } else {
+                sysMsg = `[系统潜意识记录：用户试图定位你是否在【${loc.name}】，但没找到你。且你未察觉。]`;
+            }
+        }
+        
+        openApp('chat-app');
+        addMessageToUI('user', displayHtml, true, null, `[系统操作：查岗/追踪]`, 'x-share');
+        
+        if (isNoticed) {
+            messageHistory.push({ role: 'system', content: sysMsg, isHtml: false, time: new Date().toLocaleString(), rawApiContent: sysMsg, msgType: 'system' });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            setTimeout(() => triggerAIResponse(), 800);
+        } else {
+            messageHistory.push({ role: 'system', content: sysMsg, isHtml: false, time: new Date().toLocaleString(), rawApiContent: sysMsg, msgType: 'system', isHidden: true });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+        }
+
+    }, 2500);
+}
+
+
+// 主动发送我的实时位置给 TA
+function shareMyLocation() {
+    if (mapData.length === 0) return sysAlert("提示", "请先添加一些地点！");
+    
+    // 让用户选一个地点发送
+    let options = mapData.map((m, i) => `【${i}】${m.name}`).join('\n');
+    sysPrompt("发送位置", `你想把哪个位置发送给TA？输入编号：\n${options}`).then(res => {
+        if (res !== null && !isNaN(res) && mapData[parseInt(res)]) {
+            const loc = mapData[parseInt(res)];
+            
+            const html = `
+                <div class="x-share-card" style="background: rgba(39, 174, 96, 0.15); border-color: #27ae60;">
+                    <div class="xs-header" style="color: #27ae60;"><i class="fas fa-map-marker-alt"></i> 位置共享</div>
+                    <div class="xs-content" style="font-size: 13px; margin-top:8px;">
+                        <div style="color:#fff; font-weight:bold;">我当前在：${loc.name}</div>
+                        <div style="opacity:0.8; font-size: 11px; margin-top:4px;">${loc.desc}</div>
+                    </div>
+                </div>
+            `;
+            
+            const rawText = `[系统交互：我向你发送了我当前的实时定位。我现在在【${loc.name}】（地点描述：${loc.desc}）。请你看看这个位置，然后回复我！你可以过来找我，或者提醒我注意什么。]`;
+            
+            openApp('chat-app');
+            addMessageToUI('user', html, true, null, rawText, 'x-share');
+            setTimeout(() => triggerAIResponse(), 800);
+        }
+    });
+}
+
+// 拦截应用加载
+const _originalOpenAppMap = openApp;
+openApp = function(appId) {
+    _originalOpenAppMap(appId);
+    if (appId === 'map-app') {
+        renderMapList();
+        if (currentCharLoc) {
+            updateCharLocationOnMap(currentCharLoc);
+        } else {
+            document.getElementById('map-char-pin').style.display = 'none';
+        }
+    }
+};
+
+
+
+
+
+
 
 
 
