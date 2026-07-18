@@ -7840,11 +7840,22 @@ if (mapLocsStr) {
         // 👆 新增结束
 
 
-        // 把 screenTimeInjectBlock 加入到最终拼接中
-        // 把 relationInjectBlock 加入到最终拼接中
-        // 👇 注意最后的 + mcpInjectBlock
-// 保证将 wardrobeInjectBlock 放入拼接长句中：
-let apiMessages = [{ role: "system", content: activeChar.prompt + personaBlock + memoryInjectBlock + meetInjectBlock + envInjectBlock + homeInjectBlock + wardrobeInjectBlock + statusInjectBlock /*...其余不变*/ }];
+        // 👇 修复：将所有被遗漏的功能块、世界书规则 (builtInRules) 全部拼接回来
+let finalSystemContent = activeChar.prompt 
+    + personaBlock + memoryInjectBlock + meetInjectBlock + statusInjectBlock 
+    + envInjectBlock + mcpInjectBlock + petInjectBlock + musicInjectBlock 
+    + drawInjectBlock + builtInRules + momentsInjectBlock + homeInjectBlock 
+    + wardrobeInjectBlock + screenTimeInjectBlock + relationInjectBlock 
+    + detailStatusRules;
+
+// 👇 强力防“流口水/长篇大论”补丁：在极长的系统提示词最末尾，打下最高权重的思维钢印
+finalSystemContent += `\n\n【最高约束 - 绝对指令】：
+1. 绝对禁止长篇大论、禁止总结陈词、禁止AI助手的机械感！
+2. 你的回复必须像真实人类用手机发消息一样，极其简短、口语化、接地气！
+3. 严格遵守上面的格式代码要求，不要自己瞎编格式！`;
+
+let apiMessages = [{ role: "system", content: finalSystemContent }];
+
 
 
 
