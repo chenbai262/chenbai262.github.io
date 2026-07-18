@@ -613,20 +613,21 @@
             border: 1px solid rgba(255,255,255,0.05) !important;
         }
 
-        /* 开启自定义颜色时强制覆盖内联样式 */
+                        /* 开启自定义颜色时强制接管 (超级权重) */
         body.custom-icon-colors .app-icon,
         body.custom-icon-colors .widget,
         body.custom-icon-colors .dock {
             background: var(--ui-icon-bg, rgba(255,255,255,0.15)) !important;
             border: 1px solid var(--ui-icon-border, rgba(255,255,255,0.3)) !important;
         }
-        body.custom-icon-colors .app-icon,
         body.custom-icon-colors .app-icon i,
+        body.custom-icon-colors .app-icon svg,
         body.custom-icon-colors .app-label,
         body.custom-icon-colors .widget,
         body.custom-icon-colors .widget *,
         body.custom-icon-colors .dock i {
             color: var(--ui-icon-color, #ffffff) !important;
+            fill: var(--ui-icon-color, #ffffff) !important;
         }
 
         .widget-calendar { grid-column: span 2; display: flex; flex-direction: column; justify-content: space-between; background: rgba(189, 203, 210, 0.3); }
@@ -643,8 +644,7 @@
         .memo-checkbox.checked::after { content: '✓'; color: #000; font-size: 12px; font-weight: bold; }
         .memo-text { flex: 1; font-size: 13px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
     
-        
-        /* 核心修改：极致简约清冷、清透液态粉灰玻璃图标 */
+        /* 核心修改：默认黑白极简图标样式 (取消了写死的 !important 以便被自定义覆盖) */
         .app-icon { 
             width: 62px; height: 62px; display: flex; align-items: center; justify-content: center; 
             border-radius: var(--ui-icon-radius, 16px); 
@@ -654,17 +654,26 @@
             box-shadow: var(--shadow-raised);
             border: none;
         }
-        .app-icon i, .app-icon svg {
-            color: var(--accent);
-            fill: var(--accent);
-            filter: drop-shadow(2px 2px 4px var(--neu-shadow-dark));
-        }
-.app-icon:active { 
+        .app-icon:active { 
             transform: scale(0.95); 
             box-shadow: var(--shadow-pressed); 
-        }        .app-label { font-size: 12px; color: #fff; text-align: center; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: 500;}
+        }        
+        .app-label { font-size: 12px; color: #ffffff; text-align: center; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: 500;}
+        :root.light-mode .app-label { color: #000000; text-shadow: none; }
+
+        .app-icon i, .app-icon svg {
+            color: #ffffff;
+            fill: #ffffff;
+            filter: drop-shadow(2px 2px 4px var(--neu-shadow-dark));
+        }
+        :root.light-mode .app-icon i, :root.light-mode .app-icon svg {
+            color: #000000;
+            fill: #000000;
+        }
+
         .app-container { display: flex; flex-direction: column; align-items: center; }
         .dock { position: absolute; bottom: 35px; left: 15px; right: 15px; height: 90px; background: rgba(255,255,255,0.15); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; }
+
 
                /* --- 自习室 App 专属样式 --- */
         #study-app { background: var(--bg-base); min-height: 100vh; position: relative; }
@@ -1676,22 +1685,22 @@ input:checked + .slider:before {
 
 
 
-                                      /* ============ 极度圆润、无尾巴、防包裹版气泡 ============ */
+                                      /* ============ 极度圆润、无尾巴、防包裹版气泡 (神级权重接管所有主题) ============ */
 
 /* 彻底隐藏任何可能由旧代码生成的三角小尾巴 */
-html body #chat-app #chat-container .msg::before,
-html body #chat-app #chat-container .msg::after {
+html body #chat-app#chat-app #chat-container .msg::before,
+html body #chat-app#chat-app #chat-container .msg::after {
     display: none !important;
 }
 
 /* 1. 强制缩小所有聊天条目的整体间距（极限压缩） */
-html body #chat-app #chat-container .msg-wrapper {
+html body #chat-app#chat-app #chat-container .msg-wrapper {
     margin-bottom: 4px !important; 
     gap: 6px !important; 
 }
 
 /* 2. 强制接管气泡基础样式（极度圆润，全方位 26px 弧度无死角） */
-html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble) {
+html body #chat-app#chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble) {
     box-shadow: none !important;
     border-radius: 26px !important; 
     padding: 10px 16px !important; 
@@ -1703,12 +1712,8 @@ html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble)
     font-weight: 400 !important;
 }
 
-
-
-
-
 /* 系统提示文字极致简化且压缩间距 */
-html body #chat-app .ins-sys-msg {
+html body #chat-app#chat-app .ins-sys-msg {
     background: #FAFAFA !important;
     color: #888 !important;
     border: 1px solid #EEEEEE !important;
@@ -1717,30 +1722,11 @@ html body #chat-app .ins-sys-msg {
 }
 
 /* 气泡下方时间标签收缩 */
-html body #chat-app .msg-time {
+html body #chat-app#chat-app .msg-time {
     color: #AAAAAA !important;
     font-weight: 500 !important;
     margin-top: 2px !important; 
     font-size: 9px !important;
-}
-                       
-/* --- 气泡外神动：神情动作描写样式 --- */
-.narration-block {
-    text-align: center;
-    font-size: 13px;
-    color: rgba(180, 180, 190, 0.85);
-    font-style: italic;
-    margin: 4px 20px 4px;
-    line-height: 1.6;
-    letter-spacing: 0.5px;
-    padding: 6px 12px;
-    position: relative;
-    z-index: 10;
-    animation: fadeIn 0.6s ease;
-    user-select: none;
-}
-:root.light-mode .narration-block {
-    color: rgba(100, 100, 110, 0.85);
 }
 
         /* --- 遥控器 App 专属样式 --- */
@@ -2878,116 +2864,7 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.shop-share-bubble::af
 
 
 
-                                                         /* ========================================== */
-        /* 👑 Japanese Fresh 日系小清新 核心组件强制覆写区 */
-        /* ========================================== */
-
-        /* 1. 桌面图标 (清新纸质感扁平化) */
-        html body .app-icon {
-            background: #ffffff !important;
-            box-shadow: var(--shadow-raised) !important;
-            border: 0.5px solid rgba(100, 181, 246, 0.15) !important;
-            border-radius: var(--ui-icon-radius, 12px) !important;
-            transition: all 0.2s ease !important;
-        }
-        
-        html body .app-icon:active {
-            box-shadow: var(--shadow-pressed) !important;
-            transform: scale(0.95) !important;
-        }
-        
-        /* 内部 SVG 与字体图标，采用清新的晴空蓝 */
-        html body .app-icon i, html body .app-icon svg {
-            color: var(--accent) !important;
-            fill: var(--accent) !important;
-            filter: drop-shadow(0 2px 4px rgba(100, 181, 246, 0.3)) !important;
-        }
-        html body .app-label { color: var(--text-main) !important; font-weight: 500 !important; text-shadow: none !important; }
-
-        /* 2. 桌面小组件与 Dock 栏 (微透宣纸感) */
-        html body .widget, html body .dock {
-            background: rgba(255, 255, 255, 0.7) !important;
-            box-shadow: var(--shadow-raised) !important;
-            border: 0.5px solid var(--border-color) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-        }
-        
-        /* 3. 顶部液态时间组件 (水彩蓝绿渐变细体文字) */
-        .widget-liquid-time {
-            background: var(--time-panel-bg, transparent);
-            box-shadow: var(--time-panel-shadow, none);
-            border: var(--time-panel-border, none);
-            border-radius: 24px;
-        }
-
-        html body .liquid-time-text {
-            background: linear-gradient(135deg, #64b5f6, #98d8c8) !important;
-            -webkit-background-clip: text !important;
-            background-clip: text !important;
-            color: transparent !important;
-            filter: none !important;
-            animation: none !important;
-            text-shadow: none !important;
-            font-weight: 300 !important; /* 日系细体 */
-            letter-spacing: 2px !important;
-        }
-        html body .liquid-date-text { color: var(--text-sub) !important; font-weight: 400 !important; letter-spacing: 1px !important; text-shadow: none !important;}
-
-        /* 4. 全局输入框与文本域 (日系底边框划线设计) */
-        html body .setting-input, 
-        html body .chat-input, 
-        html body .modal-input, 
-        html body .setting-textarea,
-        html body .setting-select {
-            background: rgba(255, 255, 255, 0.4) !important;
-            box-shadow: none !important;
-            border: none !important;
-            border-bottom: 1.5px solid var(--border-color) !important;
-            border-radius: 4px !important; /* 极小圆角配底边框 */
-            color: var(--text-main) !important;
-            transition: border-bottom-color 0.3s, background 0.3s !important;
-            padding-left: 8px !important;
-        }
-        html body .setting-input:focus, html body .chat-input:focus, html body .setting-textarea:focus {
-            border-bottom: 1.5px solid var(--accent) !important;
-            background: rgba(255, 255, 255, 0.8) !important;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        /* 5. 全局按钮 (治愈系晴空蓝/薄荷绿渐变) */
-        html body .save-btn, 
-        html body .pomo-btn, 
-        html body .tab-btn.active, 
-        html body .app-toggle {
-            background: linear-gradient(135deg, #64b5f6, #98d8c8) !important;
-            box-shadow: 0 4px 15px rgba(100, 181, 246, 0.25) !important;
-            color: #ffffff !important;
-            border: none !important;
-            font-weight: 500 !important;
-            letter-spacing: 1px !important;
-        }
-        html body .save-btn:active, html body .pomo-btn:active {
-            box-shadow: 0 2px 5px rgba(100, 181, 246, 0.15) !important;
-            transform: scale(0.98) !important;
-        }
-        /* 删除按钮：樱花粉弱化色 */
-        html body .del-btn {
-            background: rgba(255, 183, 197, 0.15) !important; 
-            box-shadow: none !important;
-            border: 0.5px solid #ffb7c5 !important;
-            color: #ff8fa3 !important;
-        }
-
-        /* 自由关闭阴影的类兼容保护 */
-        body.no-icon-shadow .app-icon,
-        body.no-icon-shadow .widget,
-        body.no-icon-shadow .dock,
-        body.no-icon-shadow .save-btn,
-        body.no-icon-shadow .pomo-btn {
-            box-shadow: none !important;
-        }
+                                                         
 
 
 
@@ -3063,9 +2940,11 @@ html body #group-chat-app .fa-robot {
 }
 
 /* 开启气泡边框自定义时，强力接管所有主题下气泡的边缘线 */
-body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble),
+body.custom-bubble-border #preview-chat-container .msg {
     border: 1px solid var(--ui-bubble-border-color) !important;
 }
+
 
 
 /* ========================================== */
@@ -4191,7 +4070,7 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                 </div>
             </div>
 
-                                   <!-- 美化中心 App -->
+                                               <!-- 美化中心 App -->
             <div id="beautify-app" class="app-view scrollable">
                 <div class="settings-header glass-effect">
                     <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
@@ -4200,6 +4079,15 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                 
                 <!-- 👇 完美补回了包裹容器 👇 -->
                 <div class="settings-content">
+                    <!-- 👇 新增：时间组件可视化面板 👇 -->
+                    <div class="settings-group-title">时间组件预览</div>
+                    <div class="settings-group" style="padding: 20px; background: var(--bg-base); background-image: var(--screen-bg); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; min-height: 160px; overflow: hidden;">
+                        <div class="widget-liquid-time" id="preview-lq-time-box" style="width: 90%; pointer-events: none;">
+                            <div class="liquid-time-text" id="preview-lq-time">12<span>:</span>00</div>
+                            <div class="liquid-date-text" id="preview-lq-date">1月1日 星期一</div>
+                        </div>
+                    </div>
+
                     <div class="settings-group-title">时间小组件样式</div>
                     <div class="settings-group">
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
@@ -4244,6 +4132,21 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                         <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color);">
                             <span class="setting-label">桌面图标/组件玻璃特效</span>
                             <label class="switch"><input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <!-- 👇 新增：图标调节可视化面板 👇 -->
+                    <div class="settings-group-title" style="margin-top: 20px;">桌面图标与组件预览</div>
+                    <div class="settings-group" style="padding: 20px; background: var(--bg-base); background-image: var(--screen-bg); background-size: cover; background-position: center; display: flex; justify-content: center; gap: 20px; min-height: 120px; overflow: hidden;">
+                        <div class="app-container" style="pointer-events: none;">
+                            <div class="app-icon glass-effect" style="background: linear-gradient(135deg, rgba(220, 210, 215, 0.4) 0%, rgba(195, 185, 195, 0.1) 100%);">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="app-label">示例图标</div>
+                        </div>
+                        <div class="widget glass-effect" style="width: 120px; height: 80px; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-main);">
+                            <i class="fas fa-cloud-sun" style="font-size: 24px; margin-bottom: 5px;"></i>
+                            <div style="font-size: 12px;">小组件</div>
                         </div>
                     </div>
 
@@ -4306,6 +4209,26 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                         </div>
                     </div>
 
+                    <!-- 👇 新增：气泡可视化面板 👇 -->
+                    <div class="settings-group-title" style="margin-top: 20px;">聊天气泡预览</div>
+                    <div class="settings-group" id="preview-chat-container" style="padding: 15px; background: var(--chat-bg); background-size: cover; background-position: center; display: flex; flex-direction: column; gap: 15px; min-height: 150px; overflow: hidden; position: relative;">
+                        <div class="msg-wrapper char" style="justify-content: flex-start; gap: 10px;">
+                            <div class="msg-avatar" style="background-image: url('https://ui-avatars.com/api/?name=AI&background=random&color=fff'); width: calc(40px * var(--ui-zoom, 1)); height: calc(40px * var(--ui-zoom, 1)); border-radius: 50%;"></div>
+                            <div class="msg-content-box" style="max-width: 70%; align-items: flex-start;">
+                                <div class="msg-row-wrap" style="justify-content: flex-start;">
+                                    <div class="msg char glass-effect" style="background-color: var(--time-panel-bg, transparent); color: var(--text-main);">这是一条预览气泡，实时展示圆角与颜色。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="msg-wrapper user" style="justify-content: flex-end; gap: 10px;">
+                            <div class="msg-content-box" style="max-width: 70%; align-items: flex-end;">
+                                <div class="msg-row-wrap" style="justify-content: flex-end;">
+                                    <div class="msg user glass-effect" style="background-color: var(--accent); color: #000;">外观设置所见即所得。</div>
+                                </div>
+                            </div>
+                            <div class="msg-avatar" style="background-image: url('https://ui-avatars.com/api/?name=Me&background=BDCBD2&color=fff'); width: calc(40px * var(--ui-zoom, 1)); height: calc(40px * var(--ui-zoom, 1)); border-radius: 50%;"></div>
+                        </div>
+                    </div>
 
                     <div class="settings-group-title">基础样式调节</div>
                     <div class="settings-group">
@@ -4327,14 +4250,33 @@ body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(
                         </div>
                     </div>
 
+                                        <!-- 👇 新增：CSS 代码整体可视化面板 👇 -->
+                    <div class="settings-group-title" style="margin-top: 20px;">整体 CSS 效果预览</div>
+                    <div class="settings-group" id="preview-layout-container" style="padding: 15px; background: var(--bg-base); border: 1px dashed var(--accent); min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-sub); overflow: hidden; position: relative; transform: translateZ(0);">
+                        <div class="chat-input-area glass-effect" id="preview-input-bar" style="width: 100%; border-radius: 20px; display: flex; padding: 10px; gap: 10px; align-items: center; pointer-events: none; border-top: 0.5px solid var(--border-color); position: relative; z-index: 10;">
+                            <i class="fas fa-plus-circle chat-icon-btn"></i>
+                            <div class="chat-input" style="flex: 1; border-radius: 22px; background: var(--input-bg); height: 35px; border: 1px solid var(--border-color);"></div>
+                            <i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 24px;"></i>
+                        </div>
+                        <p style="font-size: 11px; margin-top: 10px; position: relative; z-index: 10;">上方展示受下方 CSS 影响的实时效果</p>
+                    </div>
+
+
+                                        <!-- 修改部分 1: HTML 中的三个 CSS 代码输入框增加 oninput 事件 -->
                     <div class="settings-group-title">1. 气泡 CSS 代码</div>
-                    <div class="settings-group"><textarea id="css-bubble-input" class="setting-textarea" placeholder="输入气泡相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;"></textarea></div>
+                    <div class="settings-group">
+                        <textarea id="css-bubble-input" class="setting-textarea" placeholder="输入气泡相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea>
+                    </div>
 
                     <div class="settings-group-title">2. 聊天框 CSS 代码</div>
-                    <div class="settings-group"><textarea id="css-inputbar-input" class="setting-textarea" placeholder="输入底部聊天框相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;"></textarea></div>
+
+                    <div class="settings-group"><textarea id="css-inputbar-input" class="setting-textarea" placeholder="输入底部聊天框相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea></div>
 
                     <div class="settings-group-title">3. 界面 CSS 代码</div>
-                    <div class="settings-group"><textarea id="css-layout-input" class="setting-textarea" placeholder="输入整体界面、背景、顶部栏相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;"></textarea></div>
+                    <div class="settings-group"><textarea id="css-layout-input" class="setting-textarea" placeholder="输入整体界面、背景、顶部栏相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea></div>
+
+<!-- 修改部分 2: JavaScript 中新增 updateCustomCSS 函数，用于实时渲染用户输入的 CSS -->
+
                     
                     <div class="settings-group-title">配置数据备份 (写入文件/读取)</div>
                     <div class="settings-group">
@@ -9361,7 +9303,7 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
         localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
     }
 
-        function applyUISettings() {
+            function applyUISettings() {
         const root = document.documentElement;
         
         // 1. 基础 UI 变量注入
@@ -9389,7 +9331,8 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
             root.style.removeProperty('--time-panel-shadow');
             root.style.removeProperty('--time-panel-border');
         }
-                // 应用自定义气泡边框
+
+        // 应用自定义气泡边框
         if (uiSettings.customBubbleBorder) {
             document.body.classList.add('custom-bubble-border');
             root.style.setProperty('--ui-bubble-border-color', uiSettings.bubbleBorderColor || '#000000');
@@ -9397,17 +9340,7 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
             document.body.classList.remove('custom-bubble-border');
         }
 
-
-        // 2. 特效开关应用
-        const timeTextEl = document.getElementById('lq-time');
-        if(timeTextEl) {
-            if(uiSettings.liquidTime !== false) timeTextEl.classList.remove('solid-color');
-            else timeTextEl.classList.add('solid-color');
-        }
-
-        if(uiSettings.liquidIcon !== false) document.body.classList.remove('flat-icons');
-        else document.body.classList.add('flat-icons');
-
+        // 👇 核心修复：应用自定义图标颜色 (你上次漏贴了这段JS)
         if (uiSettings.customIconColor) {
             document.body.classList.add('custom-icon-colors');
             root.style.setProperty('--ui-icon-bg', hexToRgba(uiSettings.iconBgColor || '#ffffff', uiSettings.iconBgOpacity !== undefined ? uiSettings.iconBgOpacity : 0.15));
@@ -9417,7 +9350,20 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
             document.body.classList.remove('custom-icon-colors');
         }
 
-        // ======= 修复并新增：悬浮球样式动态覆盖 =======
+        // 2. 特效开关应用
+        const timeTextEl = document.getElementById('lq-time');
+        const prevTimeTextEl = document.getElementById('preview-lq-time'); 
+        if(timeTextEl) {
+            if(uiSettings.liquidTime !== false) {
+                timeTextEl.classList.remove('solid-color');
+                if (prevTimeTextEl) prevTimeTextEl.classList.remove('solid-color');
+            } else {
+                timeTextEl.classList.add('solid-color');
+                if (prevTimeTextEl) prevTimeTextEl.classList.add('solid-color');
+            }
+        }
+
+        // ======= 悬浮球样式动态覆盖 =======
         root.style.setProperty('--at-size', `${uiSettings.atSize || 60}px`);
         root.style.setProperty('--at-blur', `${uiSettings.atBlur !== undefined ? uiSettings.atBlur : 15}px`);
         
@@ -9442,18 +9388,14 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
         } else {
             root.style.setProperty('--at-img', 'none');
             root.style.setProperty('--at-inner-display', 'block');
-            // 👇 默认恢复时取蓝色 #0b84ff 👇
             root.style.setProperty('--at-bg', hexToRgba(uiSettings.atBgColor || '#0b84ff', uiSettings.atBgOpacity !== undefined ? uiSettings.atBgOpacity : 0.7));
         }
 
-        // 3. 将 CSS 追加到底部优先渲染
-        let styleTag = document.getElementById('user-injected-style');
-        if(!styleTag) { 
-            styleTag = document.createElement('style'); 
-            styleTag.id = 'user-injected-style'; 
-            document.body.appendChild(styleTag); 
+                // 3. 将 CSS 追加到底部优先渲染 (带自动提权防覆盖)
+        if (typeof applyUserInjectedCSS === 'function') {
+            applyUserInjectedCSS();
         }
-        styleTag.innerHTML = (uiSettings.cssLayout || "") + "\n" + (uiSettings.cssBubble || "") + "\n" + (uiSettings.cssInputBar || "");
+
     }
 
 
@@ -17518,6 +17460,94 @@ openApp = function(appId) {
         }
     }
 };
+
+    // 在 script 标签内部较前的位置（比如 `updateUIParam` 函数下方）增加以下函数
+                        function applyUserInjectedCSS() {
+        let styleTag = document.getElementById('user-injected-style');
+        if(!styleTag) { 
+            styleTag = document.createElement('style'); 
+            styleTag.id = 'user-injected-style'; 
+            document.body.appendChild(styleTag); 
+        }
+
+        // 核心提权算法：动态清洗多余前缀，并附加神级优先权与 !important
+        function boostCSS(css, prefixStr, cleanKeyword) {
+            if (!css) return "";
+            
+            // 自动为用户输入的属性强制补全 !important
+            css = css.replace(/([^:;{}]+\s*:\s*[^;{}!]+)(;|(?=\}))/g, function(match, p1, p2) {
+                if (!p1.includes('!important')) {
+                    return p1 + " !important" + p2;
+                }
+                return match;
+            });
+
+            let prefixes = prefixStr.split(',');
+
+            return css.replace(/(^|\}|\{)\s*([^{}]+)\s*\{/g, function(match, p1, p2) {
+                let trimmed = p2.trim();
+                // 排除 @keyframes、@media 等无需提权的语法
+                if (!trimmed || trimmed.startsWith('@') || /^[0-9]+%$/.test(trimmed) || trimmed === 'from' || trimmed === 'to') {
+                    return match;
+                }
+
+                let newSelectors = [];
+                trimmed.split(',').forEach(s => {
+                    let sel = s.trim();
+                    
+                    // 1. 无脑清洗用户自带的多余根节点前缀，防止嵌套叠加失效
+                    sel = sel.replace(/html/g, '').replace(/body/g, '').replace(/#chat-app/g, '');
+                    
+                    // 2. 清洗当前区块的专属关键字
+                    if (cleanKeyword) {
+                        let regex = new RegExp(cleanKeyword.replace(/\./g, '\\.'), 'g');
+                        sel = sel.replace(regex, '');
+                    }
+                    
+                    sel = sel.trim();
+                    
+                    // 3. 特殊兜底：如果是气泡区域且全被洗空了，强制指向 .msg 气泡本体
+                    if (!sel && cleanKeyword === '#chat-container') {
+                        sel = '.msg';
+                    }
+                    // 同样为聊天框区域兜底
+                    if (!sel && cleanKeyword === '.chat-input-area') {
+                        sel = '.chat-input-area';
+                    }
+
+                    // 4. 缝合最高权重前缀
+                    prefixes.forEach(p => {
+                        let finalPrefix = p.trim();
+                        if (!sel) {
+                            newSelectors.push(finalPrefix); // 如果洗空了，说明指向外框本身
+                        } else {
+                            newSelectors.push(finalPrefix + " " + sel);
+                        }
+                    });
+                });
+                return (p1 ? p1 + " " : "") + newSelectors.join(', ') + " {";
+            });
+        }
+
+                // 强力堆叠 4个 #chat-app 级别，比任何自带主题的权重都高
+        let bubblePrefix = 'html body #chat-app#chat-app#chat-app#chat-app #chat-container, html body #settings-app #preview-chat-container';
+        let inputPrefix = 'html body #chat-app#chat-app#chat-app#chat-app .chat-input-area, html body #settings-app #preview-input-bar';
+        
+        // 🚨 核心修复：移除对 ", html body #settings-app" 的全局污染！
+        // 但将其限制在专用的预览容器内，通过 transform 困住 fixed 定位防逃逸
+        let layoutPrefix = 'html body #chat-app#chat-app#chat-app#chat-app, html body #settings-app #preview-layout-container';
+
+
+        let bubbleCSS = boostCSS(uiSettings.cssBubble, bubblePrefix, '#chat-container');
+        let inputBarCSS = boostCSS(uiSettings.cssInputBar, inputPrefix, '.chat-input-area');
+        let layoutCSS = boostCSS(uiSettings.cssLayout, layoutPrefix, null);
+
+        styleTag.innerHTML = (layoutCSS || "") + "\n" + (bubbleCSS || "") + "\n" + (inputBarCSS || "");
+    }
+
+
+
+
 
 
 
