@@ -1685,49 +1685,7 @@ input:checked + .slider:before {
 
 
 
-                                      /* ============ 极度圆润、无尾巴、防包裹版气泡 (神级权重接管所有主题) ============ */
-
-/* 彻底隐藏任何可能由旧代码生成的三角小尾巴 */
-html body #chat-app#chat-app #chat-container .msg::before,
-html body #chat-app#chat-app #chat-container .msg::after {
-    display: none !important;
-}
-
-/* 1. 强制缩小所有聊天条目的整体间距（极限压缩） */
-html body #chat-app#chat-app #chat-container .msg-wrapper {
-    margin-bottom: 4px !important; 
-    gap: 6px !important; 
-}
-
-/* 2. 强制接管气泡基础样式（极度圆润，全方位 26px 弧度无死角） */
-html body #chat-app#chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble) {
-    box-shadow: none !important;
-    border-radius: 26px !important; 
-    padding: 10px 16px !important; 
-    font-size: 15px !important;
-    line-height: 1.5 !important;
-    border: 1px solid rgba(0,0,0,0.04) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    font-weight: 400 !important;
-}
-
-/* 系统提示文字极致简化且压缩间距 */
-html body #chat-app#chat-app .ins-sys-msg {
-    background: #FAFAFA !important;
-    color: #888 !important;
-    border: 1px solid #EEEEEE !important;
-    box-shadow: none !important;
-    margin: 6px auto !important; 
-}
-
-/* 气泡下方时间标签收缩 */
-html body #chat-app#chat-app .msg-time {
-    color: #AAAAAA !important;
-    font-weight: 500 !important;
-    margin-top: 2px !important; 
-    font-size: 9px !important;
-}
+                                      
 
         /* --- 遥控器 App 专属样式 --- */
         #remote-app { background: var(--bg-base); display: none; flex-direction: column; height: 100%; }
@@ -17461,94 +17419,7 @@ openApp = function(appId) {
     }
 };
 
-    // 在 script 标签内部较前的位置（比如 `updateUIParam` 函数下方）增加以下函数
-                        function applyUserInjectedCSS() {
-        let styleTag = document.getElementById('user-injected-style');
-        if(!styleTag) { 
-            styleTag = document.createElement('style'); 
-            styleTag.id = 'user-injected-style'; 
-            document.body.appendChild(styleTag); 
-        }
-
-        // 核心提权算法：动态清洗多余前缀，并附加神级优先权与 !important
-        function boostCSS(css, prefixStr, cleanKeyword) {
-            if (!css) return "";
-            
-            // 自动为用户输入的属性强制补全 !important
-            css = css.replace(/([^:;{}]+\s*:\s*[^;{}!]+)(;|(?=\}))/g, function(match, p1, p2) {
-                if (!p1.includes('!important')) {
-                    return p1 + " !important" + p2;
-                }
-                return match;
-            });
-
-            let prefixes = prefixStr.split(',');
-
-            return css.replace(/(^|\}|\{)\s*([^{}]+)\s*\{/g, function(match, p1, p2) {
-                let trimmed = p2.trim();
-                // 排除 @keyframes、@media 等无需提权的语法
-                if (!trimmed || trimmed.startsWith('@') || /^[0-9]+%$/.test(trimmed) || trimmed === 'from' || trimmed === 'to') {
-                    return match;
-                }
-
-                let newSelectors = [];
-                trimmed.split(',').forEach(s => {
-                    let sel = s.trim();
-                    
-                    // 1. 无脑清洗用户自带的多余根节点前缀，防止嵌套叠加失效
-                    sel = sel.replace(/html/g, '').replace(/body/g, '').replace(/#chat-app/g, '');
-                    
-                    // 2. 清洗当前区块的专属关键字
-                    if (cleanKeyword) {
-                        let regex = new RegExp(cleanKeyword.replace(/\./g, '\\.'), 'g');
-                        sel = sel.replace(regex, '');
-                    }
-                    
-                    sel = sel.trim();
-                    
-                    // 3. 特殊兜底：如果是气泡区域且全被洗空了，强制指向 .msg 气泡本体
-                    if (!sel && cleanKeyword === '#chat-container') {
-                        sel = '.msg';
-                    }
-                    // 同样为聊天框区域兜底
-                    if (!sel && cleanKeyword === '.chat-input-area') {
-                        sel = '.chat-input-area';
-                    }
-
-                    // 4. 缝合最高权重前缀
-                    prefixes.forEach(p => {
-                        let finalPrefix = p.trim();
-                        if (!sel) {
-                            newSelectors.push(finalPrefix); // 如果洗空了，说明指向外框本身
-                        } else {
-                            newSelectors.push(finalPrefix + " " + sel);
-                        }
-                    });
-                });
-                return (p1 ? p1 + " " : "") + newSelectors.join(', ') + " {";
-            });
-        }
-
-                // 强力堆叠 4个 #chat-app 级别，比任何自带主题的权重都高
-        let bubblePrefix = 'html body #chat-app#chat-app#chat-app#chat-app #chat-container, html body #settings-app #preview-chat-container';
-        let inputPrefix = 'html body #chat-app#chat-app#chat-app#chat-app .chat-input-area, html body #settings-app #preview-input-bar';
-        
-        // 🚨 核心修复：移除对 ", html body #settings-app" 的全局污染！
-        // 但将其限制在专用的预览容器内，通过 transform 困住 fixed 定位防逃逸
-        let layoutPrefix = 'html body #chat-app#chat-app#chat-app#chat-app, html body #settings-app #preview-layout-container';
-
-
-        let bubbleCSS = boostCSS(uiSettings.cssBubble, bubblePrefix, '#chat-container');
-        let inputBarCSS = boostCSS(uiSettings.cssInputBar, inputPrefix, '.chat-input-area');
-        let layoutCSS = boostCSS(uiSettings.cssLayout, layoutPrefix, null);
-
-        styleTag.innerHTML = (layoutCSS || "") + "\n" + (bubbleCSS || "") + "\n" + (inputBarCSS || "");
-    }
-
-
-
-
-
+    
 
 
 
