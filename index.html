@@ -2635,7 +2635,7 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
                                /* ========================================== */
 /* 群聊大厅 App 专属样式 */
 /* ========================================== */
-#group-chat-app { background: var(--chat-bg); background-size: cover; background-position: center; position: relative; }
+#group-chat-app { background: var(--chat-bg); background-size: cover; background-position: center; }
 .group-msg-wrapper { display: flex; width: 100%; position: relative; align-items: flex-start; gap: 10px; margin-bottom: 15px; }
 .group-msg-wrapper.char { justify-content: flex-start; }
 .group-msg-wrapper.user { justify-content: flex-end; }
@@ -5572,7 +5572,8 @@ body.custom-bubble-border #preview-chat-container .msg {
 
                                <!-- 群聊大厅 App -->
 <div id="group-chat-app" class="app-view">
-    <div id="group-setup-view" style="display:none; flex-direction:column; height:100%;">
+    <!-- 将 height:100%; 改为 flex:1; width:100%; -->
+    <div id="group-setup-view" style="display:none; flex-direction:column; flex:1; width:100%;">
         <div class="settings-header glass-effect">
             <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
             创建 / 编辑群聊
@@ -5585,7 +5586,8 @@ body.custom-bubble-border #preview-chat-container .msg {
         </div>
     </div>
 
-    <div id="group-chat-main-view" style="display:none; flex-direction:column; height:100%;">
+    <!-- 将 height:100%; 改为 flex:1; width:100%; -->
+    <div id="group-chat-main-view" style="display:none; flex-direction:column; flex:1; width:100%;">
         <div class="chat-header glass-effect">
             <div class="chat-header-left">
                 <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
