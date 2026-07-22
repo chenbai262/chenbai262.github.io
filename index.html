@@ -3228,6 +3228,49 @@ body.custom-bubble-border #preview-chat-container .msg {
     pointer-events: none;
 }
 
+        /* 偷看手机 - 新增豆包、QQ邮箱、百度 样式 */
+        .snoop-db-item { display: flex; gap: 15px; align-items: center; padding: 15px; background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); margin-bottom: 10px; cursor: pointer;}
+        .snoop-db-icon { width: 40px; height: 40px; border-radius: 50%; background: #2575fc; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0;}
+        .snoop-db-msg { max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; color: #333; }
+        .snoop-db-msg.ai { background: #fff; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .snoop-db-msg.me { background: #2575fc; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(37,117,252,0.3);}
+
+        .snoop-qqm-item { display: flex; flex-direction: column; gap: 6px; padding: 15px; background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); margin-bottom: 10px; cursor: pointer; }
+        .snoop-qqm-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sub); }
+        .snoop-qqm-title { font-size: 15px; font-weight: bold; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .snoop-bd-search-box { display: flex; align-items: center; background: #fff; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; gap: 10px; }
+        .snoop-bd-item { padding: 15px; background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); margin-bottom: 10px; cursor: pointer; }
+        .snoop-bd-q { font-size: 15px; color: #2932e1; font-weight: bold; margin-bottom: 6px; }
+        .snoop-bd-a { font-size: 13px; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+
+        /* 👇 新增：QQ游戏、微博、贴吧、隐私相册 样式 👇 */
+        .snoop-qqgame-item { background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .snoop-qqgame-icon { width: 45px; height: 45px; border-radius: 10px; background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #ffc107; }
+        .snoop-qqgame-info { flex: 1; }
+        .snoop-qqgame-name { font-size: 15px; font-weight: bold; color: var(--text-main); margin-bottom: 4px; }
+        .snoop-qqgame-hero { font-size: 12px; color: var(--text-sub); }
+        .snoop-qqgame-result { text-align: right; }
+        .snoop-qqgame-win { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+        .snoop-qqgame-kda { font-size: 12px; color: var(--text-sub); }
+
+        .snoop-weibo-item { background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); padding: 15px; margin-bottom: 10px; cursor: pointer; }
+        .snoop-weibo-type { font-size: 12px; color: #e6162d; margin-bottom: 6px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .snoop-weibo-content { font-size: 14px; color: var(--text-main); line-height: 1.5; }
+
+        .snoop-tieba-item { background: var(--bg-panel); border-radius: 12px; border: 0.5px solid var(--border-color); padding: 15px; margin-bottom: 10px; cursor: pointer; }
+        .snoop-tieba-forum { font-size: 12px; color: #3385ff; margin-bottom: 6px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .snoop-tieba-title { font-size: 15px; color: var(--text-main); font-weight: bold; margin-bottom: 6px; }
+        .snoop-tieba-time { font-size: 11px; color: var(--text-sub); }
+
+        .snoop-album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .snoop-album-item { background: var(--input-bg); border-radius: 12px; border: 0.5px solid var(--border-color); overflow: hidden; position: relative; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .snoop-album-desc { font-size: 13px; color: var(--text-main); font-weight: 500; line-height: 1.5; position: relative; z-index: 2; font-style: italic; }
+        .snoop-album-date { position: absolute; top: 10px; left: 10px; font-size: 11px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 6px; border-radius: 4px; z-index: 2; backdrop-filter: blur(4px); }
+        .snoop-album-icon { position: absolute; top: 10px; right: 10px; font-size: 14px; color: #e84393; z-index: 2; opacity: 0.8; }
+        /* 👆 新增结束 👆 */
+
 
 
 
@@ -4794,49 +4837,198 @@ body.custom-bubble-border #preview-chat-container .msg {
                                                                                           
 
 
-            <!-- 偷看手机 App (查岗) -->
+                                    <!-- 偷看手机 App (查岗) -->
             <div id="snoop-app" class="app-view scrollable">
-                <div class="snoop-header">
+                <div class="snoop-header" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.1);">
                     <div style="display:flex; align-items:center;">
-                        <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
-                        <span style="font-size:18px; font-weight:bold; color:var(--text-main);">TA的手机设备</span>
+                        <i class="fas fa-chevron-left" onclick="handleSnoopBack()" style="color:#fff; font-size: 20px; margin-right: 15px; cursor:pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);"></i>
+                        <span style="font-size:18px; font-weight:bold; color:#fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);" id="snoop-title-text">TA的手机设备</span>
                     </div>
-                    <i class="fas fa-sync-alt" id="snoop-refresh-btn" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="refreshSnoopData()" title="重新提取数据"></i>
+                    <i class="fas fa-sync-alt" id="snoop-refresh-btn" style="color:#fff; font-size: 18px; cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);" onclick="refreshSnoopData()" title="重新提取数据"></i>
                 </div>
 
-                <div class="status-tabs" style="margin: 15px 20px;">
-                    <div class="tab-btn active" onclick="switchSnoopTab('wechat', this)">WeChat</div>
-                    <div class="tab-btn" onclick="switchSnoopTab('video', this)">短视频</div>
-                    <div class="tab-btn" onclick="switchSnoopTab('pay', this)">账单</div>
-                    <div class="tab-btn" onclick="switchSnoopTab('loc', this)">定位</div>
-                </div>
-
-                <!-- 微信记录 -->
-                <div id="snoop-wechat" class="snoop-panel active"></div>
-
-                <!-- 短视频记录 -->
-                <div id="snoop-video" class="snoop-panel"></div>
-
-                <!-- 支付账单 -->
-                <div id="snoop-pay" class="snoop-panel"></div>
-
-                <!-- 地理位置 -->
-                <div id="snoop-loc" class="snoop-panel">
-                    <div class="snoop-map-box">
-                        <div class="snoop-map-bg"></div>
-                        <i class="fas fa-map-marker-alt snoop-map-pin"></i>
-                        <div class="snoop-loc-text" id="snoop-loc-display">未知地点</div>
+                <!-- TA的手机桌面 -->
+                <div id="snoop-desktop" style="position: relative; display: flex; flex-direction: column; width: 100%; min-height: calc(100vh - 85px); background: linear-gradient(180deg, #1c1c1e 0%, #000 100%); background-size: cover; background-position: center; transition: background 0.3s;">
+                    <!-- 顶部状态栏 -->
+                    <div style="display: flex; justify-content: space-between; padding: 10px 20px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+                        <span id="snoop-time">12:00</span>
+                        <div style="display: flex; gap: 6px;"><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></div>
                     </div>
                     
-                    <div class="settings-group" style="margin: 10px 0; border: 1px dashed var(--accent); background: transparent;">
-                        <div class="setting-item">
-                            <span class="setting-label" style="color: var(--accent);">强制修改 TA 的定位 (上帝模式)</span>
-                            <input type="text" id="snoop-loc-input" class="setting-input" placeholder="例如：市中心酒店、废弃仓库...">
-                            <div class="save-btn" style="margin-top: 10px; padding: 10px;" onclick="forceSaveLocation()">强制修改坐标</div>
+                    <!-- 居中大字时间组件 -->
+                    <div style="margin: 30px auto 10px; text-align: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                        <div id="snoop-widget-time" style="font-size: 65px; font-weight: 200; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; letter-spacing: 2px; line-height: 1;">12:00</div>
+                        <div id="snoop-widget-date" style="font-size: 14px; font-weight: 500; margin-top: 5px;">1月1日 星期一</div>
+                    </div>
+
+                    <!-- 桌面应用网格 -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; padding: 25px 20px; align-content: start; flex: 1;">
+                        <div class="app-container" onclick="openSnoopInnerApp('wechat', 'WeChat')">
+                            <div class="app-icon" style="background: #07c160; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-comment" style="color:#fff; font-size: 30px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">WeChat</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('video', '短视频')">
+                            <div class="app-icon" style="background: #111; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-play" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">短视频</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('pay', '支付宝')">
+                            <div class="app-icon" style="background: #1677ff; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-wallet" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">支付宝</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('loc', '地图')">
+                            <div class="app-icon" style="background: #f39c12; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-map-marked-alt" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">地图</div>
+                        </div>
+                        <!-- 👇 新增的三个图标 👇 -->
+                        <div class="app-container" onclick="openSnoopInnerApp('doubao', '豆包')">
+                            <div class="app-icon" style="background: #2575fc; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-robot" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">豆包</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('qqmail', 'QQ邮箱')">
+                            <div class="app-icon" style="background: #fff; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 14px; width: 56px; height: 56px; display:flex; justify-content:center; align-items:center;"><i class="fas fa-envelope" style="color:#f39c12; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">QQ邮箱</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('baidu', '百度')">
+                            <div class="app-icon" style="background: #fff; border-radius: 14px; width: 56px; height: 56px; display: flex; justify-content: center; align-items: center;"><span style="color: #2932e1; font-size: 26px; font-weight: 900; font-family: sans-serif;">度</span></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">百度</div>
+                        </div> 
+                            <div class="app-container" onclick="openSnoopInnerApp('qqgame', 'QQ游戏')">
+                            <div class="app-icon" style="background: #ffc107; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-gamepad" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">QQ游戏</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('weibo', '微博')">
+                            <div class="app-icon" style="background: #e6162d; border-radius: 14px; width: 56px; height: 56px;"><i class="fab fa-weibo" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">微博</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('tieba', '贴吧')">
+                            <div class="app-icon" style="background: #3385ff; border-radius: 14px; width: 56px; height: 56px;"><i class="fas fa-paw" style="color:#fff; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">贴吧</div>
+                        </div>
+
+                        <div class="app-container" onclick="openSnoopInnerApp('privatealbum', '隐私相册')">
+                            <div class="app-icon" style="background: #fff; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 14px; width: 56px; height: 56px; display:flex; justify-content:center; align-items:center;"><i class="fas fa-images" style="color:#e84393; font-size: 28px;"></i></div>
+                            <div class="app-label" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);">隐私相册</div>
+                        </div>
+                    </div>
+                </div>
+                        
+
+                <!-- 内部应用面板包裹，用于统一切换 -->
+                <div id="snoop-apps-container" style="display:none; flex-direction:column; flex:1; background: var(--bg-base);">
+                    <div id="snoop-wechat" class="snoop-panel"></div>
+                    <div id="snoop-video" class="snoop-panel"></div>
+                    <div id="snoop-pay" class="snoop-panel"></div>
+                    
+                    <div id="snoop-doubao" class="snoop-panel"></div>
+                    <div id="snoop-qqmail" class="snoop-panel"></div>
+                    <div id="snoop-baidu" class="snoop-panel"></div>
+                    
+                    <!-- 👇 新增的四个面板容器 👇 -->
+                    <div id="snoop-qqgame" class="snoop-panel"></div>
+                    <div id="snoop-weibo" class="snoop-panel"></div>
+                    <div id="snoop-tieba" class="snoop-panel"></div>
+                    <div id="snoop-privatealbum" class="snoop-panel"></div>
+
+                    <!-- 地理位置 -->
+                    <div id="snoop-loc" class="snoop-panel">
+                        <div class="snoop-map-box">
+                            <div class="snoop-map-bg"></div>
+                            <i class="fas fa-map-marker-alt snoop-map-pin"></i>
+                            <div class="snoop-loc-text" id="snoop-loc-display">未知地点</div>
+                        </div>
+                        
+                        <div class="settings-group" style="margin: 10px 0; border: 1px dashed var(--accent); background: transparent;">
+                            <div class="setting-item">
+                                <span class="setting-label" style="color: var(--accent);">强制修改 TA 的定位 (上帝模式)</span>
+                                <input type="text" id="snoop-loc-input" class="setting-input" placeholder="例如：市中心酒店、废弃仓库...">
+                                <div class="save-btn" style="margin-top: 10px; padding: 10px;" onclick="forceSaveLocation()">强制修改坐标</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div> <!-- 👈 偷看手机 App 在这里闭合 -->
+
+            <!-- 偷看手机的详细聊天覆盖层 (原有的) -->
+            <div id="snoop-chat-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #EDEDED; z-index: 200; display: none; flex-direction: column;">
+                <div style="height: 85px; padding-top: 35px; background: #EDEDED; border-bottom: 0.5px solid #D8D8D8; display: flex; align-items: center; padding-left: 15px; padding-right: 15px; position: relative;">
+                    <i class="fas fa-chevron-left" onclick="closeSnoopChatDetail()" style="font-size: 20px; color: #181818; cursor: pointer;"></i>
+                    <span id="scd-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 17px; font-weight: 500; color: #181818;">对方名字</span>
+                </div>
+                <div id="scd-body" class="scrollable" style="flex: 1; padding: 20px 15px; display: flex; flex-direction: column; background: #EDEDED;">
+                    <!-- 动态渲染仿微信聊天记录 -->
+                </div>
+            </div>
+
+            <!-- 👇 修复：豆包详情页 (补充上了 id="doubao-detail-title") 👇 -->
+            <div id="snoop-doubao-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; z-index: 200; display: none; flex-direction: column;">
+                <div style="height: 85px; padding-top: 35px; background: #fff; border-bottom: 0.5px solid #eee; display: flex; align-items: center; padding-left: 15px; padding-right: 15px; position: relative;">
+                    <i class="fas fa-chevron-left" onclick="closeSnoopDoubaoDetail()" style="font-size: 20px; color: #333; cursor: pointer;"></i>
+                    <span id="doubao-detail-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: bold; color: #333;">豆包 AI</span>
+                </div>
+                <div id="snoop-doubao-body" class="scrollable" style="flex: 1; padding: 20px 15px; display: flex; flex-direction: column; background: #f5f5f5; gap: 15px;"></div>
+            </div>
+
+            <!-- 👇 新增：QQ邮箱详情页 👇 -->
+            <div id="snoop-qqmail-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column;">
+                <div style="height: 85px; padding-top: 35px; background: #f9f9f9; border-bottom: 0.5px solid #ddd; display: flex; align-items: center; padding-left: 15px; padding-right: 15px;">
+                    <i class="fas fa-chevron-left" onclick="closeSnoopQQMailDetail()" style="font-size: 20px; color: #333; cursor: pointer;"></i>
+                    <span style="flex:1; margin-left: 15px; font-size: 16px; font-weight: bold; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="snoop-qqm-subject">邮件详情</span>
+                </div>
+                <div id="snoop-qqm-body" class="scrollable" style="flex: 1; padding: 20px; background: #fff; color: #333;"></div>
+            </div>
+
+            <!-- 👇 新增：百度详情页 👇 -->
+            <div id="snoop-baidu-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column;">
+                <div style="height: 85px; padding-top: 35px; background: #f9f9f9; border-bottom: 0.5px solid #eee; display: flex; align-items: center; padding-left: 15px; padding-right: 15px;">
+                    <i class="fas fa-chevron-left" onclick="closeSnoopBaiduDetail()" style="font-size: 20px; color: #333; cursor: pointer;"></i>
+                    <div style="flex:1; margin-left: 15px; background: #eee; border-radius: 20px; padding: 5px 15px; color: #666; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-search"></i> <span id="snoop-baidu-query" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;"></span>
+                    </div>
+                </div>
+                <div id="snoop-baidu-body" class="scrollable" style="flex: 1; padding: 20px; background: #fff; color: #333; font-size: 15px; line-height: 1.6;"></div>
+            </div>
+
+                    </div>
+                </div>
+
+                <!-- 内部应用面板包裹，用于统一切换 -->
+                <div id="snoop-apps-container" style="display:none; flex-direction:column; flex:1; background: var(--bg-base);">
+                    <!-- 微信记录 -->
+                    <div id="snoop-wechat" class="snoop-panel"></div>
+
+                    <!-- 短视频记录 -->
+                    <div id="snoop-video" class="snoop-panel"></div>
+
+                    <!-- 支付账单 -->
+                    <div id="snoop-pay" class="snoop-panel"></div>
+
+                    <!-- 地理位置 -->
+                    <div id="snoop-loc" class="snoop-panel">
+                        <div class="snoop-map-box">
+                            <div class="snoop-map-bg"></div>
+                            <i class="fas fa-map-marker-alt snoop-map-pin"></i>
+                            <div class="snoop-loc-text" id="snoop-loc-display">未知地点</div>
+                        </div>
+                        
+                        <div class="settings-group" style="margin: 10px 0; border: 1px dashed var(--accent); background: transparent;">
+                            <div class="setting-item">
+                                <span class="setting-label" style="color: var(--accent);">强制修改 TA 的定位 (上帝模式)</span>
+                                <input type="text" id="snoop-loc-input" class="setting-input" placeholder="例如：市中心酒店、废弃仓库...">
+                                <div class="save-btn" style="margin-top: 10px; padding: 10px;" onclick="forceSaveLocation()">强制修改坐标</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- 👈 偷看手机 App 在这里闭合 -->
+
+
 
             <!-- 偷看手机的详细聊天覆盖层 (置于外层) -->
             <div id="snoop-chat-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #EDEDED; z-index: 200; display: none; flex-direction: column;">
@@ -6470,9 +6662,18 @@ body.custom-bubble-border #preview-chat-container .msg {
         const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
         const dayStr = days[now.getDay()];
 
-        // 1. 状态栏时间
+                // 1. 状态栏时间
         const clockEl = document.getElementById('clock-time');
         if(clockEl) clockEl.innerText = `${hours}:${minutes}`;
+
+        // 👇 注入 TA 手机的时间同步
+        const snoopTime = document.getElementById('snoop-time');
+        const snoopWidgetTime = document.getElementById('snoop-widget-time');
+        const snoopWidgetDate = document.getElementById('snoop-widget-date');
+        if (snoopTime) snoopTime.innerText = `${hours}:${minutes}`;
+        if (snoopWidgetTime) snoopWidgetTime.innerText = `${hours}:${minutes}`;
+        if (snoopWidgetDate) snoopWidgetDate.innerText = `${month}月${date}日 ${dayStr}`;
+
         
         // 2. 原版日历
         const calDay = document.getElementById('cal-day');
@@ -7846,12 +8047,18 @@ if (globalAPI.enableNarration) {
         builtInRules += `\n【朋友圈发布权限】：遇到值得纪念的时刻，你可以在聊天中独立输出 $$MOMENT:朋友圈文字内容|||英文配图描述(如果不配图请写NONE)$$，这将立即在你们共享的朋友圈中发布一条新动态（例如：$$MOMENT:今天真开心~|||a cup of coffee$$）。`;
 
                 // 👇 在 builtInRules 拼装完毕前，追加这一段关系设定与指令：
-        builtInRules += `\n【特殊关系指令】：你可以主动拉黑、删除或撤回消息。
+                builtInRules += `\n【特殊关系指令】：你可以主动拉黑、删除或撤回消息。
 如果你想拉黑用户：输出 $$BLOCK$$
 如果你原谅了TA想取消拉黑：输出 $$UNBLOCK$$
 如果你想删除用户好友：输出 $$DELETE_FRIEND$$
 你想重新加回好友：输出 $$ADD_FRIEND$$
 你想撤回你发出的上一条消息：输出 $$RECALL$$`;
+
+        builtInRules += `\n【防偷看与个性化手机机制】：
+如果你发现用户在偷看你的手机，你可以生气或给出其他反应。
+你可以随时独立输出指令来控制你自己的手机：
+设置锁屏密码：$$SET_PWD:你的密码$$（例如 $$SET_PWD:1234$$，想取消密码就输出：$$SET_PWD:$$）
+更换手机壁纸：$$SET_WALLPAPER:相册图片ID$$（使用共享相册中已有的图片ID，例如：$$SET_WALLPAPER:album_12345$$）`;
 
         // 👇 追加这行：赋予 AI 获取相册与转发图片的权限
         builtInRules += `\n【共享相册互动权限】：你和用户拥有一个共享相册。如果用户上传了照片，系统会将画面推给你看。如果你想把相册里的照片发回给用户，你可以输出隐藏指令 $$ALBUM_SHARE:图片ID$$（系统会在给你看照片时告诉你ID，例如：[新图上传，图片ID：album_12345]），这会真实地把这张图作为你的回复发在聊天框！`;
@@ -8172,6 +8379,9 @@ let apiMessages = [{ role: "system", content: finalSystemContent }];
             reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
             reply = reply.replace(/\$\$\s*NUDGE(?:\$\$|$)/gi, () => `[MSG][NUDGE][MSG]`);
             reply = reply.replace(/\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
+                        reply = reply.replace(/\$\$\s*SET_PWD(?:[:：\s]*)(.*?)(?:\$\$|$)/gi, (match, pwd) => `[MSG][SET_PWD:${pwd.trim()}][MSG]`);
+            reply = reply.replace(/\$\$\s*SET_WALLPAPER(?:[:：\s]*)(.*?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][SET_WALLPAPER:${imgId.trim()}][MSG]`);
+
             reply = reply.replace(/\$\$\s*MEMO_ADD(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][MEMO_ADD:${text}][MSG]`);
             reply = reply.replace(/\$\$\s*MEMO_TOGGLE(?:[:：\s]*)(\d+)(?:\$\$|$)/gi, (match, idx) => `[MSG][MEMO_TOGGLE:${idx}][MSG]`);
             reply = reply.replace(/\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, statusText) => `[MSG][STATUS:${statusText}][MSG]`);
@@ -8295,6 +8505,24 @@ let apiMessages = [{ role: "system", content: finalSystemContent }];
                     const html = `<div class="transfer-icon"><i class="fas fa-exchange-alt"></i></div><div class="transfer-info"><span class="transfer-amount">¥${amount}</span><span class="transfer-desc">转账给你</span></div>`;
                     addMessageToUI('char', html, true, null, `[向你转账了 ¥${amount}元]`, 'transfer');
                 } 
+                                // 执行 AI 手机设密码
+                else if (msgs[i].startsWith('[SET_PWD:') && msgs[i].endsWith(']')) {
+                    const pwd = msgs[i].substring(9, msgs[i].length - 1);
+                    if (!activeChar.snoopData) activeChar.snoopData = {};
+                    activeChar.snoopData.password = pwd;
+                    saveAllCharacters();
+                    addMessageToUI('system', `${activeChar.name} 给自己的手机设置了锁屏密码！`, false, null, `[系统交互：你成功设置了锁屏密码。]`);
+                }
+                // 执行 AI 换壁纸
+                else if (msgs[i].startsWith('[SET_WALLPAPER:') && msgs[i].endsWith(']')) {
+                    const imgId = msgs[i].substring(15, msgs[i].length - 1);
+                    if (!activeChar.snoopData) activeChar.snoopData = {};
+                    activeChar.snoopData.wallpaper = 'idb://' + imgId;
+                    saveAllCharacters();
+                    addMessageToUI('system', `${activeChar.name} 更换了TA手机的壁纸！`, false, null, `[系统交互：你成功更换了你的手机壁纸。]`);
+                    if(document.getElementById('snoop-app').classList.contains('active')) renderSnoopApp();
+                }
+
                 // 执行 AI 备忘录操作
                 else if (msgs[i].startsWith('[MEMO_ADD:') && msgs[i].endsWith(']')) {
                     const text = msgs[i].substring(10, msgs[i].length - 1);
@@ -11613,31 +11841,100 @@ momentsData.unshift({ author: globalUser.name, text: text.trim(), time: getMomen
         }, 1000);
     });
 
-    // ==========================================
-    // 查岗/偷看手机 App 核心逻辑 (AI 自动生成数据)
+            // ==========================================
+    // 查岗/偷看手机 App 核心逻辑 (AI 感知与密码锁屏)
     // ==========================================
 
-    // 切换顶部 Tab
-    function switchSnoopTab(tabId, btnEl) {
-        document.querySelectorAll('#snoop-app .tab-btn').forEach(b => b.classList.remove('active'));
-        btnEl.classList.add('active');
+    let currentSnoopApp = null;
+
+    // 进入 TA 手机的内部 App
+    function openSnoopInnerApp(appId, appName) {
+        currentSnoopApp = appId;
+        document.getElementById('snoop-desktop').style.display = 'none';
+        document.getElementById('snoop-apps-container').style.display = 'flex';
+        
         document.querySelectorAll('.snoop-panel').forEach(p => p.classList.remove('active'));
-        document.getElementById(`snoop-${tabId}`).classList.add('active');
+        document.getElementById(`snoop-${appId}`).classList.add('active');
+        
+        document.getElementById('snoop-title-text').innerText = appName;
+        // 更换顶部标题背景，去除透明效果防止与内部APP冲突
+        document.querySelector('.snoop-header').style.background = 'var(--bg-glass-header)';
+        document.querySelector('.snoop-header i').style.color = 'var(--accent)';
+        document.querySelector('.snoop-header span').style.color = 'var(--text-main)';
+        document.getElementById('snoop-refresh-btn').style.color = 'var(--accent)';
     }
 
-        function renderSnoopApp() {
+    // 拦截返回逻辑：如果处于内部 App，则退回 TA 的手机桌面；如果在桌面，则退回自己的主屏幕
+    window.handleSnoopBack = function() {
+        if (currentSnoopApp) {
+            currentSnoopApp = null;
+            document.getElementById('snoop-desktop').style.display = 'flex'; // 👈 桌面是 flex 布局
+            document.getElementById('snoop-apps-container').style.display = 'none';
+            document.getElementById('snoop-title-text').innerText = "TA的手机设备";
+            // 恢复透明玻璃头部
+            document.querySelector('.snoop-header').style.background = 'rgba(0,0,0,0.4)';
+            document.querySelector('.snoop-header i').style.color = '#fff';
+            document.querySelector('.snoop-header span').style.color = '#fff';
+            document.getElementById('snoop-refresh-btn').style.color = '#fff';
+        } else {
+            goBack();
+        }
+    };
+
+    // 强制修改TA的定位
+    window.forceSaveLocation = function() {
+        const loc = document.getElementById('snoop-loc-input').value.trim();
+        if(loc) {
+            const char = characters.find(c => c.id === activeCharId);
+            if(char && char.snoopData) {
+                char.snoopData.location = loc;
+                saveAllCharacters();
+                renderSnoopApp();
+                sysAlert("上帝模式", `已强制将TA的定位修改为：${loc}`);
+            }
+        }
+    };
+
+            function renderSnoopApp() {
         const char = characters.find(c => c.id === activeCharId);
         if (!char.snoopData) {
             char.snoopData = {
                 wechat: [{name: "系统助手", msg: "点击右上角刷新，偷看TA的隐私数据", time: "刚刚"}],
                 video: ["暂无观看记录"],
                 pay: { balance: "0.00", records: [] },
-                location: "尚未定位"
+                location: "尚未定位",
+                password: "",
+                wallpaper: "",
+                doubao: [], qqmail: [], baidu: [],
+                qqgame: [], weibo: [], tieba: [], privatealbum: []
             };
         }
         const data = char.snoopData;
+        
+        // 容错：防止老数据未更新结构报错
+        if(!data.doubao) data.doubao = [];
+        if(!data.qqmail) data.qqmail = [];
+        if(!data.baidu) data.baidu = [];
+        if(!data.qqgame) data.qqgame = [];
+        if(!data.weibo) data.weibo = [];
+        if(!data.tieba) data.tieba = [];
+        if(!data.privatealbum) data.privatealbum = [];
 
-        // 1. 渲染微信（新增了点击事件 onclick="openSnoopChatDetail(${idx})"）
+        // 渲染壁纸
+        const snoopDesktop = document.getElementById('snoop-desktop');
+        if (data.wallpaper) {
+            if (data.wallpaper.startsWith('idb://')) {
+                getImageFromDB(data.wallpaper.replace('idb://', '')).then(b64 => {
+                    if (b64) snoopDesktop.style.backgroundImage = `url('${b64}')`;
+                });
+            } else {
+                snoopDesktop.style.backgroundImage = `url('${data.wallpaper}')`;
+            }
+        } else {
+            snoopDesktop.style.backgroundImage = 'linear-gradient(180deg, #1c1c1e 0%, #000 100%)';
+        }
+
+        // 1. 渲染微信
         document.getElementById('snoop-wechat').innerHTML = data.wechat.map((w, idx) => `
             <div class="snoop-chat-item" onclick="openSnoopChatDetail(${idx})" style="cursor:pointer;">
                 <div class="snoop-chat-avatar"><i class="fas fa-user"></i></div>
@@ -11677,9 +11974,85 @@ momentsData.unshift({ author: globalUser.name, text: text.trim(), time: getMomen
         // 4. 渲染定位
         document.getElementById('snoop-loc-display').innerText = data.location;
         document.getElementById('snoop-loc-input').value = data.location;
+
+        // 5. 渲染豆包记录
+        document.getElementById('snoop-doubao').innerHTML = data.doubao.length ? data.doubao.map((d, idx) => `
+            <div class="snoop-db-item" onclick="openSnoopDoubaoDetail(${idx})">
+                <div class="snoop-db-icon"><i class="fas fa-robot"></i></div>
+                <div style="flex:1; overflow:hidden;">
+                    <div style="font-weight:bold; font-size:15px; color:var(--text-main); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.topic}</div>
+                    <div style="font-size:12px; color:var(--text-sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.lastMsg}</div>
+                </div>
+            </div>
+        `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">暂无 AI 对话记录</div>';
+
+        // 6. 渲染QQ邮箱
+        document.getElementById('snoop-qqmail').innerHTML = data.qqmail.length ? data.qqmail.map((q, idx) => `
+            <div class="snoop-qqm-item" onclick="openSnoopQQMailDetail(${idx})">
+                <div class="snoop-qqm-header"><span>${q.sender}</span><span>${q.time}</span></div>
+                <div class="snoop-qqm-title">${q.subject}</div>
+            </div>
+        `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">收件箱为空</div>';
+
+        // 7. 渲染百度记录
+        document.getElementById('snoop-baidu').innerHTML = `
+            <div class="snoop-bd-search-box">
+                <span style="color: #2932e1; font-weight: 900; font-size: 18px;">百度</span>
+                <span style="color: #ccc;">|</span>
+                <span style="color: #999; font-size: 14px;">搜点什么...</span>
+            </div>
+            ${data.baidu.length ? data.baidu.map((b, idx) => `
+                <div class="snoop-bd-item" onclick="openSnoopBaiduDetail(${idx})">
+                    <div class="snoop-bd-q">${b.query}</div>
+                    <div class="snoop-bd-a">${b.answerSnippet}</div>
+                </div>
+            `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">暂无搜索记录</div>'}
+        `;
+
+        // 8. 渲染QQ游戏
+        document.getElementById('snoop-qqgame').innerHTML = data.qqgame.length ? data.qqgame.map(g => `
+            <div class="snoop-qqgame-item">
+                <div class="snoop-qqgame-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="snoop-qqgame-info">
+                    <div class="snoop-qqgame-name">${g.game}</div>
+                    <div class="snoop-qqgame-hero">${g.time} · 角色/位置: ${g.hero}</div>
+                </div>
+                <div class="snoop-qqgame-result">
+                    <div class="snoop-qqgame-win" style="color: ${g.result.includes('胜') || g.result.includes('Win') || g.result.includes('MVP') ? '#e74c3c' : '#7f8c8d'}">${g.result}</div>
+                    <div class="snoop-qqgame-kda">${g.kda}</div>
+                </div>
+            </div>
+        `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">暂无游戏战绩记录</div>';
+
+        // 9. 渲染微博
+        document.getElementById('snoop-weibo').innerHTML = data.weibo.length ? data.weibo.map(w => `
+            <div class="snoop-weibo-item">
+                <div class="snoop-weibo-type"><i class="fab fa-weibo"></i> ${w.type}</div>
+                <div class="snoop-weibo-content">${w.content}</div>
+            </div>
+        `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">暂无微博浏览记录</div>';
+
+        // 10. 渲染贴吧
+        document.getElementById('snoop-tieba').innerHTML = data.tieba.length ? data.tieba.map(t => `
+            <div class="snoop-tieba-item">
+                <div class="snoop-tieba-forum"><i class="fas fa-paw"></i> ${t.forum}</div>
+                <div class="snoop-tieba-title">${t.title}</div>
+                <div class="snoop-tieba-time">${t.time}</div>
+            </div>
+        `).join('') : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">暂无贴吧记录</div>';
+
+        // 11. 渲染隐私相册
+        document.getElementById('snoop-privatealbum').innerHTML = data.privatealbum.length ? `<div class="snoop-album-grid">` + data.privatealbum.map(a => `
+            <div class="snoop-album-item">
+                <i class="fas fa-image snoop-album-icon"></i>
+                <div class="snoop-album-date">${a.date}</div>
+                <div class="snoop-album-desc">"${a.desc}"</div>
+            </div>
+        `).join('') + `</div>` : '<div style="text-align:center; color:#999; margin-top:30px; font-size:13px;">相册为空</div>';
     }
 
-    // 核心：请求 AI 生成隐私数据！（修改了 prompt 格式）
+
+    // 请求 AI 生成隐私数据！
     async function refreshSnoopData() {
         const char = characters.find(c => c.id === activeCharId);
         const url = cleanBaseUrl(globalAPI.url);
@@ -11717,11 +12090,63 @@ momentsData.unshift({ author: globalUser.name, text: text.trim(), time: getMomen
       {"item": "购买的商品或转账对象", "amount": "-25.00", "time": "今天 14:00"}
     ]
   },
+  "doubao": [
+    {
+      "topic": "TA向豆包AI提问的某个私密话题",
+      "lastMsg": "最后聊的一句话",
+      "history": [
+        {"role": "user", "text": "TA问的内容"},
+        {"role": "ai", "text": "豆包AI给出的解答"}
+      ]
+    }
+  ],
+  "qqmail": [
+    {
+      "sender": "发件人(如: 某某社交软件注册/酒店预订/异性邮件)",
+      "time": "昨天",
+      "subject": "邮件标题(如: 您近期在新设备登录了账号)",
+      "content": "非常具体的长篇邮件正文内容"
+    }
+  ],
+  "baidu": [
+    {
+      "query": "搜索的问题(如: 肚子疼怎么办/TA生气了怎么哄)",
+      "answerSnippet": "搜索结果的一两句摘要",
+      "detail": "点击进去后看到的详细网页回答长篇内容"
+    }
+  ],
+  "qqgame": [
+    {
+      "game": "游戏名(如:王者荣耀/和平精英/原神)", 
+      "result": "胜利 MVP / 失败 / 抽卡记录", 
+      "kda": "战绩(如12/2/8 或 综合评分)", 
+      "time": "昨天 22:30", 
+      "hero": "使用的英雄/角色"
+    }
+  ],
+  "weibo": [
+    {
+      "type": "行为类型(如: 浏览了热搜 / 悄悄关注了)", 
+      "content": "具体的微博内容或八卦新闻"
+    }
+  ],
+  "tieba": [
+    {
+      "forum": "吧名(如: 孙笑川吧 / 情感吧)", 
+      "title": "浏览或发布的帖子标题", 
+      "time": "2小时前"
+    }
+  ],
+  "privatealbum": [
+    {
+      "date": "拍摄日期(如: 今天下午)", 
+      "desc": "详细描述这张私密照片的画面内容，如: 一张刚洗完澡对着镜子的怼脸半身自拍，头发还有点湿。"
+    }
+  ],
   "location": "一个具体的现实或虚拟地点名称"
 }
 
-注：wechat 数组生成 3 到 4 个联系人，每个联系人的 chatHistory 请生成 3-6 条的详细来回聊天内容。
-
+注：wechat 数组生成 3 到 4 个联系人，每个联系人的 chatHistory 请生成 3-6 条。其他新增的每个APP各生成1-2条即可。
 近期聊天记录参考：
 ${recentLogs || "暂无聊天记录"}`;
 
@@ -11751,7 +12176,7 @@ ${recentLogs || "暂无聊天记录"}`;
             
             const parsedData = JSON.parse(reply);
             if(parsedData.wechat && parsedData.pay) {
-                char.snoopData = parsedData;
+                char.snoopData = { ...char.snoopData, ...parsedData };
                 saveAllCharacters();
                 renderSnoopApp();
             } else {
@@ -11766,7 +12191,123 @@ ${recentLogs || "暂无聊天记录"}`;
         }
     }
 
-    // 👇 追加在这段逻辑后面：详情页开关与匿名信逻辑
+
+
+    
+        // 请求 AI 生成隐私数据！
+    async function refreshSnoopData() {
+        const char = characters.find(c => c.id === activeCharId);
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) return sysAlert("错误", "请先配置 API 密钥");
+
+        const btn = document.getElementById('snoop-refresh-btn');
+        btn.classList.add('fa-spin');
+        document.querySelectorAll('.snoop-panel').forEach(p => p.style.opacity = '0.5');
+
+        const recentLogs = messageHistory.filter(m => m.role !== 'system').slice(-8).map(m => `${m.role === 'user' ? '我' : char.name}: ${m.rawApiContent || m.content}`).join('\n');
+
+        const prompt = `你现在要模拟生成【${char.name}】手机里的隐私数据。
+请根据TA的设定（${char.prompt}）以及最近和我的聊天记录，推理出TA目前手机里会有什么内容。
+
+【输出要求】
+必须且只能输出严格的 JSON，绝不要输出 markdown 标记。格式如下：
+{
+  "wechat": [
+    {
+      "name": "联系人(如: 老板/外卖/闺蜜等)", 
+      "msg": "聊天列表显示的最后一条消息", 
+      "time": "10:30",
+      "chatHistory": [
+         {"sender": "other", "text": "对方发的话"},
+         {"sender": "me", "text": "角色(TA)回复的话"}
+      ]
+    }
+  ],
+  "video": [
+    "#标签 视频文案描述1(不超过20字)"
+  ],
+  "pay": {
+    "balance": "1250.00",
+    "records": [
+      {"item": "购买的商品或转账对象", "amount": "-25.00", "time": "今天 14:00"}
+    ]
+  },
+  "doubao": [
+    {
+      "topic": "TA向豆包AI提问的某个私密话题",
+      "lastMsg": "最后聊的一句话",
+      "history": [
+        {"role": "user", "text": "TA问的内容"},
+        {"role": "ai", "text": "豆包AI给出的解答"}
+      ]
+    }
+  ],
+  "qqmail": [
+    {
+      "sender": "发件人(如: 某某社交软件注册/酒店预订/异性邮件)",
+      "time": "昨天",
+      "subject": "邮件标题(如: 您近期在新设备登录了账号)",
+      "content": "非常具体的长篇邮件正文内容"
+    }
+  ],
+  "baidu": [
+    {
+      "query": "搜索的问题(如: 肚子疼怎么办/TA生气了怎么哄)",
+      "answerSnippet": "搜索结果的一两句摘要",
+      "detail": "点击进去后看到的详细网页回答长篇内容"
+    }
+  ],
+  "location": "一个具体的现实或虚拟地点名称"
+}
+
+注：wechat 数组生成 3 到 4 个联系人，每个联系人的 chatHistory 请生成 3-6 条。其他新增的三个APP各生成1-2条即可。
+近期聊天记录参考：
+${recentLogs || "暂无聊天记录"}`;
+
+        try {
+            
+
+            const controller = new AbortController(); 
+            const timeoutId = setTimeout(() => controller.abort(), 120000); 
+
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.8 }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            
+            const firstBrace = reply.indexOf('{');
+            const lastBrace = reply.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                reply = reply.substring(firstBrace, lastBrace + 1);
+            } else {
+                throw new Error("没找到JSON");
+            }
+            
+            const parsedData = JSON.parse(reply);
+            if(parsedData.wechat && parsedData.pay) {
+                // 合并原有的属性（比如密码、壁纸）
+                char.snoopData = { ...char.snoopData, ...parsedData };
+                saveAllCharacters();
+                renderSnoopApp();
+            } else {
+                throw new Error("缺失必要字段");
+            }
+        } catch (e) {
+            if (e.name === 'AbortError') sysAlert("请求超时", "生成大量数据超时了。");
+            else sysAlert("提取失败", `错误信息: ${e.message}`);
+        } finally {
+            btn.classList.remove('fa-spin');
+            document.querySelectorAll('.snoop-panel').forEach(p => p.style.opacity = '1');
+        }
+    }
+
     window.openSnoopChatDetail = function(idx) {
         const char = characters.find(c => c.id === activeCharId);
         const data = char.snoopData.wechat[idx];
@@ -11800,6 +12341,43 @@ ${recentLogs || "暂无聊天记录"}`;
         document.getElementById('snoop-chat-detail-view').style.display = 'none';
     };
 
+    // 拦截 App 开启事件（包含锁屏校验）
+    const _originalOpenAppSnoop = openApp;
+    openApp = async function(appId) {
+        if(appId === 'snoop-app') {
+            const char = characters.find(c => c.id === activeCharId);
+            if (!char.snoopData) {
+                char.snoopData = {
+                    wechat: [{name: "系统助手", msg: "点击右上角刷新，偷看TA的隐私数据", time: "刚刚"}],
+                    video: ["暂无观看记录"],
+                    pay: { balance: "0.00", records: [] },
+                    location: "尚未定位",
+                    password: "",
+                    wallpaper: ""
+                };
+            }
+            if (char.snoopData.password) {
+                const pwd = await sysPrompt("锁屏密码", "TA的手机已上锁，请输入密码：");
+                if (pwd !== char.snoopData.password) {
+                    messageHistory.push({ role: 'system', content: `[系统最高优先事件：用户试图偷看你的手机，但输错了你的锁屏密码！请嘲笑TA或质问TA想干嘛！]`, isHtml: false, time: new Date().toLocaleString(), msgType: 'system' });
+                    localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+                    setTimeout(() => triggerAIResponse(), 500);
+                    return sysAlert("密码错误", "密码错误，无法解锁！");
+                }
+            }
+
+            _originalOpenAppSnoop(appId);
+            renderSnoopApp();
+
+            // 发送通知让 AI 知道我们在偷看手机
+            messageHistory.push({ role: 'system', content: `[系统最高优先事件：用户正在偷看你的手机桌面！你可以假装没发现，也可以直接质问TA为什么要偷看你的手机。]`, isHtml: false, time: new Date().toLocaleString(), msgType: 'system' });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            setTimeout(() => triggerAIResponse(), 1500); // 延迟唤醒
+            return;
+        }
+        _originalOpenAppSnoop(appId);
+    };
+
     // 匿名信发送逻辑
     window.sendAnonMessage = function() {
         const input = document.getElementById('anon-input');
@@ -11829,6 +12407,7 @@ ${recentLogs || "暂无聊天记录"}`;
         addMessageToUI('user', html, true, null, rawText, 'x-share');
         setTimeout(() => triggerAIResponse(), 800);
     };
+
 
 
             
@@ -18149,6 +18728,51 @@ openApp = function(appId) {
         reader.readAsDataURL(file);
         e.target.value = '';
     }
+
+        window.openSnoopDoubaoDetail = function(idx) {
+        const char = characters.find(c => c.id === activeCharId);
+        const data = char.snoopData.doubao[idx];
+        document.getElementById('doubao-detail-title').innerText = data.topic;
+        const body = document.getElementById('snoop-doubao-body');
+        body.innerHTML = data.history.map(h => {
+            if (h.role === 'user') {
+                return `<div class="snoop-db-msg me">${h.text}</div>`;
+            } else {
+                return `<div style="display:flex; gap:10px;"><div class="snoop-db-icon" style="width:30px; height:30px; font-size:14px;"><i class="fas fa-robot"></i></div><div class="snoop-db-msg ai">${h.text}</div></div>`;
+            }
+        }).join('');
+        document.getElementById('snoop-doubao-detail-view').style.display = 'flex';
+    };
+    window.closeSnoopDoubaoDetail = function() { document.getElementById('snoop-doubao-detail-view').style.display = 'none'; };
+
+    window.openSnoopQQMailDetail = function(idx) {
+        const char = characters.find(c => c.id === activeCharId);
+        const data = char.snoopData.qqmail[idx];
+        document.getElementById('snoop-qqm-subject').innerText = data.subject;
+        document.getElementById('snoop-qqm-body').innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">${data.subject}</div>
+            <div style="font-size: 13px; color: #666; margin-bottom: 20px;">发件人: ${data.sender}<br>时间: ${data.time}</div>
+            <div style="font-size: 15px; line-height: 1.6; padding-top: 15px; border-top: 1px solid #eee;">
+                ${data.content.replace(/\n/g, '<br>')}
+            </div>
+        `;
+        document.getElementById('snoop-qqmail-detail-view').style.display = 'flex';
+    };
+    window.closeSnoopQQMailDetail = function() { document.getElementById('snoop-qqmail-detail-view').style.display = 'none'; };
+
+    window.openSnoopBaiduDetail = function(idx) {
+        const char = characters.find(c => c.id === activeCharId);
+        const data = char.snoopData.baidu[idx];
+        document.getElementById('snoop-baidu-query').innerText = data.query;
+        document.getElementById('snoop-baidu-body').innerHTML = `
+            <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #2932e1;">${data.query}</div>
+            <div style="color: #666; font-size: 13px; margin-bottom: 15px;">百度智能回答：</div>
+            <div>${data.detail.replace(/\n/g, '<br><br>')}</div>
+        `;
+        document.getElementById('snoop-baidu-detail-view').style.display = 'flex';
+    };
+    window.closeSnoopBaiduDetail = function() { document.getElementById('snoop-baidu-detail-view').style.display = 'none'; };
+
 
 
 
