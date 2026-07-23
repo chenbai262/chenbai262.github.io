@@ -2475,11 +2475,10 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
                                          /* ========================================== */
         /* 小说阅读 App 专属样式 */
         /* ========================================== */
-        #novel-app { background: var(--bg-base); min-height: 100vh; position: relative; }
-        .novel-top-bar { padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; border-bottom: 0.5px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);}
-        .novel-title { font-size: 22px; font-weight: bold; color: var(--text-main); }
-        .novel-content-area { padding: 0 20px 80px; overflow-y: auto; display: none; }
-        .novel-content-area.active { display: block; }
+#novel-app { background: var(--bg-base); min-height: 100vh; }  .novel-top-bar { flex-shrink: 0; padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; border-bottom: 0.5px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);}
+      .novel-title { font-size: 22px; font-weight: bold; color: var(--text-main); }
+  .novel-content-area { flex: 1; padding: 0 20px 80px; overflow-y: auto; display: none; }
+      .novel-content-area.active { display: block; }
         .novel-bottom-tab { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; background: var(--bg-glass-header); border-top: 0.5px solid var(--border-color); display: flex; justify-content: space-around; align-items: flex-start; z-index: 10; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding-top: 15px;}
         .novel-tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; cursor: pointer; transition: color 0.2s; width: 33%;}
         .novel-tab-item.active { color: var(--accent); }
@@ -2507,8 +2506,7 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
                                                       /* ========================================== */
         /* 仿知乎 App 专属样式 */
         /* ========================================== */
-        #zhihu-app { background: var(--bg-base); min-height: 100vh; position: relative; }
-        .zhihu-header { padding: 50px 20px 10px; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
+#zhihu-app { background: var(--bg-base); min-height: 100vh; }        .zhihu-header { padding: 50px 20px 10px; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
         .zh-search-bar { display: flex; align-items: center; background: var(--input-bg); border-radius: 20px; padding: 8px 15px; margin-bottom: 10px; gap: 10px; color: var(--text-sub); }
         .zh-ask-btn { color: #0084FF; font-weight: bold; font-size: 14px; cursor: pointer; white-space: nowrap; }
         .zh-tabs { display: flex; gap: 20px; font-size: 15px; font-weight: bold; color: var(--text-sub); padding-bottom: 5px; }
@@ -3182,7 +3180,7 @@ body.custom-bubble-border #preview-chat-container .msg {
 /* ========================================== */
 #map-app { background: var(--bg-base); min-height: 100vh; }
 .map-header { padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
-.map-radar-area { position: relative; width: 100%; height: 250px; background: radial-gradient(circle, rgba(11, 132, 255, 0.1) 0%, var(--bg-base) 70%); border-bottom: 0.5px solid var(--border-color); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.map-radar-area { position: relative; width: 100%; height: 50vh; background: radial-gradient(circle, rgba(11, 132, 255, 0.1) 0%, var(--bg-base) 70%); border-bottom: 0.5px solid var(--border-color); display: flex; justify-content: center; align-items: center; overflow: hidden; }
 .map-radar-circle { position: absolute; width: 200px; height: 200px; border-radius: 50%; border: 1px dashed rgba(11, 132, 255, 0.3); animation: spin 10s linear infinite; }
 .map-radar-circle::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 50%; background: linear-gradient(to bottom, #0b84ff, transparent); transform-origin: bottom center; animation: radarScan 4s linear infinite; }
 @keyframes radarScan { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -3639,6 +3637,7 @@ body.custom-bubble-border #preview-chat-container .msg {
                     </div>
                     <!-- 👆 新增结束 👆 -->
 
+                    
 
 
 
@@ -3646,14 +3645,22 @@ body.custom-bubble-border #preview-chat-container .msg {
 
 
                 </div>
-            </div>
+                <!-- ============ 第四页 (扩展空间) ============ -->
+<div class="home-page" id="page-4">
+    <!-- 这里可以自由放置小组件和APP图标，支持拖拽排列 -->
+</div>
 
-            <!-- 滑动页面指示器 -->
-            <div class="page-dots" id="home-page-dots">
-                <div class="dot active"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
             </div>
+            
+
+
+            <div class="page-dots" id="home-page-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+</div>
+
 
 
             <!-- 底部 Dock 栏必须移出滑动区，固定在底部 -->
