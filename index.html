@@ -7033,10 +7033,12 @@ body.custom-bubble-border #preview-chat-container .msg {
      
                    // --- 3. 初始化加载 ---
                    // 🚀 延迟加载非首屏资源，降低初始阻塞
-requestIdleCallback(() => {
+// 兼容 iOS：requestIdleCallback 不存在时降级为 setTimeout
+(window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
     loadWorldbookData();
     if(typeof renderWidgetCalendarPro === 'function') renderWidgetCalendarPro();
-}, { timeout: 2000 });
+});
+
 
     document.addEventListener('DOMContentLoaded', function() {
         if(localStorage.getItem('ai_os_global_api')) globalAPI = Object.assign(globalAPI, JSON.parse(localStorage.getItem('ai_os_global_api')));
@@ -7132,7 +7134,6 @@ requestIdleCallback(() => {
         else if(globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
         else if(globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
         
-        document.documentElement.classList.add('light-mode'); // ⚠️ 致命 Bug：请直接删掉这一行！！！
 
 
 
