@@ -439,7 +439,12 @@
             will-change: transform, opacity;
             backface-visibility: hidden;
             transform: translateZ(0);
+
+            contain: layout style paint; /* 🚀 开启CSS隔离加速，防止子组件重绘波及全局 */
+
         }
+
+
 
 
 
@@ -722,7 +727,7 @@
             background: var(--chat-overlay); pointer-events: none; z-index: 1; 
             backdrop-filter: none; -webkit-backdrop-filter: none;
         }
-
+   
         .chat-header { height: 105px; background: var(--bg-glass-header); display: flex; align-items: flex-end; padding: 0 20px 15px; border-bottom: 0.5px solid var(--border-color); z-index: 10; justify-content: space-between; }
         .chat-header-left { display: flex; align-items: center; overflow: hidden; }
         .chat-header-left i { transition: transform 0.1s, opacity 0.1s; } .chat-header-left i:active { transform: scale(0.8); opacity: 0.6; }
@@ -3270,6 +3275,78 @@ body.custom-bubble-border #preview-chat-container .msg {
         /* 👆 新增结束 👆 */
 
 
+        /* ========== 开屏加载画面（日间浅色版） ========== */
+#splash-screen {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(160deg, #fefefe 0%, #f5f0e8 50%, #fff8f0 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 999999;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+}
+#splash-screen.hide {
+    transform: scale(1.08);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-icon {
+    font-size: 80px;
+    animation: splashBounce 0.7s ease-in-out infinite alternate;
+    filter: drop-shadow(0 6px 16px rgba(230, 140, 50, 0.25));
+    margin-bottom: 18px;
+}
+@keyframes splashBounce {
+    0% { transform: translateY(0) rotate(-2deg) scale(1); }
+    100% { transform: translateY(-10px) rotate(2deg) scale(1.05); }
+}
+
+.splash-logo {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, #d4590a, #f7971e, #e8590c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: splashLogoIn 0.7s 0.3s ease forwards;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+@keyframes splashLogoIn {
+    0% { opacity: 0; transform: scale(0.85) translateY(8px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.splash-sub {
+    font-size: 13px; color: #9a7b5a;
+    margin-top: 6px; letter-spacing: 3px; font-weight: 500;
+    opacity: 0; animation: splashLogoIn 0.5s 0.8s ease forwards;
+}
+
+.splash-bar-wrap {
+    width: 120px; height: 4px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 4px; overflow: hidden;
+    margin-top: 28px;
+}
+.splash-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #f7971e, #e8590c);
+    border-radius: 4px;
+    animation: splashBarFill 1.8s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes splashBarFill {
+    0% { width: 0%; }
+    50% { width: 65%; }
+    100% { width: 100%; }
+}
+
+
+
+
+
+
+
 
 
 
@@ -3325,6 +3402,15 @@ body.custom-bubble-border #preview-chat-container .msg {
     </style>
 </head>
 <body>
+
+    <!-- 🔥 烤面筋小手机 · 开屏加载画面 -->
+<div id="splash-screen">
+    <div class="splash-icon">🍢</div>
+    <div class="splash-logo">KAOMJ</div>
+    <div class="splash-sub">烤面筋小手机</div>
+    <div class="splash-bar-wrap"><div class="splash-bar-fill"></div></div>
+</div>
+
 
 
 <div class="phone">
@@ -6936,6 +7022,12 @@ body.custom-bubble-border #preview-chat-container .msg {
    
      
                    // --- 3. 初始化加载 ---
+                   // 🚀 延迟加载非首屏资源，降低初始阻塞
+requestIdleCallback(() => {
+    loadWorldbookData();
+    if(typeof renderWidgetCalendarPro === 'function') renderWidgetCalendarPro();
+}, { timeout: 2000 });
+
     document.addEventListener('DOMContentLoaded', function() {
         if(localStorage.getItem('ai_os_global_api')) globalAPI = Object.assign(globalAPI, JSON.parse(localStorage.getItem('ai_os_global_api')));
         // 👇 修复：将开关的回显放在读取缓存之后执行，方能生效
@@ -18781,6 +18873,22 @@ openApp = function(appId) {
         document.getElementById('snoop-baidu-detail-view').style.display = 'flex';
     };
     window.closeSnoopBaiduDetail = function() { document.getElementById('snoop-baidu-detail-view').style.display = 'none'; };
+
+    // ========== 开屏加载画面自动消失 ==========
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.add('hide');
+            setTimeout(() => splash.remove(), 700); // 动画结束后彻底移除DOM释放内存
+        }
+    }, 2200); // 总展示时长 2.2 秒
+});
+
+
+
+
+
 
 
 
