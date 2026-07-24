@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
     
     <!-- 强制各类国产浏览器、微信、QQ等进入全屏应用模式，消除顶部/底部黑条 -->
     <meta name="full-screen" content="yes">
@@ -378,12 +382,14 @@
 
         /* 强行接管 APP 视图切换动画的 GPU 加速，并加入平滑退出过渡 */
         .app-view { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg-base); display: none; flex-direction: column; z-index: 50; 
-            will-change: transform, opacity;
-            backface-visibility: hidden;
-            transform: translateZ(0);
-        }
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: var(--bg-base); display: none; flex-direction: column; z-index: 50; 
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    content-visibility: auto; /* 非可视区域跳过渲染 */
+}
+
 
 
         .app-view.active { display: flex; animation: appOpen 0.2s cubic-bezier(0.25, 1, 0.2, 1) forwards; } /* 👇 改为 0.2s */
@@ -3281,13 +3287,17 @@ body.custom-bubble-border #preview-chat-container .msg {
     background: linear-gradient(160deg, #fefefe 0%, #f5f0e8 50%, #fff8f0 100%);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     z-index: 999999;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    will-change: transform, opacity;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
 }
 #splash-screen.hide {
     transform: scale(1.08);
     opacity: 0;
     pointer-events: none;
 }
+
 
 .splash-icon {
     font-size: 80px;
@@ -7049,6 +7059,7 @@ requestIdleCallback(() => {
         if(typeof globalAPI.enableVision === 'undefined') globalAPI.enableVision = true;
         const visionToggle = document.getElementById('global-vision-toggle');
         if(visionToggle) visionToggle.checked = globalAPI.enableVision;
+
 
         // 恢复气泡外神动开关
         if(typeof globalAPI.enableNarration === 'undefined') globalAPI.enableNarration = false;
@@ -10861,6 +10872,9 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
     let isHomeScrolling = false;
     
     function updatePageDots() {
+        // 如果页面不可见则跳过更新
+if (document.hidden) return;
+
         if (!isHomeScrolling) {
             window.requestAnimationFrame(() => {
                 const home = document.getElementById('os-home');
@@ -15960,6 +15974,12 @@ async function generateIfComments() {
 
         // 绑定各类触摸和鼠标事件，保证多端兼容且滑动时不误触
         homeEl.addEventListener('touchstart', startEmptyPress, {passive: true});
+        homeEl.addEventListener('click', function(e) {
+    if (e.target.closest('.widget') || e.target.closest('.app-container') || e.target.closest('.dock')) return;
+    if (addWidgetBtn) addWidgetBtn.style.display = 'flex';
+    setTimeout(() => { if (addWidgetBtn) addWidgetBtn.style.display = 'none'; }, 3000);
+});
+
         homeEl.addEventListener('mousedown', startEmptyPress);
         homeEl.addEventListener('touchmove', clearEmptyPress, {passive: true});
         homeEl.addEventListener('mousemove', clearEmptyPress);
@@ -18874,16 +18894,29 @@ openApp = function(appId) {
     };
     window.closeSnoopBaiduDetail = function() { document.getElementById('snoop-baidu-detail-view').style.display = 'none'; };
 
-    // ========== 开屏加载画面自动消失 ==========
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            splash.classList.add('hide');
-            setTimeout(() => splash.remove(), 700); // 动画结束后彻底移除DOM释放内存
-        }
-    }, 2200); // 总展示时长 2.2 秒
+    // 开屏画面自动消失（尽早隐藏，不等所有资源）
+function hideSplashEarly() {
+    const splash = document.getElementById('splash-screen');
+    if (!splash) return;
+    splash.classList.add('hide');
+    setTimeout(() => {
+        if (splash.parentNode) splash.parentNode.removeChild(splash);
+    }, 600); // 动画结束后移除DOM
+}
+
+// DOMContentLoaded 后就执行隐藏（约1.2秒）
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(hideSplashEarly, 1200);
 });
+
+// 同时保留 load 后备（某些资源很慢时确保隐藏）
+window.addEventListener('load', function() {
+    setTimeout(hideSplashEarly, 500);
+});
+
+// 防止 splash 超过4秒不消失（保险）
+setTimeout(hideSplashEarly, 4000);
+
 
 
 
