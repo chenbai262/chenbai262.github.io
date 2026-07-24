@@ -346,6 +346,7 @@
 @keyframes bounce { 0% { height: 4px; } 100% { height: 18px; } }
 
     /* 主屏幕壁纸：修复自定义壁纸无法铺满的问题 */
+                /* 主屏幕壁纸：修复自定义壁纸无法铺满的问题 */
         .screen { 
             width: 100%; height: 100%; 
             background-image: var(--screen-bg); 
@@ -354,6 +355,7 @@
             position: relative; overflow: hidden; 
             transition: background-image 0.5s ease; 
         }
+
         
         /* 增加亚麻纸纹理质感遮罩 (不影响底层壁纸拉伸) */
         .screen::before {
@@ -5048,44 +5050,24 @@ html body #chat-app.layout-qq-simple .chat-input-area {
                     </div>
                 </div>
 
-                <!-- 1. 房间结构 -->
+                                <!-- 1. 房间结构 -->
                 <div id="home-room" class="home-panel" style="display:block;">
                     <div style="padding: 15px 20px 5px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 13px; color: var(--text-sub);">点击物品，然后点击家具放置。TA会察觉~</span>
                         <i class="fas fa-edit" style="color:var(--accent); font-size: 16px; cursor: pointer;" onclick="openHomeLayoutEdit()" title="编辑家庭结构"></i>
                     </div>
-                    <!-- 👇 替换这里的包裹框，加入 id 且清空内部内容 👇 -->
+                    
                     <div class="item-inventory scrollable" id="room-item-inventory">
                         <!-- 物品由 JS 动态生成 -->
                     </div>
-                    <!-- 👆 替换结束 👆 -->
-
+                    
                     <div class="room-layout" id="home-room-layout">
                         <!-- JS 动态渲染 -->
                     </div>
                 </div>
 
-
-                    <div class="room-layout">
-                        <div class="room-box">
-                            <div class="room-title">主卧</div>
-                            <div class="furniture-slot" onclick="placeItemToSlot('大床')"><i class="fas fa-bed"></i><span>大床</span><div class="slot-item" style="color:var(--accent); font-weight:bold; font-size:11px;"></div></div>
-                        </div>
-                        <div class="room-box">
-                            <div class="room-title">次卧</div>
-                            <div class="furniture-slot" onclick="placeItemToSlot('书桌')"><i class="fas fa-desktop"></i><span>书桌</span><div class="slot-item" style="color:var(--accent); font-weight:bold; font-size:11px;"></div></div>
-                        </div>
-                        <div class="room-box" style="grid-column: span 2; height: 160px;">
-                            <div class="room-title">客厅</div>
-                            <div style="display:flex; gap:10px; height:100%;">
-                                <div class="furniture-slot" onclick="placeItemToSlot('沙发')"><i class="fas fa-couch"></i><span>沙发</span><div class="slot-item" style="color:var(--accent); font-weight:bold; font-size:11px;"></div></div>
-                                <div class="furniture-slot" onclick="placeItemToSlot('茶几')"><i class="fas fa-coffee"></i><span>茶几</span><div class="slot-item" style="color:var(--accent); font-weight:bold; font-size:11px;"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 2. 蓝牙共享 -->
+
                 <div id="home-bluetooth" class="home-panel" style="display:none;">
                     <div class="bluetooth-panel">
                         <div class="bt-device" id="bt-device-icon"><i class="fas fa-headphones"></i></div>
@@ -10866,7 +10848,7 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
         });
     }
 
-    // 放置物品联动AI与视觉引擎
+        // 放置物品联动AI与视觉引擎
     function placeItemToSlot(slotName, imageKey) {
         if (!currentSelectedRoomItem) return sysAlert("提示", "请先在上方点击选中一个物品！");
         homeData.itemsOnFurnitures[slotName] = currentSelectedRoomItem;
@@ -10893,7 +10875,56 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
             addMessageToUI('system', `你把 ${currentSelectedRoomItem} 放在了 ${slotName} 上`, false, null, sysMsg);
         }
         
-        setTimeout(() => { openApp('chat-app'); triggerAIResponse(); }, 500);
+        // 👇 修复：移除 openApp('chat-app') 防止乱跳转主屏
+        setTimeout(() => { triggerAIResponse(); }, 500);
+    }
+
+    // 👇 新增：补全蓝牙操作与 UI 回显方法
+    function renderHomeBluetooth() {
+        const icon = document.getElementById('bt-device-icon');
+        const text = document.getElementById('bt-status-text');
+        if(!icon || !text) return;
+        if (homeData.bluetooth.connected) {
+            icon.classList.add('connected');
+            text.innerText = "已连接：用户的蓝牙耳机";
+        } else {
+            icon.classList.remove('connected');
+            text.innerText = "未连接";
+        }
+    }
+
+    function renderHomeSleep() {
+        const btn = document.getElementById('sleep-toggle-btn');
+        const text = document.getElementById('sleep-btn-text');
+        if(!btn || !text) return;
+        const icon = btn.querySelector('i');
+        const desc = document.getElementById('sleep-desc');
+        if (homeData.sleep.isSleeping) {
+            btn.style.background = "linear-gradient(135deg, #111 0%, #333 100%)";
+            text.innerText = "醒来";
+            icon.className = "fas fa-sun";
+            desc.innerText = "您已进入睡眠状态。嘘，TA正在旁边守候着您...";
+        } else {
+            btn.style.background = "linear-gradient(135deg, #2c3e50 0%, #3498db 100%)";
+            text.innerText = "开始睡眠";
+            icon.className = "fas fa-moon";
+            desc.innerText = "开启睡眠模式后，TA会在整晚默默陪伴您。醒来后可获取TA的陪伴日记。";
+        }
+    }
+
+    function toggleBluetooth() {
+        homeData.bluetooth.connected = !homeData.bluetooth.connected;
+        renderHomeBluetooth();
+        
+        if (homeData.bluetooth.connected) {
+            addMessageToUI('system', `你连接了蓝牙耳机，声音开始共享给TA...`, false, null, `[系统交互：用户刚刚连接了蓝牙耳机，开启了声音共享模式。]`);
+        } else {
+            addMessageToUI('system', `你断开了蓝牙耳机。`, false, null, `[系统交互：用户断开了蓝牙耳机，退出了声音共享。]`);
+        }
+        
+        saveHomeData();
+        // 修复：直接触发回复不乱飞
+        setTimeout(() => { triggerAIResponse(); }, 500);
     }
 
 
@@ -10914,7 +10945,8 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
             logBox.style.display = 'none';
             
             addMessageToUI('system', `你开启了睡眠模式，沉沉睡去...`, false, null, `[系统交互：用户已经睡着了。请在心里默默对TA说一句晚安，并表示你会一直陪着TA。]`);
-            setTimeout(() => { openApp('chat-app'); triggerAIResponse(); }, 500);
+            // 👇 修复：移除 openApp('chat-app') 防止强行跳转
+            setTimeout(() => { triggerAIResponse(); }, 500);
         } else {
             homeData.sleep.isSleeping = false;
             btn.style.background = "linear-gradient(135deg, #2c3e50 0%, #3498db 100%)";
@@ -10949,13 +10981,15 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
                 logBox.style.display = 'block';
 
                 addMessageToUI('system', `你醒来了。查收了一份睡眠陪伴日记。`, false, null, `[系统交互：用户醒来了。你刚才为TA写了一份陪伴日记。请用一句简短的话向TA道早安！]`);
-                setTimeout(() => { openApp('chat-app'); triggerAIResponse(); }, 1000);
+                // 👇 修复：同样移除强制跳转
+                setTimeout(() => { triggerAIResponse(); }, 1000);
             } catch(e) {
                 logBox.innerText = "网络错误，日记生成失败。";
                 logBox.style.display = 'block';
             }
         }
     }
+
 
 
 
@@ -14953,15 +14987,19 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         }
     }
 
-    // 拦截操作：当打开家庭空间时，渲染并加载物品列表
+        // 拦截操作：当打开家庭空间时，渲染并加载物品列表
         const _originalOpenAppHomeItem = openApp;
     openApp = function(appId) {
         _originalOpenAppHomeItem(appId);
         if(appId === 'home-app') {
             renderRoomItems();
-            renderHomeLayout(); // 👈 增加初始化渲染
+            renderHomeLayout(); // 增加初始化渲染
+            // 👇 修复：注入渲染函数以保持面板状态正确
+            renderHomeBluetooth();
+            renderHomeSleep();
         }
     };
+
 
 
     // ==========================================
