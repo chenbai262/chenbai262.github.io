@@ -436,10 +436,12 @@
             scroll-snap-stop: always; /* ！！！核心：一滑只翻一页，确保完整停留不断续 */
             padding: 75px 20px 140px; /* 👈 顶部 padding 从 45px 改为 75px，让整体内容往下移 */
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
+                        /* 👇 接入动态网格列数，实现“田”字格支持 👇 */
+            grid-template-columns: repeat(var(--ui-grid-cols, 4), 1fr); 
             gap: var(--ui-grid-gap) !important; 
             align-content: start; 
             box-sizing: border-box;
+
             
             /* 👇新增：提升硬件加速，解决包含大量毛玻璃时的滑动卡顿 */
             will-change: transform, opacity;
@@ -2311,6 +2313,8 @@ html body #chat-app.layout-liquid .chat-input {
 
 
 
+
+
         /* ========================================== */
         /* 2. QQ 炫彩气泡 (左侧排版大字) */
         /* ========================================== */
@@ -2334,6 +2338,149 @@ html body #chat-app.layout-qq { background-color: #F5F6FA !important; }
         html body #chat-app.layout-qq .chat-input { background: #F5F6FA !important; border-radius: 20px !important; color: #000 !important; border: none !important;}
         html body #chat-app.layout-qq .fa-arrow-circle-up { color: #00CAFC !important; }
         html body #chat-app.layout-qq .fa-robot { color: #FFB300 !important; }
+
+        /* ========================================== */
+/* 8. QQ 简洁版聊天气泡 (长方形微圆润) */
+/* ========================================== */
+html body #chat-app.layout-qq-simple { background-color: #FFFFFF !important; }
+html body #chat-app.layout-qq-simple::before { display: none !important; }
+
+/* 顶部：白色主体，备注在线状态左上角 */
+html body #chat-app.layout-qq-simple .chat-header {
+    background: #FFFFFF !important;
+    border-bottom: 0.5px solid #E5E5E5 !important;
+    height: 90px !important;
+    padding-bottom: 0 !important;
+    align-items: center !important;
+    position: relative !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+/* 备注名和在线状态靠左上角 */
+html body #chat-app.layout-qq-simple .chat-header-left {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    margin-top: 15px !important;
+}
+html body #chat-app.layout-qq-simple .chat-info {
+    text-align: left !important;
+    margin-left: 5px !important;
+}
+html body #chat-app.layout-qq-simple .chat-info h3 {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    margin: 0 !important;
+}
+html body #chat-app.layout-qq-simple .chat-info h3 i { display: none !important; }
+html body #chat-app.layout-qq-simple .chat-info p {
+    color: #999999 !important;
+    font-size: 12px !important;
+    margin-top: 2px !important;
+    display: block !important;
+}
+html body #chat-app.layout-qq-simple .chat-header-left i.fa-chevron-left {
+    color: #000000 !important;
+}
+html body #chat-app.layout-qq-simple .fa-phone-alt { display: none !important; }
+
+/* 头像圆形 */
+html body #chat-app.layout-qq-simple .msg-avatar {
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    border: none !important;
+}
+html body #chat-app.layout-qq-simple #chat-container .msg-wrapper {
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+    align-items: flex-start !important;
+}
+
+/* 气泡核心：长方形微圆润 */
+html body #chat-app.layout-qq-simple #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10px 14px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 对方气泡 - 白色 */
+html body #chat-app.layout-qq-simple #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    background-color: #FFFFFF !important;
+    color: #111111 !important;
+    border: 1px solid #E8E8E8 !important;
+}
+
+/* 发送者气泡 - 蓝色 #1e85ed */
+html body #chat-app.layout-qq-simple #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    background-color: #1e85ed !important;
+    color: #FFFFFF !important;
+}
+
+/* 隐藏伪元素尾巴（QQ简洁版不带小三角） */
+html body #chat-app.layout-qq-simple #chat-container .msg::before,
+html body #chat-app.layout-qq-simple #chat-container .msg::after {
+    display: none !important;
+}
+
+/* 隐藏时间戳 */
+html body #chat-app.layout-qq-simple .msg-time { display: none !important; }
+
+/* 底部输入框：白色 */
+html body #chat-app.layout-qq-simple .chat-input-area {
+    background: #FFFFFF !important;
+    border-top: 0.5px solid #E5E5E5 !important;
+    padding: 10px 15px 35px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+html body #chat-app.layout-qq-simple .chat-input {
+    background: #F5F5F5 !important;
+    border-radius: 6px !important;
+    border: 1px solid #E5E5E5 !important;
+    color: #000 !important;
+}
+html body #chat-app.layout-qq-simple .chat-icon-btn { color: #333333 !important; }
+html body #chat-app.layout-qq-simple .fa-arrow-circle-up { color: #1e85ed !important; font-size: 28px !important; background: transparent !important; }
+html body #chat-app.layout-qq-simple .fa-robot { color: #1e85ed !important; }
+
+/* 系统消息 */
+html body #chat-app.layout-qq-simple .msg-system {
+    background: #DADADA !important;
+    color: #FFFFFF !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+    margin: 15px auto !important;
+    width: auto !important;
+    max-width: 80% !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+html body #chat-app.layout-qq-simple .ins-sys-msg {
+    background: #DADADA !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+
+/* 图片圆角 */
+html body #chat-app.layout-qq-simple .image-bubble img.chat-upload-img {
+    border-radius: 6px !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 
 
                        /* ========================================== */
@@ -3347,8 +3494,47 @@ body.custom-bubble-border #preview-chat-container .msg {
 }
 @keyframes splashBarFill {
     0% { width: 0%; }
-    50% { width: 65%; }
+    40% { width: 45%; }
+    70% { width: 75%; }
     100% { width: 100%; }
+}
+.splash-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #f7971e, #e8590c);
+    border-radius: 4px;
+    animation: splashBarFill 7s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+
+/* ========================================== */
+/* 全局强制：所有主题顶部备注栏与底部输入栏去除虚化和阴影 */
+/* ========================================== */
+html body #chat-app .chat-header,
+html body #chat-app.layout-wechat .chat-header,
+html body #chat-app.layout-qq .chat-header,
+html body #chat-app.layout-imessage .chat-header,
+html body #chat-app.layout-imessage2 .chat-header,
+html body #chat-app.layout-telegram .chat-header,
+html body #chat-app.layout-liquid .chat-header,
+html body #chat-app.layout-qq-simple .chat-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+html body #chat-app .chat-input-area,
+html body #chat-app.layout-wechat .chat-input-area,
+html body #chat-app.layout-qq .chat-input-area,
+html body #chat-app.layout-imessage .chat-input-area,
+html body #chat-app.layout-imessage2 .chat-input-area,
+html body #chat-app.layout-telegram .chat-input-area,
+html body #chat-app.layout-liquid .chat-input-area,
+html body #chat-app.layout-qq-simple .chat-input-area {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
 
@@ -3435,6 +3621,8 @@ body.custom-bubble-border #preview-chat-container .msg {
         <input type="file" id="wb-file-import-input" accept=".json,.txt,.docx,.doc,.pdf" style="display:none;" onchange="handleWbFileImport(event)">
         <input type="file" id="wardrobe-model-upload" accept="image/*" style="display:none;" onchange="handleWardrobeModelUpload(event)">
 <input type="file" id="wardrobe-cloth-upload" accept="image/*" style="display:none;" onchange="handleWardrobeClothUpload(event)">
+<input type="file" id="home-furniture-upload" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleHomeFurnitureUpload(event)">
+
 
 
                         <!-- 世界书 App -->
@@ -3743,7 +3931,11 @@ body.custom-bubble-border #preview-chat-container .msg {
                 </div>
                 <!-- ============ 第四页 (扩展空间) ============ -->
 <div class="home-page" id="page-4">
+    
     <!-- 这里可以自由放置小组件和APP图标，支持拖拽排列 -->
+     <!-- 在 id="page-4" 的 div 内部添加 -->
+
+
 </div>
 
             </div>
@@ -4384,6 +4576,21 @@ body.custom-bubble-border #preview-chat-container .msg {
                 <div class="am-btn" onclick="toggleAssistiveMenu()"><i class="fas fa-times"></i><span>取消</span></div>
             </div>
             <div id="gesture-pad"><div class="gesture-indicator"></div><p>手势控制区</p><p style="font-size:12px; margin-top:5px; color:#888;">下滑返回 / 上滑关闭</p></div>
+                        <!-- 家庭结构编辑弹窗 -->
+            <div id="home-layout-edit-modal" class="modal-overlay" style="z-index: 6600;">
+                <div class="modal-content" style="height: 85%;">
+                    <div class="modal-header">
+                        <span onclick="document.getElementById('home-layout-edit-modal').style.display='none'" style="cursor:pointer; color:var(--text-sub);">关闭</span>
+                        <span>编辑家庭结构</span>
+                        <span style="color:var(--accent); cursor:pointer;" onclick="saveHomeLayoutEdit()">保存</span>
+                    </div>
+                    <div class="scrollable" style="flex: 1; padding-bottom: 20px;" id="home-layout-edit-container">
+                        <!-- JS 渲染编辑界面 -->
+                    </div>
+                    <div class="save-btn" style="margin-top: 10px; background: rgba(135,192,202,0.2); color: var(--accent);" onclick="addHomeRoomEdit()">+ 添加新房间</div>
+                </div>
+            </div>
+
 
             <!-- 通用弹窗区 -->
             <div id="text-modal" class="modal-overlay">
@@ -4843,12 +5050,21 @@ body.custom-bubble-border #preview-chat-container .msg {
 
                 <!-- 1. 房间结构 -->
                 <div id="home-room" class="home-panel" style="display:block;">
-                    <div style="padding: 15px 20px 5px; font-size: 13px; color: var(--text-sub);">点击下方物品，然后点击家具放置。TA会察觉到的~</div>
+                    <div style="padding: 15px 20px 5px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; color: var(--text-sub);">点击物品，然后点击家具放置。TA会察觉~</span>
+                        <i class="fas fa-edit" style="color:var(--accent); font-size: 16px; cursor: pointer;" onclick="openHomeLayoutEdit()" title="编辑家庭结构"></i>
+                    </div>
                     <!-- 👇 替换这里的包裹框，加入 id 且清空内部内容 👇 -->
                     <div class="item-inventory scrollable" id="room-item-inventory">
                         <!-- 物品由 JS 动态生成 -->
                     </div>
                     <!-- 👆 替换结束 👆 -->
+
+                    <div class="room-layout" id="home-room-layout">
+                        <!-- JS 动态渲染 -->
+                    </div>
+                </div>
+
 
                     <div class="room-layout">
                         <div class="room-box">
@@ -5270,6 +5486,17 @@ body.custom-bubble-border #preview-chat-container .msg {
                             <input type="range" min="0.5" max="1.5" step="0.01" value="0.85" id="ui-app-icon-scale" style="accent-color: var(--accent);" oninput="updateIconFontParams()">
                         </div>
                         <!-- 👆 新增结束 👆 -->
+                                                 <!-- 👇 新增：桌面网格控制 (支持田字格) 👇 -->
+                        <div style="border-top: 0.5px solid var(--border-color); margin-top: 5px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: var(--text-main);">桌面网格列数 (选2列可呈田字格)</span>
+                            <select id="ui-grid-cols" class="setting-select" style="width: auto; padding: 4px 8px;" onchange="updateIconFontParams()">
+                                <option value="2">2 列 (田字大图标)</option>
+                                <option value="3">3 列</option>
+                                <option value="4" selected>4 列 (默认)</option>
+                                <option value="5">5 列</option>
+                            </select>
+                        </div>
+
 
                     </div>
                     <!-- 👆 新增区域结束 👆 -->
@@ -5398,6 +5625,17 @@ body.custom-bubble-border #preview-chat-container .msg {
                         </div>
                         <i class="fas fa-check-circle tl-check" id="check-liquid"></i>
                     </div>
+
+                    <!-- QQ 简洁版 -->
+<div class="theme-layout-card" onclick="applyChatLayout('qq-simple')">
+    <div class="tl-title">QQ 简洁版 (微圆润长方形)</div>
+    <div class="tl-preview" style="background: #fff;">
+        <div class="tl-msg char" style="background:#fff; color:#000; border:1px solid #E8E8E8; border-radius:6px;">白色接收气泡，干净利落。</div>
+        <div class="tl-msg user" style="background:#1e85ed; color:#fff; border-radius:6px;">蓝色发送气泡，简约大方。</div>
+    </div>
+    <i class="fas fa-check-circle tl-check" id="check-qq-simple"></i>
+</div>
+
 
 
 
@@ -6093,6 +6331,10 @@ body.custom-bubble-border #preview-chat-container .msg {
         <!-- 动态渲染地点列表 -->
     </div>
 </div>
+
+
+
+
 
 
 
@@ -7365,6 +7607,57 @@ document.getElementById('chat-app').style.setProperty('--chat-avatar', `url('${c
             background-color: ${char.userColor} !important;
             color: ${char.userTextColor} !important;
         }
+            /* ===== Telegram 纸飞机：同步角色工坊颜色 ===== */
+        html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: ${char.charColor} !important;
+            color: ${char.charTextColor} !important;
+        }
+        html body #chat-app.layout-telegram #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            color: ${char.charTextColor} !important;
+            opacity: 0.6;
+        }
+        html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: ${char.userColor} !important;
+            color: ${char.userTextColor} !important;
+        }
+        html body #chat-app.layout-telegram #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            color: ${char.userTextColor} !important;
+            opacity: 0.6;
+        }
+
+        /* ===== QQ 简洁版：同步角色工坊颜色 ===== */
+        html body #chat-app.layout-qq-simple #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+            background-color: ${char.charColor} !important;
+            color: ${char.charTextColor} !important;
+            border: 1px solid rgba(0,0,0,0.08) !important;
+        }
+        html body #chat-app.layout-qq-simple #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+            background-color: ${char.userColor} !important;
+            color: ${char.userTextColor} !important;
+        }
+
+        /* ===== iMessage 精致版：同步角色工坊颜色 ===== */
+        html body #chat-app.layout-imessage2 #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: ${char.charColor} !important;
+            color: ${char.charTextColor} !important;
+        }
+        html body #chat-app.layout-imessage2 #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            background: ${char.charColor} !important;
+        }
+        html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble) {
+            background-color: ${char.userColor} !important;
+            color: ${char.userTextColor} !important;
+        }
+        html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)::after {
+            background: ${char.userColor} !important;
+        }
+
+        /* iMessage 精致版点击反馈也跟随 */
+        html body #chat-app.layout-imessage2 #chat-container .msg.char:not(.sticker-bubble):active { background-color: ${char.charColor} !important; filter: brightness(0.85); }
+        html body #chat-app.layout-imessage2 #chat-container .msg.char:not(.sticker-bubble):active::after { background: ${char.charColor} !important; filter: brightness(0.85); }
+        html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.sticker-bubble):active { background-color: ${char.userColor} !important; filter: brightness(0.85); }
+        html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.sticker-bubble):active::after { background: ${char.userColor} !important; filter: brightness(0.85); }
+        
         `;
 
 
@@ -8222,8 +8515,8 @@ if (globalAPI.enableNarration) {
 
                 // 👇 新增：家庭环境与设备感知注入
         let homeInjectBlock = "";
-        let homeItems = Object.entries(homeData.room).filter(([k,v]) => v).map(([k,v]) => `${k}上放着${v}`).join('，');
-        if (homeItems) {
+   let homeItems = Object.entries(homeData.itemsOnFurnitures || {}).filter(([k,v]) => v).map(([k,v]) => `${k}上放着${v}`).join('，');
+     if (homeItems) {
             homeInjectBlock += `\n【房间物理状态】：房间里目前${homeItems}。你可以自然地吐槽或注意这些物品。`;
         }
         if (homeData.bluetooth.connected) {
@@ -8516,6 +8809,8 @@ let apiMessages = [{ role: "system", content: finalSystemContent }];
             reply = reply.replace(/\$\$\s*ALBUM_SHARE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][ALBUM_SHARE:${imgId.trim()}][MSG]`);
             reply = reply.replace(/\$\$\s*WARDROBE_WEAR(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, names) => `[MSG][WARDROBE_WEAR:${names}][MSG]`);
             reply = reply.replace(/\$\$\s*LOC_UPDATE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, locName) => `[MSG][LOC_UPDATE:${locName.trim()}][MSG]`);
+            reply = reply.replace(/\$\$\s*WHISPER_ANSWER(?:[:：\s]*)(.+?)\|\|\|([\s\S]+?)(?:\$\$|$)/gi, (match, qId, ans) => `[MSG][WHISPER_ANSWER:${qId.trim()}|||${ans.trim()}][MSG]`);
+
 
 
 
@@ -8532,8 +8827,8 @@ let apiMessages = [{ role: "system", content: finalSystemContent }];
 
             blocks.forEach(block => {
                 // 🚨 更宽容的隐藏指令判定：只要是以系统关键字开头，就绝对不打碎，直接作为隐藏指令放行！
-                if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|MEMO_|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|SURVEY_SUBMIT|BLOCK|UNBLOCK|DELETE_FRIEND|ADD_FRIEND|RECALL|ALBUM_SHARE|NUDGE)/i)) {
-                    if (!block.endsWith(']')) block += ']'; // 强制闭合括号，防指令残留
+ if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|MEMO_|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|SURVEY_SUBMIT|BLOCK|UNBLOCK|DELETE_FRIEND|ADD_FRIEND|RECALL|ALBUM_SHARE|NUDGE|WHISPER_ANSWER)/i)) {
+                   if (!block.endsWith(']')) block += ']'; // 强制闭合括号，防指令残留
                     msgs.push(block);
                     return;
                 }
@@ -8920,6 +9215,34 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
     updateCharLocationOnMap(locName);
     addMessageToUI('system', `${activeChar.name} 已移动至：${locName}`, false, null, `[系统交互：你的雷达位置已同步更新至 ${locName}。]`);
 }
+else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
+    const innerContent = msgs[i].substring(16, msgs[i].length - 1);
+    const parts = innerContent.split('|||');
+    if (parts.length >= 2) {
+        const qId = parts[0].trim();
+        const ans = parts.slice(1).join('|||').trim();
+        const qItem = whisperData.questions.find(q => q.id === qId);
+        if (qItem) {
+            qItem.answered = true;
+            qItem.answer = ans;
+            // 自动移入收藏板并生成随机位置
+            whisperData.collection.unshift({
+                question: qItem.question,
+                answer: ans,
+                color: qItem.color,
+                top: (Math.random() * 40 + 10) + '%',
+                left: (Math.random() * 40 + 10) + '%'
+            });
+            saveWhisperData();
+            if (document.getElementById('whisper-app').classList.contains('active')) {
+                renderWhisperQuestions();
+                renderWhisperCollection();
+            }
+            addMessageToUI('system', `TA 在“悄悄话”回答了你的问题！快去看看吧。`, false, null, `[系统交互：你已经回答了用户的问题。]`);
+        }
+    }
+}
+
 
 
 
@@ -10194,16 +10517,60 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
     }
 
 
-    // === 写入数据文件与加载功能 ===
-    function exportBeautifyConfig() {
+        // === 写入数据文件与加载功能 ===
+    async function exportBeautifyConfig() {
         uiSettings.cssBubble = document.getElementById('css-bubble-input').value;
         uiSettings.cssInputBar = document.getElementById('css-inputbar-input').value;
         uiSettings.cssLayout = document.getElementById('css-layout-input').value;
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(uiSettings));
+        const iconTextConfig = JSON.parse(localStorage.getItem('ai_os_icon_text_config')) || {};
+        const widgetStyles = JSON.parse(localStorage.getItem('ai_os_widget_styles')) || {};
+        
+        const themeParams = {
+            theme: globalAPI.theme,
+            uiZoom: globalAPI.uiZoom,
+            homeWallpaper: globalAPI.homeWallpaper,
+            wallpaperMode: globalAPI.wallpaperMode
+        };
+
+        const individualIcons = JSON.parse(localStorage.getItem('ai_os_individual_icons')) || {};
+
+        let themePack = {
+            version: "2.0",
+            type: "theme_pack",
+            uiSettings,
+            iconTextConfig,
+            widgetStyles,
+            themeParams,
+            individualIcons,
+            images: {},
+            customFont: null
+        };
+
+        // 从大容量私有库中抽取 Base64 真实内容
+        async function extractIdbImage(url) {
+            if (url && url.startsWith('idb://')) {
+                const key = url.replace('idb://', '');
+                const b64 = await getImageFromDB(key);
+                if (b64) themePack.images[key] = b64;
+            }
+        }
+
+        await extractIdbImage(themeParams.homeWallpaper);
+
+        for (let k in individualIcons) {
+            await extractIdbImage(individualIcons[k]);
+        }
+
+        if (localStorage.getItem('ai_os_font_enabled') === 'true') {
+            const fontB64 = await getImageFromDB('ai_os_custom_font');
+            if (fontB64) themePack.customFont = fontB64;
+        }
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(themePack));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "AI_OS_美化配置文件.json");
+        downloadAnchorNode.setAttribute("download", "AI_OS_全量主题包.json");
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
@@ -10220,15 +10587,64 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
         reader.onload = async function(event) {
             try {
                 const imported = JSON.parse(event.target.result);
-                uiSettings = Object.assign(uiSettings, imported);
+                
+                if (!imported.type || imported.type !== "theme_pack") {
+                    uiSettings = Object.assign(uiSettings, imported);
+                    document.getElementById('css-bubble-input').value = uiSettings.cssBubble || "";
+                    document.getElementById('css-inputbar-input').value = uiSettings.cssInputBar || "";
+                    document.getElementById('css-layout-input').value = uiSettings.cssLayout || "";
+                    await finalSaveBeautify(); 
+                    await initBeautify(); 
+                    sysAlert("导入成功", "旧版美化配置已成功加载并应用！");
+                    return;
+                }
 
+                sysAlert("正在恢复主题...", "全量数据处理中，请稍候...");
+
+                if (imported.images) {
+                    for (let key in imported.images) {
+                        await saveImageToDB(key, imported.images[key]);
+                    }
+                }
+
+                if (imported.customFont) {
+                    await saveImageToDB('ai_os_custom_font', imported.customFont);
+                    localStorage.setItem('ai_os_font_enabled', 'true');
+                    applyCustomFont(imported.customFont);
+                }
+
+                uiSettings = Object.assign(uiSettings, imported.uiSettings);
                 document.getElementById('css-bubble-input').value = uiSettings.cssBubble || "";
                 document.getElementById('css-inputbar-input').value = uiSettings.cssInputBar || "";
                 document.getElementById('css-layout-input').value = uiSettings.cssLayout || "";
 
+                if (imported.themeParams) {
+                    globalAPI.theme = imported.themeParams.theme || globalAPI.theme;
+                    globalAPI.uiZoom = imported.themeParams.uiZoom || globalAPI.uiZoom;
+                    globalAPI.homeWallpaper = imported.themeParams.homeWallpaper || globalAPI.homeWallpaper;
+                    globalAPI.wallpaperMode = imported.themeParams.wallpaperMode || globalAPI.wallpaperMode;
+                    localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
+                }
+
+                if (imported.iconTextConfig) {
+                    localStorage.setItem('ai_os_icon_text_config', JSON.stringify(imported.iconTextConfig));
+                }
+
+                if (imported.widgetStyles) {
+                    localStorage.setItem('ai_os_widget_styles', JSON.stringify(imported.widgetStyles));
+                    if(typeof widgetCustomStyles !== 'undefined') widgetCustomStyles = imported.widgetStyles; 
+                }
+
+                if (imported.individualIcons) {
+                    localStorage.setItem('ai_os_individual_icons', JSON.stringify(imported.individualIcons));
+                    if(typeof individualIcons !== 'undefined') individualIcons = imported.individualIcons;
+                }
+
                 await finalSaveBeautify(); 
-                await initBeautify(); 
-                sysAlert("导入成功", "美化配置已成功加载并应用！");
+                sysAlert("导入成功", "全量超级主题包已全面应用！系统即将刷新...").then(() => {
+                    location.reload();
+                });
+
             } catch(err) {
                 sysAlert("导入失败", "文件格式损坏或不正确！");
             }
@@ -10236,6 +10652,7 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
         reader.readAsText(file);
         e.target.value = '';
     }
+
 
     function resetUIParams() {
         if (confirm("确定要清空所有 UI 美化设置并恢复系统默认吗？")) {
@@ -10258,15 +10675,40 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
     localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
 }
 
-        // ==========================================
+            // ==========================================
     // 家庭空间 App 逻辑
     // ==========================================
-    let homeData = {
-        room: { "大床": "", "书桌": "", "沙发": "", "茶几": "" },
-        bluetooth: { connected: false, music: "" },
-        sleep: { isSleeping: false }
-    };
+    let homeData = JSON.parse(localStorage.getItem('ai_os_home'));
+    if (!homeData) {
+        homeData = {
+            rooms: [
+                { name: "主卧", furnitures: [ { name: "大床", icon: "fas fa-bed", image: "" } ] },
+                { name: "次卧", furnitures: [ { name: "书桌", icon: "fas fa-desktop", image: "" } ] },
+                { name: "客厅", furnitures: [ { name: "沙发", icon: "fas fa-couch", image: "" }, { name: "茶几", icon: "fas fa-coffee", image: "" } ] }
+            ],
+            itemsOnFurnitures: { "大床": "", "书桌": "", "沙发": "", "茶几": "" },
+            bluetooth: { connected: false, music: "" },
+            sleep: { isSleeping: false }
+        };
+    } else {
+        // 兼容老用户数据升级
+        if (homeData.room && !homeData.rooms) {
+            homeData.rooms = [
+                { name: "主卧", furnitures: [ { name: "大床", icon: "fas fa-bed", image: "" } ] },
+                { name: "次卧", furnitures: [ { name: "书桌", icon: "fas fa-desktop", image: "" } ] },
+                { name: "客厅", furnitures: [ { name: "沙发", icon: "fas fa-couch", image: "" }, { name: "茶几", icon: "fas fa-coffee", image: "" } ] }
+            ];
+            homeData.itemsOnFurnitures = homeData.room;
+            delete homeData.room;
+        }
+        if (!homeData.itemsOnFurnitures) homeData.itemsOnFurnitures = {};
+    }
+
+    function saveHomeData() { localStorage.setItem('ai_os_home', JSON.stringify(homeData)); }
+    
     let currentSelectedRoomItem = "";
+    let editingHomeData = [];
+    let targetFurnitureUpload = null;
 
     function switchHomeTab(tabId, btnEl) {
         document.querySelectorAll('#home-app .home-tab').forEach(t => t.classList.remove('active'));
@@ -10281,49 +10723,179 @@ else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
         currentSelectedRoomItem = itemName;
     }
 
-    function placeItemToSlot(slotName) {
-        if (!currentSelectedRoomItem) return sysAlert("提示", "请先在上方点击选中一个物品！");
-        homeData.room[slotName] = currentSelectedRoomItem;
-        
-        const slots = document.querySelectorAll('.furniture-slot');
-        slots.forEach(slot => {
-            if (slot.querySelector('span').innerText === slotName) {
-                slot.querySelector('.slot-item').innerText = currentSelectedRoomItem;
-            }
-        });
-
-        const sysMsg = `[系统交互：用户刚才把【${currentSelectedRoomItem}】随意放在了房间的【${slotName}】上。请注意察觉并结合你的性格吐槽或做出反应！]`;
-        addMessageToUI('system', `你把 ${currentSelectedRoomItem} 放在了 ${slotName} 上`, false, null, sysMsg);
-        
-        setTimeout(() => { openApp('chat-app'); triggerAIResponse(); }, 500);
+    // 打开编辑面板
+    function openHomeLayoutEdit() {
+        editingHomeData = JSON.parse(JSON.stringify(homeData.rooms)); // 深拷贝
+        renderHomeLayoutEdit();
+        document.getElementById('home-layout-edit-modal').style.display = 'flex';
     }
 
-    function toggleBluetooth() {
-        const isAudioPlaying = !document.getElementById('audio-player').paused;
-        const currentSongName = typeof songs !== 'undefined' && songs[currentSongIdx] ? songs[currentSongIdx].title : "未知音乐";
-        
-        homeData.bluetooth.connected = !homeData.bluetooth.connected;
-        const icon = document.getElementById('bt-device-icon');
-        const text = document.getElementById('bt-status-text');
+    // 渲染编辑面板
+    function renderHomeLayoutEdit() {
+        const container = document.getElementById('home-layout-edit-container');
+        container.innerHTML = editingHomeData.map((room, rIdx) => `
+            <div style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <input type="text" class="setting-input" style="flex: 1; margin-right: 10px; padding: 8px;" value="${room.name}" onchange="editingHomeData[${rIdx}].name = this.value" placeholder="房间名称">
+                    <i class="fas fa-trash-alt" style="color: #ff453a; cursor: pointer; padding: 5px;" onclick="deleteHomeRoomEdit(${rIdx})"></i>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    ${room.furnitures.map((f, fIdx) => `
+                        <div style="background: var(--input-bg); border-radius: 8px; padding: 10px; position: relative; text-align: center;">
+                            <i class="fas fa-times-circle" style="position: absolute; top: -5px; right: -5px; color: #ff453a; cursor: pointer; background: #fff; border-radius: 50%; z-index: 2;" onclick="deleteHomeFurnitureEdit(${rIdx}, ${fIdx})"></i>
+                            <div style="width: 50px; height: 50px; margin: 0 auto 5px; background: rgba(0,0,0,0.1); border-radius: 8px; border: 1px dashed var(--text-sub); display: flex; justify-content: center; align-items: center; cursor: pointer; background-size: contain; background-position: center; background-repeat: no-repeat;" 
+                                 id="edit-furn-img-${rIdx}-${fIdx}"
+                                 onclick="triggerHomeFurnitureUpload(${rIdx}, ${fIdx})" title="点击上传家具图片(透明底)">
+                                 ${!f.image ? `<i class="${f.icon || 'fas fa-couch'}"></i>` : ''}
+                            </div>
+                            <input type="text" class="setting-input" style="width: 100%; padding: 4px; font-size: 11px; text-align: center;" value="${f.name}" onchange="editingHomeData[${rIdx}].furnitures[${fIdx}].name = this.value" placeholder="家具名">
+                        </div>
+                    `).join('')}
+                    <div style="background: transparent; border: 1px dashed var(--accent); border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--accent); min-height: 80px;" onclick="addHomeFurnitureEdit(${rIdx})">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+            </div>
+        `).join('');
 
-        if (homeData.bluetooth.connected) {
-            icon.classList.add('connected');
-            text.innerText = "已连接: AirPods Pro";
-            homeData.bluetooth.music = isAudioPlaying ? currentSongName : "设备待机中";
-            
-            const sysMsg = `[系统交互：用户刚才戴上了蓝牙耳机。当前耳机状态：${homeData.bluetooth.music}。你可以感知到这个动作，表示你也要一起听，或者吐槽。]`;
-            addMessageToUI('system', `蓝牙耳机已连接`, false, null, sysMsg);
+        // 异步加载已有的图片
+        editingHomeData.forEach((room, rIdx) => {
+            room.furnitures.forEach((f, fIdx) => {
+                if (f.image && f.image.startsWith('idb://')) {
+                    getImageFromDB(f.image.replace('idb://', '')).then(b64 => {
+                        const el = document.getElementById(`edit-furn-img-${rIdx}-${fIdx}`);
+                        if (el && b64) {
+                            el.style.backgroundImage = `url('${b64}')`;
+                            el.innerHTML = '';
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    function addHomeRoomEdit() { editingHomeData.push({ name: "新房间", furnitures: [] }); renderHomeLayoutEdit(); }
+    function deleteHomeRoomEdit(rIdx) { editingHomeData.splice(rIdx, 1); renderHomeLayoutEdit(); }
+    function addHomeFurnitureEdit(rIdx) { editingHomeData[rIdx].furnitures.push({ name: "新家具", icon: "fas fa-box", image: "" }); renderHomeLayoutEdit(); }
+    function deleteHomeFurnitureEdit(rIdx, fIdx) { editingHomeData[rIdx].furnitures.splice(fIdx, 1); renderHomeLayoutEdit(); }
+
+    function triggerHomeFurnitureUpload(rIdx, fIdx) {
+        targetFurnitureUpload = { rIdx, fIdx };
+        document.getElementById('home-furniture-upload').click();
+    }
+
+    // 上传并生成透明 PNG 家具图
+    async function handleHomeFurnitureUpload(e) {
+        const file = e.target.files[0];
+        if (!file || !targetFurnitureUpload) return;
+        
+        sysAlert("处理中", "正在保存家具图案...");
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                let size = Math.max(img.width, img.height);
+                if (size > 512) size = 512; // 家具图标512px足够清晰
+                let w = img.width, h = img.height;
+                if (w > h) { h = Math.round(h * size / w); w = size; }
+                else { w = Math.round(w * size / h); h = size; }
+                
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const dx = (size - w) / 2;
+                const dy = (size - h) / 2;
+                ctx.drawImage(img, dx, dy, w, h);
+                
+                // 核心：必须使用 image/png 保存透明底通道！
+                const base64Url = canvas.toDataURL('image/png'); 
+                const imgId = 'home_furn_' + Date.now();
+                await saveImageToDB(imgId, base64Url);
+                
+                editingHomeData[targetFurnitureUpload.rIdx].furnitures[targetFurnitureUpload.fIdx].image = 'idb://' + imgId;
+                renderHomeLayoutEdit();
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    function saveHomeLayoutEdit() {
+        homeData.rooms = editingHomeData;
+        saveHomeData();
+        document.getElementById('home-layout-edit-modal').style.display = 'none';
+        renderHomeLayout();
+    }
+
+    // 渲染主界面的家庭布局
+    function renderHomeLayout() {
+        const layoutContainer = document.getElementById('home-room-layout');
+        if (!layoutContainer) return;
+        
+        layoutContainer.innerHTML = homeData.rooms.map((room, rIdx) => {
+            return `
+                <div class="room-box" style="grid-column: span ${room.furnitures.length > 1 ? 2 : 1}; min-height: 150px;">
+                    <div class="room-title">${room.name}</div>
+                    <div style="display:flex; gap:10px; height:calc(100% - 30px); overflow-x:auto;">
+                        ${room.furnitures.map(f => {
+                            return `
+                            <div class="furniture-slot" onclick="placeItemToSlot('${f.name}', '${f.image || ''}')" style="min-width:80px;">
+                                ${f.image ? 
+                                    `<div class="furn-icon-img" data-idb="${f.image.startsWith('idb://') ? f.image : ''}" style="width:40px; height:40px; background-size:contain; background-position:center; background-repeat:no-repeat; margin-bottom:5px;"></div>` 
+                                    : `<i class="${f.icon || 'fas fa-couch'}" style="font-size: 24px; margin-bottom: 5px;"></i>`}
+                                <span>${f.name}</span>
+                                <div class="slot-item" style="color:var(--accent); font-weight:bold; font-size:11px;">${homeData.itemsOnFurnitures[f.name] || ''}</div>
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // 加载高清家具图片
+        layoutContainer.querySelectorAll('.furn-icon-img').forEach(imgEl => {
+            const idbKey = imgEl.getAttribute('data-idb');
+            if (idbKey) {
+                getImageFromDB(idbKey.replace('idb://', '')).then(b64 => {
+                    if(b64) imgEl.style.backgroundImage = `url('${b64}')`;
+                });
+            }
+        });
+    }
+
+    // 放置物品联动AI与视觉引擎
+    function placeItemToSlot(slotName, imageKey) {
+        if (!currentSelectedRoomItem) return sysAlert("提示", "请先在上方点击选中一个物品！");
+        homeData.itemsOnFurnitures[slotName] = currentSelectedRoomItem;
+        saveHomeData();
+        renderHomeLayout();
+
+        const sysMsg = `[系统交互：用户刚才把【${currentSelectedRoomItem}】随意放在了房间的【${slotName}】上。请注意察觉并结合你的性格吐槽或做出反应！]`;
+        
+        // 视觉模型支持：如果放置的家具本身是一张用户上传的图片，带上该图片给AI感知
+        if (imageKey && globalAPI.enableVision !== false) {
+            messageHistory.push({ 
+                role: 'user', 
+                content: sysMsg, 
+                isHtml: false, 
+                time: new Date().toLocaleString(), 
+                rawApiContent: sysMsg, 
+                msgType: 'album_upload',  // 借用相册底层极稳的视觉图床通道
+                imageId: imageKey, 
+                isHidden: true 
+            });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            addMessageToUI('system', `你把 ${currentSelectedRoomItem} 放在了 ${slotName} 上（已启用视觉感知家具图案）`);
         } else {
-            icon.classList.remove('connected');
-            text.innerText = "未连接";
-            homeData.bluetooth.music = "";
-            
-            const sysMsg = `[系统交互：用户摘下了蓝牙耳机。]`;
-            addMessageToUI('system', `蓝牙耳机已断开`, false, null, sysMsg);
+            addMessageToUI('system', `你把 ${currentSelectedRoomItem} 放在了 ${slotName} 上`, false, null, sysMsg);
         }
         
         setTimeout(() => { openApp('chat-app'); triggerAIResponse(); }, 500);
     }
+
 
     async function toggleSleepMode() {
         const btn = document.getElementById('sleep-toggle-btn');
@@ -13150,8 +13722,8 @@ openApp = function(appId) {
         
         
           // 清除旧的布局类和新加的微信变体类
-        chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layout-telegram', 'layout-imessage2', 'layout-liquid', 'theme-wechat-gray', 'theme-wechat-blue', 'theme-wechat-black');
-      document.querySelectorAll('.theme-layout-card').forEach(c => c.classList.remove('active'));
+ chatApp.classList.remove('layout-wechat', 'layout-qq', 'layout-imessage', 'layout-telegram', 'layout-imessage2', 'layout-liquid', 'layout-qq-simple', 'theme-wechat-gray', 'theme-wechat-blue', 'theme-wechat-black');
+     document.querySelectorAll('.theme-layout-card').forEach(c => c.classList.remove('active'));
         
         if (layout.startsWith('wechat-')) {
             // 如果是微信的特殊变体，需要先继承微信的基础框架，再加变体颜色
@@ -13248,6 +13820,8 @@ openApp = function(appId) {
         
         localStorage.setItem('ai_os_header_size', size);
     }
+
+    
 
 
 
@@ -14232,29 +14806,39 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         // ==========================================
     // 🔠 APP 内部图案与文字调节引擎
     // ==========================================
-    function updateIconFontParams() {
+        function updateIconFontParams() {
         const hideFont = document.getElementById('ui-hide-icon-font').checked;
         const fontSize = document.getElementById('ui-icon-font-size').value;
         const hideLabel = document.getElementById('ui-hide-app-label').checked;
         const labelSize = document.getElementById('ui-app-label-size').value;
+        const iconScale = document.getElementById('ui-app-icon-scale').value; 
+        const gridCols = document.getElementById('ui-grid-cols') ? document.getElementById('ui-grid-cols').value : '4';
 
-        // 动态回显数值
         document.getElementById('val-icon-font-size').innerText = fontSize;
         document.getElementById('val-app-label-size').innerText = labelSize;
+        document.getElementById('val-icon-scale').innerText = iconScale; 
 
-        // 实时应用到 CSS 变量
         const root = document.documentElement;
         root.style.setProperty('--ui-icon-font-display', hideFont ? 'none' : 'block');
         root.style.setProperty('--ui-icon-font-size', fontSize + 'px');
         root.style.setProperty('--ui-label-display', hideLabel ? 'none' : 'block');
         root.style.setProperty('--ui-label-font-size', labelSize + 'px');
+        root.style.setProperty('--ui-icon-scale', iconScale); 
+        root.style.setProperty('--ui-grid-cols', gridCols); // 👈 动态列数注入
 
-        // 持久化保存
-        const iconConfig = { hideFont, fontSize, hideLabel, labelSize };
+        const iconConfig = { hideFont, fontSize, hideLabel, labelSize, iconScale, gridCols };
         localStorage.setItem('ai_os_icon_text_config', JSON.stringify(iconConfig));
+        
+        if (typeof uiSettings !== 'undefined') {
+            uiSettings.iconScale = parseFloat(iconScale);
+            const lightSettings = { ...uiSettings };
+            delete lightSettings.cssBubble;
+            delete lightSettings.cssInputBar;
+            delete lightSettings.cssLayout;
+            localStorage.setItem('ai_os_ui_settings', JSON.stringify(lightSettings));
+        }
     }
 
-    // 系统启动时恢复保存的文字与图标状态
     document.addEventListener('DOMContentLoaded', function() {
         const saved = JSON.parse(localStorage.getItem('ai_os_icon_text_config'));
         if (saved) {
@@ -14263,8 +14847,9 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             root.style.setProperty('--ui-icon-font-size', saved.fontSize + 'px');
             root.style.setProperty('--ui-label-display', saved.hideLabel ? 'none' : 'block');
             root.style.setProperty('--ui-label-font-size', saved.labelSize + 'px');
+            if (saved.iconScale) root.style.setProperty('--ui-icon-scale', saved.iconScale); 
+            if (saved.gridCols) root.style.setProperty('--ui-grid-cols', saved.gridCols);
 
-            // 延迟一点以等待 DOM 渲染，然后同步给滑块和开关UI
             setTimeout(() => {
                 const elHideFont = document.getElementById('ui-hide-icon-font');
                 if (elHideFont) {
@@ -14272,13 +14857,56 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
                     document.getElementById('ui-icon-font-size').value = saved.fontSize;
                     document.getElementById('ui-hide-app-label').checked = saved.hideLabel;
                     document.getElementById('ui-app-label-size').value = saved.labelSize;
+                    if (saved.iconScale) document.getElementById('ui-app-icon-scale').value = saved.iconScale; 
+                    if (saved.gridCols && document.getElementById('ui-grid-cols')) document.getElementById('ui-grid-cols').value = saved.gridCols;
                     
                     document.getElementById('val-icon-font-size').innerText = saved.fontSize;
                     document.getElementById('val-app-label-size').innerText = saved.labelSize;
+                    if (saved.iconScale) document.getElementById('val-icon-scale').innerText = saved.iconScale; 
                 }
             }, 600);
         }
     });
+
+    // 👇 强力修复：CSS 独立覆盖引擎，绝不干扰其他 APP 的气泡！
+    function updateCustomCSS() {
+        if(typeof uiSettings === 'undefined') window.uiSettings = {};
+        uiSettings.cssBubble = document.getElementById('css-bubble-input') ? document.getElementById('css-bubble-input').value : '';
+        uiSettings.cssInputBar = document.getElementById('css-inputbar-input') ? document.getElementById('css-inputbar-input').value : '';
+        uiSettings.cssLayout = document.getElementById('css-layout-input') ? document.getElementById('css-layout-input').value : '';
+        applyUserInjectedCSS();
+    }
+
+    function applyUserInjectedCSS() {
+        let styleEl = document.getElementById('user-injected-css');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'user-injected-css';
+            document.head.appendChild(styleEl);
+        }
+        
+        let customCSS = '';
+        
+        const process = (css, defaultSelector) => {
+            if (!css || !css.trim()) return '';
+            if (css.includes('{')) {
+                // 如果用户手写了选择器大括号，利用 css嵌套/父选择器锁定它只在 chat-app 下生效
+                return `\nhtml body #chat-app { ${css} }\n`;
+            } else {
+                return `\n${defaultSelector} { ${css} !important; }\n`;
+            }
+        };
+
+        // 强行增加权重，只影响真正短信 App 里的气泡，绝不干扰其他地方！
+        customCSS += process(uiSettings.cssBubble, 'html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)');
+        
+        customCSS += process(uiSettings.cssInputBar, 'html body #chat-app .chat-input-area, html body #chat-app .chat-input');
+        
+        customCSS += process(uiSettings.cssLayout, 'html body #chat-app');
+        
+        styleEl.innerHTML = customCSS;
+    }
+
 
 
         // ==========================================
@@ -14326,10 +14954,13 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
     }
 
     // 拦截操作：当打开家庭空间时，渲染并加载物品列表
-    const _originalOpenAppHomeItem = openApp;
+        const _originalOpenAppHomeItem = openApp;
     openApp = function(appId) {
         _originalOpenAppHomeItem(appId);
-        if(appId === 'home-app') renderRoomItems();
+        if(appId === 'home-app') {
+            renderRoomItems();
+            renderHomeLayout(); // 👈 增加初始化渲染
+        }
     };
 
 
@@ -18895,28 +19526,46 @@ openApp = function(appId) {
     };
     window.closeSnoopBaiduDetail = function() { document.getElementById('snoop-baidu-detail-view').style.display = 'none'; };
 
-    // 开屏画面自动消失（尽早隐藏，不等所有资源）
+    // 开屏画面自动消失（7~8秒沉浸展示，iOS 设备缩短防白屏）
 function hideSplashEarly() {
     const splash = document.getElementById('splash-screen');
     if (!splash) return;
     splash.classList.add('hide');
     setTimeout(() => {
         if (splash.parentNode) splash.parentNode.removeChild(splash);
-    }, 600); // 动画结束后移除DOM
+    }, 600);
 }
 
-// DOMContentLoaded 后就执行隐藏（约1.2秒）
+// 检测是否为 iOS
+const _isIOSSplash = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(hideSplashEarly, 1200);
+    if (_isIOSSplash) {
+        // iOS 保持原来的快速消失（约1.2秒），防止 Safari 白屏
+        setTimeout(hideSplashEarly, 1200);
+    } else {
+        // 非 iOS（Android/PC）延长至 7.5 秒
+        setTimeout(hideSplashEarly, 7500);
+    }
 });
 
-// 同时保留 load 后备（某些资源很慢时确保隐藏）
 window.addEventListener('load', function() {
-    setTimeout(hideSplashEarly, 500);
+    if (_isIOSSplash) {
+        setTimeout(hideSplashEarly, 500);
+    }
+    // 非iOS不再用 load 触发，让 DOMContentLoaded 的 7.5s 控制
 });
 
-// 防止 splash 超过4秒不消失（保险）
-setTimeout(hideSplashEarly, 4000);
+// 终极兜底：无论如何不超过 10 秒
+setTimeout(hideSplashEarly, 10000);
+
+
+
+
+
+</script>
+</body>
+</html>
 
 
 
