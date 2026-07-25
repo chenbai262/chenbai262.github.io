@@ -92,8 +92,8 @@
             --accent: var(--neu-accent);
             
             /* 默认壁纸：使用偏深邃的 Apple 质感渐变 */
-            --screen-bg: linear-gradient(135deg, #111111 0%, #1a1a1c 50%, #000000 100%);
-            --app-bg: var(--neu-bg);
+        --screen-bg: linear-gradient(160deg, #fbf1d6 0%, #fad4af 30%, #fcaeaa 60%, #b6e3e9 100%);
+     --app-bg: var(--neu-bg);
             --bg-base: var(--neu-bg);
             --bg-panel: hsla(var(--apple-card), 0.85);
             --bg-glass: hsla(var(--apple-background), 0.65);
@@ -103,8 +103,9 @@
             --text-sub: hsl(var(--apple-muted-foreground));
                         --border-color: hsl(var(--apple-border));
             --input-bg: hsl(var(--apple-input));
-            --chat-bg: url('https://img.cdn1.vip/i/6a56edff42574_1784081919.webp');
-            --chat-overlay: transparent;
+--chat-bg: url('https://img.cdn1.vip/i/6a64ab6d5dcc8_1784982381.webp');
+--chat-overlay: transparent;
+
             --modal-bg: var(--neu-bg);
 
 
@@ -153,11 +154,57 @@
             --shadow-pressed-sm: inset 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        /* 其余冗余模式的兜底接管 */
-        :root.morandi-mode, :root.monochrome-mode, :root.aqua-mode {
-            --neu-bg: hsl(var(--apple-background));
-            --border-color: hsl(var(--apple-border));
+                /* ========================================== */
+        /* 🌟 修复并补全：莫兰迪 / 黑白灰 / 水蓝色 专属浅彩配色 */
+        /* ========================================== */
+        /* 1. 莫兰迪配色 (高级灰粉/灰蓝调) */
+        :root.morandi-mode {
+            --neu-bg: #e8ecef;
+            --screen-bg: linear-gradient(135deg, #e5e9ec 0%, #d8e0e5 50%, #c8d2d8 100%);
+            --text-main: #4a5568;
+            --text-sub: #718096;
+            --accent: #879ab5;
+            --bg-panel: rgba(232, 236, 239, 0.85);
+            --bg-glass: rgba(232, 236, 239, 0.65);
+            --bg-glass-header: rgba(232, 236, 239, 0.85);
+            --input-bg: #dde3e8;
+            --border-color: #cbd5e0;
+            --shadow-raised: 0 4px 20px rgba(113, 128, 150, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-pressed: inset 0 2px 5px rgba(113, 128, 150, 0.2);
         }
+
+        /* 2. 黑白灰高级配色 (极简单色调) */
+        :root.monochrome-mode {
+            --neu-bg: #f3f4f6;
+            --screen-bg: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 50%, #e5e7eb 100%);
+            --text-main: #111827;
+            --text-sub: #6b7280;
+            --accent: #374151;
+            --bg-panel: rgba(243, 244, 246, 0.85);
+            --bg-glass: rgba(243, 244, 246, 0.65);
+            --bg-glass-header: rgba(243, 244, 246, 0.85);
+            --input-bg: #e5e7eb;
+            --border-color: #d1d5db;
+            --shadow-raised: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --shadow-pressed: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 3. 水蓝色配色 (清爽海洋调) */
+        :root.aqua-mode {
+            --neu-bg: #e0f2fe;
+            --screen-bg: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            --text-main: #0369a1;
+            --text-sub: #0284c7;
+            --accent: #00838f;
+            --bg-panel: rgba(224, 242, 254, 0.85);
+            --bg-glass: rgba(224, 242, 254, 0.65);
+            --bg-glass-header: rgba(224, 242, 254, 0.85);
+            --input-bg: #dbeafe;
+            --border-color: #7dd3fc;
+            --shadow-raised: 0 4px 20px rgba(2, 132, 199, 0.12), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --shadow-pressed: inset 0 2px 5px rgba(2, 132, 199, 0.15);
+        }
+
 
         /* --- Apple 专属附加特有交互类 --- */
         .apple-headline { font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
@@ -205,8 +252,12 @@
             will-change: transform;
         }
 
-        /* 浅色模式下的液态玻璃（防刺眼适配） */
-        :root.light-mode .glass-effect {
+                /* 所有浅彩模式下的液态玻璃（防刺眼与深色底冲突适配） */
+        :root.light-mode .glass-effect,
+        :root.morandi-mode .glass-effect,
+        :root.monochrome-mode .glass-effect,
+        :root.aqua-mode .glass-effect,
+        :root.clay-mode .glass-effect {
             background: linear-gradient(
                 135deg,
                 rgba(255, 255, 255, 0.65) 0%,
@@ -674,7 +725,49 @@
             box-shadow: var(--shadow-pressed); 
         }        
         .app-label { font-size: 12px; color: #ffffff; text-align: center; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: 500;}
-        :root.light-mode .app-label { color: #000000; text-shadow: none; }
+                /* 桌面图标与名字在所有浅彩主题下自动变为深色，防止白字看不清 */
+        :root.light-mode .app-label,
+        :root.morandi-mode .app-label,
+        :root.monochrome-mode .app-label,
+        :root.aqua-mode .app-label,
+        :root.clay-mode .app-label { color: #111827 !important; text-shadow: none !important; }
+
+        :root.light-mode .app-icon i, :root.light-mode .app-icon svg,
+        :root.morandi-mode .app-icon i, :root.morandi-mode .app-icon svg,
+        :root.monochrome-mode .app-icon i, :root.monochrome-mode .app-icon svg,
+        :root.aqua-mode .app-icon i, :root.aqua-mode .app-icon svg,
+       /* 粘土拟真模式：通透马卡龙奶油色图标 */
+:root.clay-mode .app-icon i,
+:root.clay-mode .app-icon svg {
+    filter: none !important;
+    opacity: 0.9;
+}
+
+:root.clay-mode .app-container:nth-child(4n+1) .app-icon i,
+:root.clay-mode .app-container:nth-child(4n+1) .app-icon svg { color: #fbf1d6 !important; fill: #fbf1d6 !important; } /* 奶白 */
+
+:root.clay-mode .app-container:nth-child(4n+2) .app-icon i,
+:root.clay-mode .app-container:nth-child(4n+2) .app-icon svg { color: #fad4af !important; fill: #fad4af !important; } /* 杏桃 */
+
+:root.clay-mode .app-container:nth-child(4n+3) .app-icon i,
+:root.clay-mode .app-container:nth-child(4n+3) .app-icon svg { color: #fcaeaa !important; fill: #fcaeaa !important; } /* 蜜桃粉 */
+
+:root.clay-mode .app-container:nth-child(4n+4) .app-icon i,
+:root.clay-mode .app-container:nth-child(4n+4) .app-icon svg { color: #b6e3e9 !important; fill: #b6e3e9 !important; } /* 薄荷蓝 */
+
+/* Dock 栏四个图标依次分配 */
+:root.clay-mode .dock .app-container:nth-child(1) .app-icon i,
+:root.clay-mode .dock .app-container:nth-child(1) .app-icon svg { color: #fbf1d6 !important; fill: #fbf1d6 !important; }
+:root.clay-mode .dock .app-container:nth-child(2) .app-icon i,
+:root.clay-mode .dock .app-container:nth-child(2) .app-icon svg { color: #fad4af !important; fill: #fad4af !important; }
+:root.clay-mode .dock .app-container:nth-child(3) .app-icon i,
+:root.clay-mode .dock .app-container:nth-child(3) .app-icon svg { color: #fcaeaa !important; fill: #fcaeaa !important; }
+:root.clay-mode .dock .app-container:nth-child(4) .app-icon i,
+:root.clay-mode .dock .app-container:nth-child(4) .app-icon svg { color: #b6e3e9 !important; fill: #b6e3e9 !important; }
+
+
+
+
 
         .app-icon i, .app-icon svg {
             color: #ffffff;
@@ -3556,6 +3649,92 @@ html body #chat-app.layout-qq-simple .chat-input-area {
         }
         /* --- 👆 新增结束 👆 --- */
 
+        /* ========================================== */
+/* 🌟 严格隔离版：Claymorphism 粘土拟态主题 */
+/* ========================================== */
+:root.clay-mode {
+    --apple-background: 48 97% 89%;
+    --apple-foreground: 332 100% 39%;
+    --apple-card: 48 97% 89%;
+    --apple-border: 48 97% 77%;
+    
+    --clay-pink: #f8b4d9;
+    --clay-cream: #fef3c7;
+    --clay-mint: #a7f3d0;
+    --clay-lavender: #c4b5fd;
+    --clay-lemon: #fcd34d;
+    --clay-shadow-light: rgba(255, 255, 255, 0.85);
+    --clay-shadow-dark: rgba(0, 0, 0, 0.12);
+    --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --neu-bg: #fef3c7;
+    --text-main: #6b2143;
+    --text-sub: rgba(107, 33, 67, 0.65);
+    --border-color: #fcd34d;
+    --input-bg: #fffbeb;
+    --accent: #f8b4d9;
+    --screen-bg: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f8b4d9 100%);
+    
+    --shadow-raised: 8px 8px 16px var(--clay-shadow-dark), inset 4px 4px 8px var(--clay-shadow-light), inset -2px -2px 4px var(--clay-shadow-dark);
+    --shadow-pressed: inset 4px 4px 8px var(--clay-shadow-dark), inset -4px -4px 8px var(--clay-shadow-light);
+    --ui-icon-radius: 24px;
+    --ui-bubble-radius: 24px;
+}
+
+/* 1. 仅在处于 clay-mode 时，才改变桌面控件为粘土风格 */
+:root.clay-mode body .app-icon,
+:root.clay-mode body .widget,
+:root.clay-mode body .dock {
+    background: #fffef7 !important;
+    border-radius: 24px !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 6px 6px 14px var(--clay-shadow-dark), inset 3px 3px 6px var(--clay-shadow-light), inset -2px -2px 4px var(--clay-shadow-dark) !important;
+    transition: all 0.3s var(--clay-spring) !important;
+}
+
+:root.clay-mode body .app-icon:active,
+:root.clay-mode body .widget:active {
+    transform: scaleX(1.05) scaleY(0.9) translateY(2px) !important;
+    box-shadow: 2px 2px 4px var(--clay-shadow-dark), inset 6px 6px 12px rgba(0, 0, 0, 0.1), inset -2px -2px 4px var(--clay-shadow-light) !important;
+}
+
+/* 粘土气泡布局 - 不使用 !important，确保切换其他布局时能正常覆盖 */
+html body #chat-app.layout-clay { background: #fef3c7; }
+html body #chat-app.layout-clay::before { display: none; }
+html body #chat-app.layout-clay .chat-header { background: rgba(254, 243, 199, 0.9); border-bottom: 2px solid #fde68a; }
+html body #chat-app.layout-clay .chat-input-area { background: #fffbeb; border-top: 2px solid #fde68a; }
+html body #chat-app.layout-clay .chat-input { 
+    background: #ffffff; border-radius: 16px; border: 2px solid #fde68a;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.06), inset -3px -3px 6px rgba(255,255,255,0.8); 
+    color: #6b2143;
+}
+
+html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    border-radius: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.08), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 1;
+}
+
+html body #chat-app.layout-clay #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    background: #ffffff; color: #6b2143; border-bottom-left-radius: 6px;
+}
+
+html body #chat-app.layout-clay #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
+    background: #f8b4d9; color: #4a0e2e; border-bottom-right-radius: 6px;
+}
+
+html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble):active {
+    transform: scaleX(1.05) scaleY(0.92) translateY(2px);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+}
+
+
+
+
+
+
 
 
 
@@ -3780,7 +3959,6 @@ html body #chat-app.layout-qq-simple .chat-input-area {
 
 
                     <!-- 第一页常用 APP -->
-                    <div class="app-container" onclick="openApp('memory-app')" data-drag-id="sys-memory"><div class="app-icon" style="background: linear-gradient(135deg, rgba(225, 205, 215, 0.4) 0%, rgba(195, 180, 190, 0.1) 100%);"><i class="fas fa-book"></i></div><div class="app-label">记忆书</div></div>
                     <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
                     <div class="app-container" onclick="changeHomeWallpaper()" data-drag-id="sys-wallpaper"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
                     <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
@@ -4300,6 +4478,8 @@ html body #chat-app.layout-qq-simple .chat-input-area {
     <option value="morandi">莫兰迪配色 (Morandi)</option>
     <option value="monochrome">黑白灰高级 (Monochrome)</option>
     <option value="aqua">水蓝色 (Aqua)</option>
+    <option value="clay">粘土拟态 Q弹 (Claymorphism)</option>
+
 </select>
 
                         </div>
@@ -5630,10 +5810,11 @@ html body #chat-app.layout-qq-simple .chat-input-area {
                         <i class="fas fa-check-circle tl-check" id="check-imessage2"></i>
                     </div>
 
-                                        <!-- Glass Liquid 玻璃液态 -->
+                                                            <!-- Glass Liquid 玻璃液态 -->
                     <div class="theme-layout-card" onclick="applyChatLayout('liquid')">
                         <div class="tl-title">Glass Liquid 玻璃液态</div>
-                        <div class="tl-preview" style="background: url('https://img.cdn1.vip/i/6a56edff42574_1784081919.webp') center/cover;">
+                        <div class="tl-preview" style="background: url('https://img.cdn1.vip/i/6a64ab6d5dcc8_1784982381.webp') center/cover;">
+
                             <div class="tl-msg char" style="border-radius: 22px 22px 22px 4px; background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05)); border: 0.5px solid rgba(255,255,255,0.3); color: #fff; backdrop-filter: blur(10px); box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.2);">水滴状液态拟态气泡。</div>
                             <div class="tl-msg user" style="border-radius: 22px 22px 4px 22px; background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05)); border: 0.5px solid rgba(255,255,255,0.3); color: #fff; backdrop-filter: blur(10px); box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.2);">清透折射，极其精致。</div>
                         </div>
@@ -5649,6 +5830,18 @@ html body #chat-app.layout-qq-simple .chat-input-area {
     </div>
     <i class="fas fa-check-circle tl-check" id="check-qq-simple"></i>
 </div>
+
+                    <!-- 👇 新增：粘土拟态气泡主题卡片 👇 -->
+                    <div class="theme-layout-card" onclick="applyChatLayout('clay')">
+                        <div class="tl-title">Claymorphism 粘土拟态 (Q弹物理)</div>
+                        <div class="tl-preview" style="background: #fef3c7; padding: 12px; border-radius: 16px;">
+                            <div class="tl-msg char" style="background:#ffffff; color:#6b2143; border-radius:18px; border-bottom-left-radius:4px; box-shadow: 4px 4px 8px rgba(0,0,0,0.06), inset 2px 2px 4px rgba(255,255,255,0.8); border:1.5px solid #fff;">你好，我是 Q 弹的粘土气泡~</div>
+                            <div class="tl-msg user" style="background:#f8b4d9; color:#4a0e2e; border-radius:18px; border-bottom-right-radius:4px; box-shadow: 4px 4px 8px rgba(0,0,0,0.06), inset 2px 2px 4px rgba(255,255,255,0.8); border:1.5px solid #fff;">点我会有草莓糖般的压扁回弹效果哦！</div>
+                        </div>
+                        <i class="fas fa-check-circle tl-check" id="check-clay"></i>
+                    </div>
+                    <!-- 👆 新增结束 👆 -->
+
 
 
 
@@ -6609,10 +6802,12 @@ html body #chat-app.layout-qq-simple .chat-input-area {
         temperature: 0.7,
         contextLength: 25,
         modelList: [], 
-        theme: 'dark', 
+        theme: 'clay',
+
         // 👇 将这一行的链接替换为新的壁纸链接
-        homeWallpaper: 'https://img.cdn1.vip/i/6a56edff42574_1784081919.webp', 
-        wallpaperMode: 'dark', 
+        homeWallpaper: 'https://img.cdn1.vip/i/6a64ab6d5dcc8_1784982381.webp', 
+        wallpaperMode: 'light',
+
         portraitLock: false,
         enableIsland: true,
         uiZoom: 1,
@@ -6623,6 +6818,9 @@ html body #chat-app.layout-qq-simple .chat-input-area {
         enableMcp: false,         
         mcpUrl: ""                
     };
+
+    
+
 
 
 
@@ -6833,20 +7031,22 @@ html body #chat-app.layout-qq-simple .chat-input-area {
         }
     }
 
-        function toggleTheme() {
+            function toggleTheme() {
         globalAPI.theme = document.getElementById('global-theme').value;
         
-        // 移除所有特定的主题类
-        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode');
+        // 👇 移除类名数组里加上 'clay-mode'
+        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode', 'clay-mode');
         
         // 根据选择追加对应主题
         if (globalAPI.theme === 'light') document.documentElement.classList.add('light-mode');
         else if (globalAPI.theme === 'morandi') document.documentElement.classList.add('morandi-mode');
         else if (globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
         else if (globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
+        else if (globalAPI.theme === 'clay') document.documentElement.classList.add('clay-mode'); // 👈 新增这行
         
         localStorage.setItem('ai_os_global_api', JSON.stringify(globalAPI));
     }
+
 
 
         // ！！！新增的控制函数 ！！！
@@ -7383,12 +7583,14 @@ html body #chat-app.layout-qq-simple .chat-input-area {
         }
 
         if (globalAPI.wallpaperMode) applyStatusBarColor(globalAPI.wallpaperMode);
-                         // 恢复加载主题
-        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode');
+                                 // 恢复加载主题
+        document.documentElement.classList.remove('light-mode', 'morandi-mode', 'monochrome-mode', 'aqua-mode', 'clay-mode');
         if(globalAPI.theme === 'light') document.documentElement.classList.add('light-mode');
         else if(globalAPI.theme === 'morandi') document.documentElement.classList.add('morandi-mode');
         else if(globalAPI.theme === 'monochrome') document.documentElement.classList.add('monochrome-mode');
         else if(globalAPI.theme === 'aqua') document.documentElement.classList.add('aqua-mode');
+        else if(globalAPI.theme === 'clay') document.documentElement.classList.add('clay-mode'); // 👈 新增这行
+
         
 
 
@@ -7671,6 +7873,11 @@ document.getElementById('chat-app').style.setProperty('--chat-avatar', `url('${c
         html body #chat-app.layout-imessage2 #chat-container .msg.char:not(.sticker-bubble):active::after { background: ${char.charColor} !important; filter: brightness(0.85); }
         html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.sticker-bubble):active { background-color: ${char.userColor} !important; filter: brightness(0.85); }
         html body #chat-app.layout-imessage2 #chat-container .msg.user:not(.sticker-bubble):active::after { background: ${char.userColor} !important; filter: brightness(0.85); }
+        html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble):active {
+    transform: scaleX(1.05) scaleY(0.92) translateY(2px) !important;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8) !important;
+}
+
         
         `;
 
