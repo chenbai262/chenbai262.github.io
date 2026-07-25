@@ -3539,6 +3539,24 @@ html body #chat-app.layout-qq-simple .chat-input-area {
     text-shadow: none !important;
 }
 
+        /* --- 👇 新增：底部常驻栏 (Dock) 独立控制与隐藏逻辑 👇 --- */
+        html body .dock.glass-effect {
+            backdrop-filter: blur(var(--ui-dock-blur, 25px)) saturate(180%) brightness(1.1) contrast(1.05) !important;
+            -webkit-backdrop-filter: blur(var(--ui-dock-blur, 25px)) saturate(180%) brightness(1.1) contrast(1.05) !important;
+        }
+
+        /* 隐藏背景板：强制底板透明，剥夺所有的阴影、模糊和边框，但里面的图标完全不受影响 */
+        html body.hide-dock-bg .dock,
+        html body.hide-dock-bg .dock.glass-effect {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+        /* --- 👆 新增结束 👆 --- */
+
+
 
 
 
@@ -4746,6 +4764,20 @@ html body #chat-app.layout-qq-simple .chat-input-area {
                             <label class="switch"><input type="checkbox" id="ui-liquid-icon-toggle" checked onchange="updateUIParam('liquidIcon', this.checked)"><span class="slider"></span></label>
                         </div>
                     </div>
+                                        <!-- 👇 新增：底部常驻栏 (Dock) 专属设置 👇 -->
+                    <div class="settings-group-title">底部常驻栏 (Dock) 设置</div>
+                    <div class="settings-group">
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                            <span class="setting-label">显示背景板 (隐藏时不影响图标)</span>
+                            <label class="switch"><input type="checkbox" id="ui-dock-bg-toggle" checked onchange="updateUIParam('dockBgVisible', this.checked)"><span class="slider"></span></label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">背景板模糊度: <span id="val-dock-blur">25</span>px</span>
+                            <input type="range" id="ui-dock-blur-input" min="0" max="50" value="25" class="setting-input" oninput="updateUIParam('dockBlur', this.value)">
+                        </div>
+                    </div>
+                    <!-- 👆 新增结束 👆 -->
+
 
                     <!-- 👇 新增：图标调节可视化面板 👇 -->
                     <div class="settings-group-title" style="margin-top: 20px;">桌面图标与组件预览</div>
@@ -10204,14 +10236,16 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
                  // ==========================================
     // 🎨 全局美化中心核心逻辑 (强力防阻塞版)
     // ==========================================
-        let uiSettings = { 
+            let uiSettings = { 
         iconRadius: 20, glassBlur: 25, iconScale: 0.85, bubbleRadius: 20, bubbleOpacity: 0.92, 
         cssBubble: "", cssInputBar: "", cssLayout: "", liquidTime: true, timeColor: "#ffffff", 
         liquidIcon: true, customIconColor: false, iconBgColor: "#ffffff", iconBgOpacity: 0.15, 
         iconColor: "#ffffff", iconBorderColor: "#ffffff", timeSize: 56, timeWeight: 200,
         timeOpacity: 1.0, iconShadow: true, hideTimePanel: true,
-        customBubbleBorder: false, bubbleBorderColor: "#000000" /* 👈 新增这两个 */
+        customBubbleBorder: false, bubbleBorderColor: "#000000",
+        dockBgVisible: true, dockBlur: 25 // 👈 新增这两个参数用于常驻栏
     };
+
 
 
     function hexToRgba(hex, opacity) {
@@ -10297,6 +10331,14 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
                 if (prevTimeTextEl) prevTimeTextEl.classList.add('solid-color');
             }
         }
+                // 👇 追加：底部常驻栏状态应用 👇
+        root.style.setProperty('--ui-dock-blur', `${uiSettings.dockBlur}px`);
+        if (uiSettings.dockBgVisible === false) {
+            document.body.classList.add('hide-dock-bg');
+        } else {
+            document.body.classList.remove('hide-dock-bg');
+        }
+
 
         // ======= 悬浮球样式动态覆盖 =======
         root.style.setProperty('--at-size', `${uiSettings.atSize || 60}px`);
@@ -10364,6 +10406,9 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
 
         if(typeof uiSettings.bubbleRadius === 'undefined') uiSettings.bubbleRadius = 20;
         if(typeof uiSettings.glassBlur === 'undefined') uiSettings.glassBlur = 25;
+                if(typeof uiSettings.dockBgVisible === 'undefined') uiSettings.dockBgVisible = true;
+        if(typeof uiSettings.dockBlur === 'undefined') uiSettings.dockBlur = 25;
+
 
         // 👑 关键修复：在此处立马同步还原 UI！不等待下面的代码，确保退出重进数据稳如泰山！
         restoreUIInputs();
@@ -10429,6 +10474,11 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
         const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
         const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
         const setCheck = (id, checked) => { const el = document.getElementById(id); if(el) el.checked = checked; };
+                // 👇 追加：常驻栏回显
+        setCheck('ui-dock-bg-toggle', uiSettings.dockBgVisible);
+        setVal('ui-dock-blur-input', uiSettings.dockBlur); 
+        setText('val-dock-blur', uiSettings.dockBlur);
+
 
         setVal('ui-time-size-input', uiSettings.timeSize); setText('val-time-size', uiSettings.timeSize);
         setVal('ui-time-weight-input', uiSettings.timeWeight); setText('val-time-weight', uiSettings.timeWeight);
@@ -14911,6 +14961,15 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         applyUserInjectedCSS();
     }
 
+            // 👇 强力修复：CSS 独立覆盖引擎，绝不干扰其他 APP 的气泡，同时具备上帝级统治力！
+    function updateCustomCSS() {
+        if(typeof uiSettings === 'undefined') window.uiSettings = {};
+        uiSettings.cssBubble = document.getElementById('css-bubble-input') ? document.getElementById('css-bubble-input').value : '';
+        uiSettings.cssInputBar = document.getElementById('css-inputbar-input') ? document.getElementById('css-inputbar-input').value : '';
+        uiSettings.cssLayout = document.getElementById('css-layout-input') ? document.getElementById('css-layout-input').value : '';
+        applyUserInjectedCSS();
+    }
+
     function applyUserInjectedCSS() {
         let styleEl = document.getElementById('user-injected-css');
         if (!styleEl) {
@@ -14920,26 +14979,60 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         }
         
         let customCSS = '';
+        // 核心提权 ID，赋予无可匹敌的系统最高权重
+        const rootId = 'html body #chat-app#chat-app#chat-app';
         
         const process = (css, defaultSelector) => {
             if (!css || !css.trim()) return '';
+            
             if (css.includes('{')) {
-                // 如果用户手写了选择器大括号，利用 css嵌套/父选择器锁定它只在 chat-app 下生效
-                return `\nhtml body #chat-app { ${css} }\n`;
+                // 👑 【上帝模式】：如果用户自己写了选择器和大括号
+                // 1. 无视一切，给大括号里的每一行属性强行注入 !important
+                let text = css.replace(/([^:;{}]+:[^;{}!]+)(?:!important)?\s*;/g, "$1 !important;");
+                
+                // 2. 将所有的选择器精准切开，在其头部暴力拼接 3 重 ID 强行提权
+                text = text.replace(/(^|\})([^{}]+)(\{)/g, function(match, brace, selectors, openBrace) {
+                    if (selectors.trim().startsWith('@')) return match; // 避开 @media 等特殊指令
+                    
+                    let newSelectors = selectors.split(',').map(sel => {
+                        sel = sel.trim();
+                        if (!sel) return '';
+                        // 如果用户已经手写了最高权限，则不重复加
+                        if (sel.includes('#chat-app')) return sel;
+                        return `${rootId} ${sel}`;
+                    }).join(', ');
+                    
+                    return `${brace}\n${newSelectors} ${openBrace}`;
+                });
+                return `\n/* 带有自定义选择器的超级注入 */\n${text}\n`;
+                
             } else {
-                return `\n${defaultSelector} { ${css} !important; }\n`;
+                // 👑 【常规模式】：如果用户只写了属性，直接注入到默认选择器并加 !important
+                let rules = css.split(';').filter(r => r.trim());
+                let importantRules = rules.map(r => {
+                    let clean = r.trim();
+                    if (!clean.includes('!important')) {
+                        clean += ' !important';
+                    }
+                    return clean;
+                }).join('; ') + ';';
+                
+                return `\n/* 纯属性超级注入 */\n${defaultSelector} { ${importantRules} }\n`;
             }
         };
 
-        // 强行增加权重，只影响真正短信 App 里的气泡，绝不干扰其他地方！
-        customCSS += process(uiSettings.cssBubble, 'html body #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble)');
+        // 强行排除分享卡片和图片气泡，避免误伤
+        const msgExclusions = ':not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.health-share-bubble):not(.survey-share-bubble):not(.shop-share-bubble)';
         
-        customCSS += process(uiSettings.cssInputBar, 'html body #chat-app .chat-input-area, html body #chat-app .chat-input');
-        
-        customCSS += process(uiSettings.cssLayout, 'html body #chat-app');
+        // 分发三路权限
+        customCSS += process(uiSettings.cssBubble, `${rootId} #chat-container .msg${msgExclusions}`);
+        customCSS += process(uiSettings.cssInputBar, `${rootId} .chat-input-area, ${rootId} .chat-input`);
+        customCSS += process(uiSettings.cssLayout, rootId);
         
         styleEl.innerHTML = customCSS;
     }
+
+
 
 
 
