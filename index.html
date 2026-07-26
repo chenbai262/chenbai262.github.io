@@ -1517,7 +1517,7 @@ input:checked + .slider:before {
 .x-share-card .xs-footer { font-size: 12px; opacity: 0.8; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; display: flex; gap: 18px; font-weight: bold;}
 :root.light-mode .x-share-card .xs-footer { border-top: 0.5px solid rgba(0,0,0,0.1); }
 
-        }
+        
 
         /* 2. 真正的 iOS 独立播放器卡片 - 拟态/液态高级毛玻璃 */
         .ios-music-widget {
@@ -3719,14 +3719,39 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
-* --- 👇 修复 APK 输入框被压扁、被遮盖的问题 👇 --- */
-        .chat-header, .chat-input-area, .contacts-header, .settings-header, .novel-top-bar, .novel-bottom-tab {
-            flex-shrink: 0 !important;
+        /* --- 👇 聊天框 iOS 键盘适配与多选样式 👇 --- */
+        .chat-input, .setting-input, .modal-input, .modal-textarea { 
+            font-size: 16px !important; /* 彻底防止 iOS Safari 点击输入框自动放大页面 */
         }
-        .phone {
-            min-height: 380px !important; /* 防止容器被输入法过度压缩导致页面崩坏 */
+        
+        /* 强力接管所有主题、所有缩放尺寸下的底部输入栏 padding，消除过厚的大黑边和冗余空白 */
+        html body .app-view .chat-input-area,
+        html body #chat-app[class*="layout-"] .chat-input-area,
+        html body #chat-app[class*="chat-size-"] .chat-input-area,
+        html body #group-chat-app .chat-input-area,
+        html body #heart-chat-app .chat-input-area,
+        html body .app-view .novel-bottom-tab { 
+            padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important; 
         }
-        /* --- 👆 修复结束 👆 --- */
+        
+        /* 面板的底部安全距离 */
+        html body #tools-panel, 
+        html body #sticker-panel,
+        html body #multi-select-bar { 
+            padding-bottom: calc(15px + env(safe-area-inset-bottom)) !important; 
+        }
+
+        .msg-checkbox {
+            display: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--text-sub);
+            align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+            margin: auto 5px; transition: all 0.2s;
+        }
+        .msg-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+        .msg-checkbox.checked::after { content: '✓'; color: #000; font-size: 14px; font-weight: bold; }
+        #chat-container.multi-select-active .msg-checkbox { display: flex; animation: fadeIn 0.2s; }
+        #chat-container.multi-select-active .msg-avatar, #chat-container.multi-select-active .msg-content-box { pointer-events: none; }
+        /* --- 👆 适配结束 👆 --- */
+
 
 
                 /* ========================================== */
@@ -4131,6 +4156,13 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                     <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
                     <div class="app-container" onclick="openApp('wardrobe-app')" data-drag-id="sys-wardrobe"><div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-tshirt" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">衣橱</div></div>
                     <div class="app-container" onclick="openApp('home-app')" data-drag-id="sys-home"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 200, 150, 0.4) 0%, rgba(255, 150, 100, 0.1) 100%);"><i class="fas fa-home" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">家庭空间</div></div>
+                    <div class="app-container" onclick="openApp('memory-app')" data-drag-id="sys-memory">
+    <div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);">
+        <i class="fas fa-brain" style="color: rgba(255,255,255,0.95);"></i>
+    </div>
+    <div class="app-label">记忆书</div>
+</div>
+
                 </div>
 
             </div>
@@ -4391,6 +4423,11 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                             <div class="tool-icon-wrap"><i class="fas fa-trash-alt" style="color: #e74c3c;"></i></div>
                             <span>清空对话</span>
                         </div>
+                         <!-- 👇 追加多选按钮 👇 -->
+                        <div class="tool-item" onclick="toggleMultiSelectMode(); toggleToolsPanel();">
+                            <div class="tool-icon-wrap"><i class="fas fa-check-square" style="color: #34495e;"></i></div>
+                            <span>批量删除</span>
+                        </div>
                               <!-- 👇 新增：瞅瞅功能 👇 -->
 <div class="tool-item" onclick="peekCharState(); toggleToolsPanel();">
     <div class="tool-icon-wrap"><i class="fas fa-eye" style="color: #e84393;"></i></div>
@@ -4424,7 +4461,8 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                               
 
 <!-- 聊天输入框 -->
-<input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels()">
+<!-- 聊天输入框 -->
+<input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels(); setTimeout(scrollToBottom, 300);">
 
 <!-- 右侧：线框表情与加号 -->
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="chat-icon-btn" style="font-size: 26px; width: 1em; height: 1em; margin-left: 10px; color: var(--text-sub); flex-shrink: 0;" onclick="toggleStickerPanel()" title="表情包">
@@ -4441,13 +4479,18 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     <line x1="8" y1="12" x2="16" y2="12"></line>
 </svg>
 
+
 <!-- 发送按钮 -->
 <i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 8px;" onclick="sendMessage()" title="仅发送消息"></i>
 
-
-
+                </div>
+                <!-- 多选模式下的操作栏 -->
+                <div id="multi-select-bar" class="glass-effect" style="display: none; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); justify-content: space-between; align-items: center; position: relative; z-index: 10; border-top: 0.5px solid var(--border-color); background: var(--bg-glass-header); flex-shrink: 0;">
+                    <div style="color: var(--text-sub); cursor: pointer; font-size: 16px; padding: 10px;" onclick="cancelMultiSelect()">取消</div>
+                    <div style="color: #ff453a; cursor: pointer; font-weight: bold; font-size: 16px; padding: 10px;" onclick="confirmMultiDelete()">删除已选</div>
                 </div>
             </div> <!-- 🚨就是这个闭合标签！它负责把聊天APP关上，千万不能漏🚨 -->
+
 
                                    <!-- ========================================== -->
             <!-- 以下为完全清理、修复重构后的所有 APP 与弹窗 (绝无重复，治愈一切BUG) -->
@@ -4622,7 +4665,36 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
 
                             
 
-                    <div class="settings-group-title" style="margin-top: 30px;">AI 引擎设置</div>
+                    <!-- 👇 新增：紧密联系/向量数据库配置 👇 -->
+<div class="settings-group-title" style="margin-top: 30px;"><i class="fas fa-brain"></i> 紧密联系引擎 (向量化与知识库)</div>
+<div class="settings-group">
+    <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; background: rgba(135,192,202,0.1); border: 1px solid var(--accent);">
+        <span class="setting-label" style="color: var(--accent);">开启记忆向量化检索 (RAG)</span>
+        <label class="switch">
+            <input type="checkbox" id="global-vector-toggle" onchange="saveVectorConfig()">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="setting-item">
+        <span class="setting-label">Embedding 接口地址 (URL)</span>
+        <input type="text" id="embed-url" class="setting-input" placeholder="例如: https://api.siliconflow.cn/v1/embeddings" onchange="saveVectorConfig()">
+    </div>
+    <div class="setting-item">
+        <span class="setting-label">Embedding API 密钥 (Key)</span>
+        <input type="password" id="embed-key" class="setting-input" placeholder="sk-..." onchange="saveVectorConfig()">
+    </div>
+    <div class="setting-item" style="flex-direction: row; align-items: center; gap: 10px;">
+        <div style="flex:1;">
+            <span class="setting-label">Embedding 模型名称 (Model)</span>
+            <select id="embed-model" class="setting-select" style="margin-top:8px;" onchange="saveVectorConfig()"></select>
+        </div>
+        <i class="fas fa-sync-alt" id="embed-model-sync-btn" style="color:var(--accent); font-size:20px; padding:10px; cursor:pointer;" onclick="fetchEmbedModels()" title="拉取可用模型"></i>
+    </div>
+</div>
+<!-- 👆 新增结束 👆 -->
+
+
+
                     <div class="settings-group">
                         <!-- 👇 新增：API 多节点（坑位）管理槽位 👇 -->
                         <div class="setting-item" style="flex-direction: row; align-items: center; gap: 8px; background: rgba(135,192,202,0.1); border-bottom: 2px solid var(--accent);">
@@ -4692,14 +4764,18 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                                 <option value="100">100 条 (极致)</option>
                             </select>
                         </div>
-                        <div class="setting-item">
+                                                <div class="setting-item">
                             <span class="setting-label" style="display:flex; justify-content:space-between;"><span>连发消息上限</span><span id="multi-msg-val" style="color:var(--accent);">1</span></span>
                             <input type="range" id="global-multi-msg" min="1" max="10" value="1" style="margin-top:10px; accent-color: var(--accent);" oninput="document.getElementById('multi-msg-val').innerText=this.value">
                         </div>
-                        <div class="save-btn" style="margin: 15px; padding: 12px; background: #333; color: #fff;" onclick="saveGlobalAPI()">保存 API 设置</div>
+                        <div style="display: flex; gap: 10px; margin: 15px;">
+                            <div class="save-btn" style="flex: 1; margin: 0; padding: 12px; background: #333; color: #fff; font-size: 14px;" onclick="saveGlobalAPI()"><i class="fas fa-save"></i> 保存设置</div>
+                            <div class="save-btn" style="flex: 1; margin: 0; padding: 12px; background: rgba(135,192,202,0.2); color: var(--accent); border: 1px solid var(--accent); font-size: 14px;" onclick="testGlobalAPI()"><i class="fas fa-wifi"></i> 测试连通性</div>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
                         <!-- 我的人设 App -->
             <div id="persona-app" class="app-view scrollable">
@@ -4729,17 +4805,25 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
             </div>
 
 
-                        <!-- 记忆书 App -->
-            <div id="memory-app" class="app-view scrollable">
-                <div class="memory-app-header glass-effect">
-                    <div style="display: flex; align-items: center;">
-                        <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
-                        <span id="memory-book-title">专属记忆书</span>
-                    </div>
-                    <i class="fas fa-pen-nib" style="font-size: 20px; cursor: pointer; color: var(--accent);" onclick="openMemoryModal()"></i>
-                </div>
-                <div class="memory-app-list" id="memory-book-list"></div>
-            </div>
+                        <div id="memory-app" class="app-view scrollable">
+    <div class="memory-app-header glass-effect">
+        <div style="display: flex; align-items: center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span id="memory-book-title">专属记忆书</span>
+        </div>
+        <i class="fas fa-pen-nib" style="font-size: 20px; cursor: pointer; color: var(--accent);" onclick="openMemoryModal()"></i>
+    </div>
+    <!-- 👇 新增：记忆书顶部 Tab 👇 -->
+    <div class="status-tabs" style="margin: 15px 20px;">
+        <div class="tab-btn active" onclick="switchMemoryTab('normal', this)">常规记忆</div>
+        <div class="tab-btn" onclick="switchMemoryTab('vector', this)">紧密联系(知识库)</div>
+    </div>
+    <!-- 常规记忆列表 -->
+    <div class="memory-app-list" id="memory-book-list"></div>
+    <!-- 👇 新增：向量化记忆列表 (默认隐藏) 👇 -->
+    <div class="memory-app-list" id="vector-memory-list" style="display:none;"></div>
+</div>
+
 
             <!-- 音乐播放器 App -->
             <div id="music-app" class="app-view">
@@ -4846,6 +4930,10 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                 <div class="action-sheet" onclick="event.stopPropagation()">
                     <div class="action-sheet-title" id="sheet-preview">选择操作</div>
                                       <div class="action-sheet-btn" onclick="handleSheetAction('recall')"><i class="fas fa-undo-alt"></i> 撤回消息</div>
+                                      <div class="action-sheet-btn" onclick="handleSheetAction('extract_vector')">
+    <i class="fas fa-brain"></i> 提取为紧密联系 (向量化)
+</div>
+
 
                     <div class="action-sheet-btn" onclick="handleSheetAction('quote')"><i class="fas fa-quote-left"></i> 引用消息</div>
                     <div class="action-sheet-btn" onclick="handleSheetAction('retry')"><i class="fas fa-redo"></i> 重新诉说 (重说)</div>
@@ -8456,8 +8544,13 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         let isLongPress = false;
 
                 const handleStart = (e) => {
+                     // 👇 屏蔽多选模式下的长按操作
+            if (document.getElementById('chat-container').classList.contains('multi-select-active')) return;
+
+
             // 👇 新增这行：屏蔽AI图片的自定义长按事件，让给系统原生的长按保存弹窗
             if(e.target && e.target.tagName === 'IMG' && e.target.classList.contains('chat-upload-img')) return;
+            
 
             isLongPress = false;
             const touch = e.touches ? e.touches[0] : e;
@@ -8519,8 +8612,34 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
 
         contentBox.appendChild(msgRowWrap); 
         // 👆 修改结束
+          // --- 👇 多选复选框注入逻辑 👇 ---
+        const checkbox = document.createElement('div');
+        checkbox.className = 'msg-checkbox';
+        checkbox.dataset.index = myIndex;
+        checkbox.onclick = (e) => {
+            e.stopPropagation();
+            checkbox.classList.toggle('checked');
+        };
+        // 在多选模式下点击整个气泡也可勾选
+        wrapper.onclick = (e) => {
+            if (document.getElementById('chat-container').classList.contains('multi-select-active')) {
+                e.preventDefault();
+                e.stopPropagation();
+                checkbox.classList.toggle('checked');
+            }
+        };
 
-        if (role === 'char') { wrapper.appendChild(avatarDiv); wrapper.appendChild(contentBox); } else { wrapper.appendChild(contentBox); wrapper.appendChild(avatarDiv); }
+        if (role === 'char') { 
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(avatarDiv); 
+            wrapper.appendChild(contentBox); 
+        } else { 
+            checkbox.style.marginRight = 'auto'; // 发送者的框靠最左
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(contentBox); 
+            wrapper.appendChild(avatarDiv); 
+        }
+
 
         let showTime = true;
         const lastTimeNodes = container.querySelectorAll('.msg-time-center');
@@ -8941,24 +9060,48 @@ if (mapLocsStr) {
     builtInRules += `\n【地图系统联动】：当前城市地图上已知的坐标点有：${mapLocsStr}。如果你在聊天中描述自己出门、改变了位置，请在回复中独立输出 $$LOC_UPDATE:地点名称$$ ，系统会将你的角色图标在地图雷达上实时移动到该地点。`;
 }
 
-        // 👆 新增结束
+        
 
 
-        // 👇 修复：将所有被遗漏的功能块、世界书规则 (builtInRules) 全部拼接回来
-let finalSystemContent = activeChar.prompt 
-    + personaBlock + memoryInjectBlock + meetInjectBlock + statusInjectBlock 
-    + envInjectBlock + mcpInjectBlock + petInjectBlock + musicInjectBlock 
-    + drawInjectBlock + builtInRules + momentsInjectBlock + homeInjectBlock 
-    + wardrobeInjectBlock + screenTimeInjectBlock + relationInjectBlock 
-    + detailStatusRules;
+                        // ------------------ 👇 新增：RAG 向量检索拦截 👇 ------------------
+        const lastUserMsgForRAG = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
+        let ragInjectBlock = "";
+        
+        // 🚨 修复：直接读取页面开关状态，避免 vectorConfig 未定义导致报错卡死
+    const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
+   
+        if (lastUserMsg && isVectorEnabled) {
+            const ti = document.getElementById('typing-indicator');
+            if (ti) { ti.innerText = '正在脑海中检索相关记忆...'; ti.style.display = 'block'; }
+            try {
+                // 确保方法存在才调用
+                if (typeof retrieveRelatedMemories === 'function') {
+                    ragInjectBlock = await retrieveRelatedMemories(lastUserMsg.replace(/<[^>]*>/g, ''));
+                }
+            } catch(e) {
+                console.error("记忆检索异常跳过:", e);
+            }
+            if (ti) ti.innerText = '对方正在输入...'; 
+        }
+        // ------------------ 👆 RAG 检索结束 👆 ------------------
 
-// 👇 强力防“流口水/长篇大论”补丁：在极长的系统提示词最末尾，打下最高权重的思维钢印
-finalSystemContent += `\n\n【最高约束 - 绝对指令】：
+        // 👇 修复：将所有被遗漏的功能块、世界书规则 (builtInRules) 全部拼接回来 (加入了 ragInjectBlock)
+        let finalSystemContent = activeChar.prompt 
+            + personaBlock + memoryInjectBlock + meetInjectBlock + statusInjectBlock 
+            + envInjectBlock + mcpInjectBlock + petInjectBlock + musicInjectBlock 
+            + drawInjectBlock + builtInRules + momentsInjectBlock + homeInjectBlock 
+            + wardrobeInjectBlock + screenTimeInjectBlock + relationInjectBlock 
+            + ragInjectBlock 
+            + detailStatusRules;
+
+        // 👇 强力防“流口水/长篇大论”补丁：在极长的系统提示词最末尾，打下最高权重的思维钢印
+        finalSystemContent += `\n\n【最高约束 - 绝对指令】：
 1. 绝对禁止长篇大论、禁止总结陈词、禁止AI助手的机械感！
 2. 你的回复必须像真实人类用手机发消息一样，极其简短、口语化、接地气！
 3. 严格遵守上面的格式代码要求，不要自己瞎编格式！`;
 
-let apiMessages = [{ role: "system", content: finalSystemContent }];
+        let apiMessages = [{ role: "system", content: finalSystemContent }];
+
 
 
 
@@ -9704,7 +9847,17 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
             loadChatHistory(); 
             triggerAIResponse(); 
         }
+        else if (action === 'extract_vector') {
+    const text = getMsgPreview(targetMsg);
+    sysAlert("处理中", "正在将该对话转化为高维向量并存入记忆...");
+    // 异步调用转向量并存入库
+    vectorizeAndStore(text).then(() => {
+        sysAlert("成功", "已成功转化为紧密记忆！聊天时AI会自动感知。");
+    });
+}
+
         selectedMsgIndex = null;
+        
     }
     function cancelQuote() { quotedMessageText = null; document.getElementById('quote-bar').style.display = 'none'; }
 
@@ -9805,17 +9958,66 @@ else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
         `).join(''); 
     }
 
-    // 新增：删除单条记忆的函数
+        // 新增：删除单条记忆的函数
     async function deleteMemoryItem(index) {
         const confirmDel = await sysConfirm("删除记忆", "确定要彻底删除这条记忆吗？\n删除后 AI 将无法再回想起这件事。");
         if(confirmDel) {
             const key = `ai_os_memories_${activeCharId}`;
             let mems = JSON.parse(localStorage.getItem(key) || '[]');
-            mems.splice(index, 1); // 删掉选中的那条
+            mems.splice(index, 1); 
             localStorage.setItem(key, JSON.stringify(mems));
-            renderMemoryBook(); // 重新渲染列表
+            renderMemoryBook(); 
         }
     }
+
+    // 新增：切换记忆书 Tab 的逻辑
+    window.switchMemoryTab = function(tabId, btnEl) {
+        document.querySelectorAll('#memory-app .tab-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        
+        if (tabId === 'normal') {
+            document.getElementById('memory-book-list').style.display = 'flex';
+            document.getElementById('vector-memory-list').style.display = 'none';
+            renderMemoryBook();
+        } else {
+            document.getElementById('memory-book-list').style.display = 'none';
+            document.getElementById('vector-memory-list').style.display = 'flex';
+            renderVectorMemories();
+        }
+    };
+
+    // 新增：渲染向量记忆列表
+    window.renderVectorMemories = function() {
+        const list = document.getElementById('vector-memory-list');
+        if (!list) return;
+        
+        let charVectors = vectorDatabase.filter(v => v.charId === activeCharId || v.charId === 'all');
+        
+        if (charVectors.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding-top:40px;">暂无紧密联系记忆。<br>长按聊天气泡可提取并存入向量库。</p>';
+            return;
+        }
+
+        list.innerHTML = charVectors.map((v, index) => `
+            <div class="memory-card" style="border-left-color: #9b59b6;">
+                <div class="ai-badge" style="background:rgba(155,89,182,0.1); color:#9b59b6; right: 35px;">向量记忆 (${v.source || '提取'})</div>
+                <i class="fas fa-trash-alt" style="position: absolute; top: 12px; right: 12px; color: #ff453a; opacity: 0.8; cursor: pointer; font-size: 14px; padding: 5px;" onclick="deleteVectorMemory('${v.id}')"></i>
+                <p>${v.text}</p>
+                <div class="time">${v.time}</div>
+            </div>
+        `).join('');
+    };
+
+    // 新增：删除向量记忆
+    window.deleteVectorMemory = async function(id) {
+        const confirmDel = await sysConfirm("删除向量记忆", "确定要彻底删除这条紧密联系吗？\n删除后 AI 将无法在聊天中检索到它。");
+        if(confirmDel) {
+            vectorDatabase = vectorDatabase.filter(v => v.id !== id);
+            localStorage.setItem('ai_os_vector_db', JSON.stringify(vectorDatabase));
+            renderVectorMemories();
+        }
+    };
+
 
 
    
@@ -17044,6 +17246,44 @@ async function generateIfComments() {
             }
         }
     };
+    // --- 👇 新增：多选批量删除聊天记录引擎 👇 ---
+    window.toggleMultiSelectMode = function() {
+        document.getElementById('chat-container').classList.add('multi-select-active');
+        document.querySelector('.chat-input-area').style.display = 'none';
+        document.getElementById('multi-select-bar').style.display = 'flex';
+    };
+
+    window.cancelMultiSelect = function() {
+        document.getElementById('chat-container').classList.remove('multi-select-active');
+        document.querySelector('.chat-input-area').style.display = 'flex';
+        document.getElementById('multi-select-bar').style.display = 'none';
+        document.querySelectorAll('.msg-checkbox.checked').forEach(cb => cb.classList.remove('checked'));
+    };
+
+    window.confirmMultiDelete = async function() {
+        const checkedBoxes = document.querySelectorAll('.msg-checkbox.checked');
+        if (checkedBoxes.length === 0) {
+            return sysAlert("提示", "请先选择要删除的消息！");
+        }
+        const confirmDel = await sysConfirm("批量删除", `确定要彻底删除选中的 ${checkedBoxes.length} 条消息吗？`);
+        if (confirmDel) {
+            let indexes = [];
+            checkedBoxes.forEach(cb => {
+                if (cb.dataset.index) indexes.push(parseInt(cb.dataset.index));
+            });
+            // 从大到小排序，从后往前删防止索引越界乱位
+            indexes.sort((a, b) => b - a);
+            indexes.forEach(idx => {
+                if (messageHistory[idx]) {
+                    messageHistory.splice(idx, 1);
+                }
+            });
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            cancelMultiSelect();
+            loadChatHistory(); // 重新渲染界面
+        }
+    };
+    // --- 👆 新增结束 👆 ---
 
 
             // ==========================================
@@ -19942,118 +20182,206 @@ window.addEventListener('load', function() {
 // 终极兜底：无论如何不超过 10 秒
 setTimeout(hideSplashEarly, 10000);
             // ==========================================
-    // 👑 终极修复：解决 Median/APK 环境下输入法完全遮挡输入框
+// 🧠 紧密联系 (向量化记忆 / RAG 引擎)
+// ==========================================
+let vectorDatabase = JSON.parse(localStorage.getItem('ai_os_vector_db')) || [];
+let vectorConfig = JSON.parse(localStorage.getItem('ai_os_vector_config')) || {
+    enabled: false, url: "https://api.siliconflow.cn/v1/embeddings", key: "", model: "BAAI/bge-m3"
+};
+
+// 1. 页面加载时自动回显配置
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if(document.getElementById('global-vector-toggle')) document.getElementById('global-vector-toggle').checked = vectorConfig.enabled;
+        if(document.getElementById('embed-url')) document.getElementById('embed-url').value = vectorConfig.url;
+        if(document.getElementById('embed-key')) document.getElementById('embed-key').value = vectorConfig.key;
+        if(document.getElementById('embed-model')) {
+            const select = document.getElementById('embed-model');
+            if(!Array.from(select.options).some(opt => opt.value === vectorConfig.model)) {
+                select.innerHTML += `<option value="${vectorConfig.model}">${vectorConfig.model}</option>`;
+            }
+            select.value = vectorConfig.model;
+        }
+    }, 500);
+});
+
+// 2. 实时保存配置
+window.saveVectorConfig = function() {
+    vectorConfig.enabled = document.getElementById('global-vector-toggle').checked;
+    vectorConfig.url = document.getElementById('embed-url').value.trim() || "https://api.siliconflow.cn/v1/embeddings";
+    vectorConfig.key = document.getElementById('embed-key').value.trim();
+    vectorConfig.model = document.getElementById('embed-model').value.trim() || "BAAI/bge-m3";
+    localStorage.setItem('ai_os_vector_config', JSON.stringify(vectorConfig));
+};
+
+// 3. 拉取嵌入模型列表
+window.fetchEmbedModels = async function() {
+    const btn = document.getElementById('embed-model-sync-btn');
+    btn.classList.add('fa-spin');
+    
+    // 把 URL 末尾的 /embeddings 截断替换为 /models，兼容标准的获取模型接口
+    let baseUrl = document.getElementById('embed-url').value.trim().replace(/\/embeddings\/?$/, '').replace(/\/$/, '');
+    const key = document.getElementById('embed-key').value.trim();
+    
+    if(!baseUrl || !key) {
+        btn.classList.remove('fa-spin');
+        return sysAlert("错误", "拉取失败：请先填写完整的 API 地址和 密钥！");
+    }
+    
+    try {
+        const res = await fetch(`${baseUrl}/models`, { headers: { 'Authorization': `Bearer ${key}` }});
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        
+        if (data && data.data) {
+            const select = document.getElementById('embed-model');
+            select.innerHTML = data.data.map(m => `<option value="${m.id}" ${m.id === vectorConfig.model ? 'selected' : ''}>${m.id}</option>`).join('');
+            sysAlert("成功", `成功拉取 ${data.data.length} 个模型！请在下拉框选择。`);
+            saveVectorConfig(); // 刷新保存
+        } else {
+            throw new Error("返回格式不符");
+        }
+    } catch (e) {
+        console.error(e);
+        const customModel = await sysPrompt("拉取失败", "无法自动拉取。请手动输入嵌入模型名称:", vectorConfig.model);
+        if(customModel) { 
+            const select = document.getElementById('embed-model');
+            select.innerHTML = `<option value="${customModel}" selected>${customModel}</option>`;
+            saveVectorConfig();
+        }
+    } finally {
+        btn.classList.remove('fa-spin');
+    }
+};
+
+// 4. 调用 Embedding API
+async function getEmbedding(text) {
+    if (!vectorConfig.key) throw new Error("缺少 Embedding API 密钥。");
+    const res = await fetch(vectorConfig.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${vectorConfig.key}` },
+        body: JSON.stringify({ model: vectorConfig.model, input: text })
+    });
+    if (!res.ok) throw new Error(`Embedding API 请求失败: ${res.status}`);
+    const data = await res.json();
+    return data.data[0].embedding; 
+}
+
+// 5. 将文本向量化存入本地知识库
+window.vectorizeAndStore = async function(text, source = "手动提取") {
+    try {
+        const vector = await getEmbedding(text);
+        vectorDatabase.push({
+            id: 'vec_' + Date.now(),
+            charId: activeCharId,
+            text: text,
+            vector: vector,
+            source: source,
+            time: new Date().toLocaleString()
+        });
+        localStorage.setItem('ai_os_vector_db', JSON.stringify(vectorDatabase));
+    } catch(e) {
+        throw e;
+    }
+};
+
+// 6. 余弦相似度算法
+function cosineSimilarity(vecA, vecB) {
+    let dotProduct = 0, normA = 0, normB = 0;
+    for (let i = 0; i < vecA.length; i++) {
+        dotProduct += vecA[i] * vecB[i];
+        normA += vecA[i] * vecA[i];
+        normB += vecB[i] * vecB[i];
+    }
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+// 7. 检索最相关片段
+window.retrieveRelatedMemories = async function(userQuery, topK = 3) {
+    if (!vectorConfig.enabled || vectorDatabase.length === 0) return "";
+    try {
+        const queryVector = await getEmbedding(userQuery);
+        let charVectors = vectorDatabase.filter(v => v.charId === activeCharId || v.charId === 'all');
+        if (charVectors.length === 0) return "";
+
+        charVectors.forEach(v => { v.score = cosineSimilarity(queryVector, v.vector); });
+        charVectors.sort((a, b) => b.score - a.score);
+        
+        // 相似度阈值 0.45，可依据模型特性调整
+        const results = charVectors.filter(v => v.score > 0.45).slice(0, topK);
+        if (results.length > 0) {
+            const memoryStr = results.map((r, i) => `[提取时间 ${r.time}]: ${r.text}`).join('\n');
+            return `\n\n【紧密联系触发(RAG深度记忆)】：\n用户刚才的话唤醒了你脑海中的深层记忆碎片，请结合以下记忆进行自然回复：\n${memoryStr}`;
+        }
+    } catch (e) { 
+        console.warn("检索异常:", e); 
+    }
+    return "";
+};
+
     // ==========================================
-    
-    function fixViewportHeight() {
-        const phoneContainer = document.querySelector('.phone');
-        if (!phoneContainer) return;
-        
-        // 核心：获取真实的可用屏幕高度
-        let realHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        
-        // 兜底保护：绝不允许高度被异常压缩至低于 350px (防止由于计算错误导致界面挤成一团)
-        if (realHeight < 350) realHeight = 350;
+    // 新增：测试模型连通性
+    // ==========================================
+    async function testGlobalAPI() {
+        const url = cleanBaseUrl(document.getElementById('global-url').value);
+        const key = document.getElementById('global-key').value;
+        const model = document.getElementById('global-model').value;
 
-        phoneContainer.style.height = realHeight + 'px';
+        if(!url || !key || !model) {
+            return sysAlert("配置不完整", "请确保接口地址、API 密钥和模型名称都已填写完整！");
+        }
+
+        sysAlert("📡 测试中...", "正在发送请求探测模型连通性，请稍候...");
         
-        // 延迟触发滚动，等待 DOM 渲染与安卓键盘彻底稳定
-        setTimeout(() => {
-            if (typeof scrollToBottom === 'function') scrollToBottom();
-            if (typeof scrollGroupToBottom === 'function') scrollGroupToBottom();
-            const heartContainer = document.getElementById('heart-container');
-            if (heartContainer) heartContainer.scrollTop = heartContainer.scrollHeight;
-            const srChatBody = document.getElementById('sr-chat-body');
-            if (srChatBody) srChatBody.scrollTop = srChatBody.scrollHeight;
-        }, 150);
-    }
+        try {
+            const controller = new AbortController(); 
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    // 1. 监听现代浏览器的可视视口变化（精准捕获键盘弹起/收回）
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', fixViewportHeight);
-    }
-    // 2. 兜底监听常规窗口 resize
-    window.addEventListener('resize', fixViewportHeight);
-
-    // 3. 焦点事件：一旦点击输入框，主动调用原生滚动对齐，强行将输入框"顶"到用户视口！
-    document.addEventListener('focusin', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            // 给安卓输入法弹起的物理动画留点时间，再执行推起操作
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({ 
+                    model: model, 
+                    messages: [{role: "user", content: "你好，请简短地回复我一句：连通测试成功。"}], 
+                    max_tokens: 30,
+                    stream: false 
+                }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) {
+                let errStr = await res.text();
+                throw new Error(`HTTP ${res.status}: ${errStr.substring(0, 150)}`);
+            }
+            
+            const data = await res.json();
+            if (data.choices && data.choices[0].message && data.choices[0].message.content) {
+                // 关闭当前加载弹窗并弹出成功反馈
+                document.getElementById('sys-dialog-overlay').style.display = 'none';
+                setTimeout(() => {
+                    sysAlert("✅ 连通测试成功", `API连接正常！\n\n大模型回复：${data.choices[0].message.content}`);
+                }, 200);
+            } else {
+                throw new Error("返回格式异常，未找到有效的对话内容。");
+            }
+        } catch(e) {
+            document.getElementById('sys-dialog-overlay').style.display = 'none';
             setTimeout(() => {
-                fixViewportHeight();
-                e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 300); 
+                sysAlert("❌ 连通测试失败", `无法连接到模型或发生错误：\n${e.message}`);
+            }, 200);
         }
-    });
-    
-    document.addEventListener('focusout', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            setTimeout(fixViewportHeight, 100); 
-        }
-    });
-
-    // 网页加载时先初始化一次
-    fixViewportHeight();
+    }
 
 
 
 
-
-
-
-</script>
-</body>
-</html>
+// 5. 【可选】聊天自动滑动窗口分段
+// 在 checkAndRunBackgroundTasks 函数中加入逻辑：每聊满5句话，将这5句话合并后丢给 vectorizeAndStore 进行静默向量化。
 
 
 
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    
 
 
 
