@@ -1062,6 +1062,11 @@ html body #group-chat-app #group-user-input:placeholder-shown ~ .fa-arrow-circle
 html body #heart-chat-app #heart-input:placeholder-shown ~ .fa-pen-nib {
     display: none !important;
 }
+/* 输入文字时，隐藏右侧的更多功能加号按钮，呈现微信无缝切换排版 */
+html body #chat-app #user-input:not(:placeholder-shown) ~ .tools-plus-btn {
+    display: none !important;
+}
+
  
 
 
@@ -3381,19 +3386,7 @@ html body #chat-app#chat-app#chat-app #chat-container .msg.shop-share-bubble::af
         .ssc-footer { font-size: 11px; opacity: 0.7; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 6px; margin-top: 2px; }
         :root.light-mode .ssc-footer { border-top: 0.5px solid rgba(0,0,0,0.1); }
 
-        /* 彻底隐藏所有模式下的 AI 机器人图标，将其变为隐形触发区。
-   既保障界面沉浸感，又能盲点右下角空白处进行原有的交互 */
-html body #chat-app .fa-robot,
-html body #group-chat-app .fa-robot {
-    opacity: 0 !important;
-    background: transparent !important;
-    color: transparent !important;
-    filter: none !important;
-    text-shadow: none !important;
-    -webkit-text-fill-color: transparent !important;
-    /* 保持原来的宽高和位置占位，不破坏排版 */
-}
-
+        
 /* 开启气泡边框自定义时，强力接管所有主题下气泡的边缘线 */
 body.custom-bubble-border #chat-app #chat-container .msg:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.survey-share-bubble):not(.health-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble),
 body.custom-bubble-border #preview-chat-container .msg {
@@ -4366,16 +4359,44 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
 
 
                     
-                    <!-- 左侧功能按钮 -->
-                    <i class="fas fa-plus-circle chat-icon-btn" onclick="toggleToolsPanel()" title="更多功能"></i>
-                    <i class="fas fa-smile chat-icon-btn" onclick="toggleStickerPanel()" title="表情包"></i>
-                    
-                    <!-- 聊天输入框 -->
-                    <input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels()">
+                              <!-- 左侧：语音发送键 (外边框圆 + 居中的右转wifi) -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="chat-icon-btn ai-reply-btn" style="font-size: 26px; width: 1em; height: 1em; margin-right: 8px; color: var(--text-main); flex-shrink: 0;" onclick="triggerAIResponse()" title="让 AI 回复">
+    <!-- 外圈 -->
+    <circle cx="12" cy="12" r="10"></circle>
+    
+    <!-- 信号基点 -->
+    <path d="M8.5 12h.01" stroke-width="2.5"></path>
+    
+    <!-- 两层信号线，拥有极大的留白距离，绝不触碰外圈 -->
+    <path d="M11 9.5a3.5 3.5 0 0 1 0 5"></path>
+    <path d="M13.5 7a7 7 0 0 1 0 10"></path>
+</svg>
 
-                    <!-- 右侧发送按钮 -->
-                    <i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 5px;" onclick="sendMessage()" title="仅发送消息"></i>
-                    <i class="fas fa-robot" style="color: var(--accent); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 10px;" onclick="triggerAIResponse()" title="让 AI 回复"></i>
+                              
+
+<!-- 聊天输入框 -->
+<input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels()">
+
+<!-- 右侧：线框表情与加号 -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="chat-icon-btn" style="font-size: 26px; width: 1em; height: 1em; margin-left: 10px; color: var(--text-sub); flex-shrink: 0;" onclick="toggleStickerPanel()" title="表情包">
+    <circle cx="12" cy="12" r="10"></circle>
+    <!-- 眼睛大一点：用稍粗的垂直短线构成椭圆大眼 -->
+    <path d="M8 8.5v1" stroke-width="2.5"></path>
+    <path d="M16 8.5v1" stroke-width="2.5"></path>
+    <!-- 扇形开怀的笑：上平下弯的闭合 D 型 (半圆扇形) -->
+    <path d="M7 14h10a5 5 0 0 1-10 0z"></path>
+</svg>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="chat-icon-btn tools-plus-btn" style="font-size: 26px; width: 1em; height: 1em; margin-left: 10px; color: var(--text-sub); flex-shrink: 0;" onclick="toggleToolsPanel()" title="更多功能">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="16"></line>
+    <line x1="8" y1="12" x2="16" y2="12"></line>
+</svg>
+
+<!-- 发送按钮 -->
+<i class="fas fa-arrow-circle-up" style="color: var(--text-sub); font-size: 28px; cursor: pointer; flex-shrink: 0; margin-left: 8px;" onclick="sendMessage()" title="仅发送消息"></i>
+
+
+
                 </div>
             </div> <!-- 🚨就是这个闭合标签！它负责把聊天APP关上，千万不能漏🚨 -->
 
