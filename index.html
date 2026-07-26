@@ -40,7 +40,7 @@
     </script>
     <!-- 👆 新增结束 👆 -->
 
-            /
+            
 
      
     
@@ -2706,14 +2706,31 @@ html body #chat-app.layout-imessage { background-color: #FFFFFF !important; }
             font-size: 18px !important; padding: 14px 20px !important; line-height: 1.6 !important;
         }
 
-                                         /* --- 独立的顶部面板高度控制 --- */
-        html body #chat-app.header-size-small .chat-header { height: 85px !important; padding-bottom: 10px !important; }
-        html body #chat-app.layout-wechat.header-size-small .chat-header { height: 70px !important; }
-        html body #chat-app.layout-imessage.header-size-small .chat-header { height: 90px !important; }
+                                                                                  
 
-        html body #chat-app.header-size-large .chat-header { height: 135px !important; padding-bottom: 25px !important; }
-        html body #chat-app.layout-wechat.header-size-large .chat-header { height: 115px !important; }
-        html body #chat-app.layout-imessage.header-size-large .chat-header { height: 145px !important; }
+        /* --- 独立的底部输入栏高度控制 --- */
+        html body #chat-app.inputbar-size-small .chat-input-area,
+        html body #chat-app[class*="layout-"].inputbar-size-small .chat-input-area,
+        html body #chat-app[class*="chat-size-"].inputbar-size-small .chat-input-area {
+            padding-bottom: calc(5px + env(safe-area-inset-bottom)) !important;
+            padding-top: 6px !important;
+        }
+        html body #chat-app.inputbar-size-small .chat-input {
+            padding: 6px 12px !important;
+            height: 34px !important;
+        }
+
+        html body #chat-app.inputbar-size-large .chat-input-area,
+        html body #chat-app[class*="layout-"].inputbar-size-large .chat-input-area,
+        html body #chat-app[class*="chat-size-"].inputbar-size-large .chat-input-area {
+            padding-bottom: calc(30px + env(safe-area-inset-bottom)) !important;
+            padding-top: 18px !important;
+        }
+        html body #chat-app.inputbar-size-large .chat-input {
+            padding: 12px 18px !important;
+            height: 48px !important;
+        }
+
 
 
 
@@ -5898,11 +5915,18 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                     </div>
 
 
-                                                     <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">顶部面板高度</div>
+                                                                                                          <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">顶部面板高度</div>
                     <div class="status-tabs" style="margin: 0 0 25px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px;">
                         <div class="tab-btn" id="btn-header-size-small" onclick="applyHeaderSize('small')">小</div>
                         <div class="tab-btn active" id="btn-header-size-medium" onclick="applyHeaderSize('medium')">标准 (默认)</div>
                         <div class="tab-btn" id="btn-header-size-large" onclick="applyHeaderSize('large')">大</div>
+                    </div>
+
+                    <div class="settings-group-title" style="margin: 0 0 10px 0; padding: 0;">底部输入栏高度</div>
+                    <div class="status-tabs" style="margin: 0 0 25px 0; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px;">
+                        <div class="tab-btn" id="btn-inputbar-size-small" onclick="applyInputBarSize('small')">紧凑</div>
+                        <div class="tab-btn active" id="btn-inputbar-size-medium" onclick="applyInputBarSize('medium')">标准 (默认)</div>
+                        <div class="tab-btn" id="btn-inputbar-size-large" onclick="applyInputBarSize('large')">大</div>
                     </div>
 
                     
@@ -14387,7 +14411,7 @@ openApp = function(appId) {
     }
 
 
-        // 监听系统初始化，在开机时读取保存的主题和大小
+                // 监听系统初始化，在开机时读取保存的主题和大小
     document.addEventListener('DOMContentLoaded', function() {
         const savedLayout = localStorage.getItem('ai_os_chat_layout') || 'default';
         applyChatLayout(savedLayout);
@@ -14397,9 +14421,12 @@ openApp = function(appId) {
 
         const savedHeaderSize = localStorage.getItem('ai_os_header_size') || 'medium';
         applyHeaderSize(savedHeaderSize);
+
+        const savedInputBarSize = localStorage.getItem('ai_os_inputbar_size') || 'medium';
+        applyInputBarSize(savedInputBarSize);
     });
 
-        function applyHeaderSize(size) {
+    function applyHeaderSize(size) {
         const chatApp = document.getElementById('chat-app');
         if(!chatApp) return;
         
@@ -14425,6 +14452,34 @@ openApp = function(appId) {
         
         localStorage.setItem('ai_os_header_size', size);
     }
+
+    function applyInputBarSize(size) {
+        const chatApp = document.getElementById('chat-app');
+        if(!chatApp) return;
+        
+        chatApp.classList.remove('inputbar-size-small', 'inputbar-size-large');
+        
+        const btnSmall = document.getElementById('btn-inputbar-size-small');
+        const btnMedium = document.getElementById('btn-inputbar-size-medium');
+        const btnLarge = document.getElementById('btn-inputbar-size-large');
+        
+        if(btnSmall) btnSmall.classList.remove('active');
+        if(btnMedium) btnMedium.classList.remove('active');
+        if(btnLarge) btnLarge.classList.remove('active');
+        
+        if (size === 'small') {
+            chatApp.classList.add('inputbar-size-small');
+            if(btnSmall) btnSmall.classList.add('active');
+        } else if (size === 'large') {
+            chatApp.classList.add('inputbar-size-large');
+            if(btnLarge) btnLarge.classList.add('active');
+        } else {
+            if(btnMedium) btnMedium.classList.add('active');
+        }
+        
+        localStorage.setItem('ai_os_inputbar_size', size);
+    }
+
 
     
 
