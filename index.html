@@ -3692,7 +3692,7 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
-        /* --- 👇 聊天框 iOS 键盘适配与多选样式 👇 --- */
+                /* --- 👇 聊天框 iOS 键盘适配与多选样式 👇 --- */
         .chat-input, .setting-input, .modal-input, .modal-textarea { 
             font-size: 16px !important; /* 彻底防止 iOS Safari 点击输入框自动放大页面 */
         }
@@ -3704,26 +3704,19 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         html body #group-chat-app .chat-input-area,
         html body #heart-chat-app .chat-input-area,
         html body .app-view .novel-bottom-tab { 
-            padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important; 
+            /* 👇 修复1：加入 0px 回退值以防安卓 WebView 崩溃，往下增加 1px 负边距吞噬 iOS 的底层黑线渲染缝隙 */
+            padding-bottom: calc(13px + env(safe-area-inset-bottom, 0px)) !important; 
+            margin-bottom: -1px !important;
         }
         
         /* 面板的底部安全距离 */
         html body #tools-panel, 
         html body #sticker-panel,
         html body #multi-select-bar { 
-            padding-bottom: calc(15px + env(safe-area-inset-bottom)) !important; 
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important; 
+            margin-bottom: -1px !important;
         }
 
-        .msg-checkbox {
-            display: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--text-sub);
-            align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-            margin: auto 5px; transition: all 0.2s;
-        }
-        .msg-checkbox.checked { background: var(--accent); border-color: var(--accent); }
-        .msg-checkbox.checked::after { content: '✓'; color: #000; font-size: 14px; font-weight: bold; }
-        #chat-container.multi-select-active .msg-checkbox { display: flex; animation: fadeIn 0.2s; }
-        #chat-container.multi-select-active .msg-avatar, #chat-container.multi-select-active .msg-content-box { pointer-events: none; }
-        /* --- 👆 适配结束 👆 --- */
 
 
 
