@@ -289,17 +289,21 @@
             transform: translateZ(0); 
         }
 
-        /* --- 极简全屏适配 (彻底移除电脑外壳，手机端永远铺满) --- */
+                /* --- 极简全屏适配 (无条件铺满屏幕，彻底消灭黑边和宽度限制) --- */
         .phone {
-            width: 100vw;
-            height: 100vh;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important; /* 🚀 突破 450px 限制，允许全屏铺满 */
+            max-height: 100vh !important;
             position: relative;
             background: #000;
             overflow: hidden;
             transform: none !important;
-            border-radius: 0;
-            box-shadow: none;
-            padding: 0;
+            border: none !important; /* 🔪 彻底移除那条该死的左侧大黑线 */
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         .phone-inner {
@@ -307,45 +311,35 @@
             height: 100%;
             position: relative;
             overflow: hidden;
-            border-radius: 0;
+            border-radius: 0 !important;
         }
 
-        /* 👑 防横屏崩坏兜底机制：就算手机物理横屏了，软件也绝不跟着横向拉伸变扁！ */
+        /* 彻底废弃之前的横屏强行居中，无论什么屏幕方向、多宽的屏幕，绝对 100% 铺满 */
         @media screen and (orientation: landscape) {
-            body { background: #0f1115; }
+            body { background: #000; }
             .phone {
-                max-width: 450px; /* 强制锁定在正常手机的竖屏宽度 */
-                margin: 0 auto;   /* 居中显示，两侧留黑边，绝不水平拉伸 */
-                border-left: 1px solid #333;
-                border-right: 1px solid #333;
+                max-width: 100vw !important;
+                margin: 0 !important;
+                border: none !important; /* 斩草除根防黑线 */
             }
         }
 
+        /* 浏览器全屏模式适配 (绝对强制铺满无死角) */
+        :fullscreen .phone, :-webkit-full-screen .phone {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            transform: none !important;
+        }
+        :fullscreen .phone-inner, :-webkit-full-screen .phone-inner {
+            border-radius: 0 !important;
+        }
 
-/* 浏览器全屏模式适配 */
-:fullscreen .phone {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 0;
-    transform: none !important;
-}
-:fullscreen .phone-inner {
-    border-radius: 0;
-}
-
-:-webkit-full-screen .phone {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 0;
-    transform: none !important;
-}
-:-webkit-full-screen .phone-inner {
-    border-radius: 0;
-}
 
 /* 移动设备横屏提示 */
 @media screen and (max-device-width: 900px) and (orientation: landscape) and (pointer: coarse) {
@@ -3733,6 +3727,61 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
             min-height: 380px !important; /* 防止容器被输入法过度压缩导致页面崩坏 */
         }
         /* --- 👆 修复结束 👆 --- */
+
+
+                /* ========================================== */
+        /* 🚀 终极全屏强制铺满补丁 (彻底解决向右偏移与左侧黑线) */
+        /* ========================================== */
+        html, body {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important; 
+            background: #000 !important; 
+            /* 🔪 核心：彻底干掉 Flex 居中！消除所有像素级向右偏移的元凶 */
+            display: block !important; 
+            position: fixed !important; 
+            top: 0 !important;
+            left: 0 !important;
+        }
+
+        .phone, :fullscreen .phone, :-webkit-full-screen .phone {
+            /* 不再使用 100vw 这种会产生滚动条误差的单位，严格使用 100% */
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important; 
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            /* 🔒 死锁在屏幕绝对的左上角，杜绝任何居中位移 */
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            transform: none !important; 
+        }
+        
+        .phone-inner, :fullscreen .phone-inner, :-webkit-full-screen .phone-inner {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+        }
+
+
+        
+
 
 
 
