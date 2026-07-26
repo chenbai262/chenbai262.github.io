@@ -40,6 +40,8 @@
     </script>
     <!-- 👆 新增结束 👆 -->
 
+            /
+
      
     
 
@@ -3729,6 +3731,16 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     transform: scaleX(1.05) scaleY(0.92) translateY(2px);
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
+
+* --- 👇 修复 APK 输入框被压扁、被遮盖的问题 👇 --- */
+        .chat-header, .chat-input-area, .contacts-header, .settings-header, .novel-top-bar, .novel-bottom-tab {
+            flex-shrink: 0 !important;
+        }
+        .phone {
+            min-height: 380px !important; /* 防止容器被输入法过度压缩导致页面崩坏 */
+        }
+        /* --- 👆 修复结束 👆 --- */
+
 
 
 
@@ -19859,7 +19871,7 @@ window.addEventListener('load', function() {
 
 // 终极兜底：无论如何不超过 10 秒
 setTimeout(hideSplashEarly, 10000);
-        // ==========================================
+            // ==========================================
     // 👑 终极修复：解决 Median/APK 环境下输入法完全遮挡输入框
     // ==========================================
     
@@ -19867,40 +19879,46 @@ setTimeout(hideSplashEarly, 10000);
         const phoneContainer = document.querySelector('.phone');
         if (!phoneContainer) return;
         
-        // 核心：获取剔除键盘后的【真实可视区域高度】
-        const realHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        // 核心：获取真实的可用屏幕高度
+        let realHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
         
-        // 暴力破解 100vh 的限制，强制把整个外壳的高度压缩到键盘上方
+        // 兜底保护：绝不允许高度被异常压缩至低于 350px (防止由于计算错误导致界面挤成一团)
+        if (realHeight < 350) realHeight = 350;
+
         phoneContainer.style.height = realHeight + 'px';
         
-        // 高度压缩后，由于你的布局是 flex，输入框自然会被顶上来。这里再顺便让聊天滚到底
-        requestAnimationFrame(() => {
+        // 延迟触发滚动，等待 DOM 渲染与安卓键盘彻底稳定
+        setTimeout(() => {
             if (typeof scrollToBottom === 'function') scrollToBottom();
             if (typeof scrollGroupToBottom === 'function') scrollGroupToBottom();
             const heartContainer = document.getElementById('heart-container');
             if (heartContainer) heartContainer.scrollTop = heartContainer.scrollHeight;
             const srChatBody = document.getElementById('sr-chat-body');
             if (srChatBody) srChatBody.scrollTop = srChatBody.scrollHeight;
-        });
+        }, 150);
     }
 
-    // 1. 监听现代浏览器的可视视口变化（键盘弹起/收回的最准确事件）
+    // 1. 监听现代浏览器的可视视口变化（精准捕获键盘弹起/收回）
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', fixViewportHeight);
     }
     // 2. 兜底监听常规窗口 resize
     window.addEventListener('resize', fixViewportHeight);
 
-    // 3. 焦点事件兜底（防止某些安卓机型事件丢失）
+    // 3. 焦点事件：一旦点击输入框，主动调用原生滚动对齐，强行将输入框"顶"到用户视口！
     document.addEventListener('focusin', function(e) {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            setTimeout(fixViewportHeight, 200); 
+            // 给安卓输入法弹起的物理动画留点时间，再执行推起操作
+            setTimeout(() => {
+                fixViewportHeight();
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 300); 
         }
     });
     
     document.addEventListener('focusout', function(e) {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            setTimeout(fixViewportHeight, 200); 
+            setTimeout(fixViewportHeight, 100); 
         }
     });
 
