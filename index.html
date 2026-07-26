@@ -3925,17 +3925,24 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                 </div>
             </div>
 
-                                                  <!-- 支持滑动的多页桌面 -->
+                
+                            <!-- 支持滑动的多页桌面 -->
             <div id="os-home" onscroll="updatePageDots()">
                 
-                <!-- ============ 第一页 (主屏核心) ============ -->
+                <!-- ============ 第一页 (主屏核心：美化与日常) ============ -->
                 <div class="home-page" id="page-1">
+                    <!-- 顶部液态时间 -->
                     <div class="widget-liquid-time" data-drag-id="liquid-time">
                         <div class="liquid-time-text" id="lq-time">00<span>:</span>00</div>
                         <div class="liquid-date-text" id="lq-date">1月1日 星期一</div>
                     </div>
 
-                    <!-- 照片墙与天气对齐放置 -->
+                    <!-- 天气与照片墙并排 -->
+                    <div class="widget widget-weather glass-effect" id="wg-weather" data-drag-id="sys-weather" ondblclick="openWidgetSettings('wg-weather')" style="height: 160px;">
+                        <i class="fas fa-cloud-sun" style="font-size: 28px;"></i>
+                        <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
+                        <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
+                    </div>
                     <div class="widget widget-photo-wall glass-effect" id="wg-photo" data-drag-id="sys-wg-photo" ondblclick="openWidgetSettings('wg-photo')" title="双击自由定制样式大小">
                         <div class="wg-photo-img" id="wg-photo-img" onclick="document.getElementById('wg-photo-upload').click()">
                             <span id="wg-photo-hint">点击上传照片<br><span style="font-weight:normal; opacity:0.8; font-size:10px;">(双击改大小)</span></span>
@@ -3943,39 +3950,49 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                         <input type="file" id="wg-photo-upload" accept="image/*" style="display:none;" onchange="handleWidgetPhotoUpload(event)">
                     </div>
 
-                    <div class="widget widget-weather glass-effect" id="wg-weather" data-drag-id="sys-weather" ondblclick="openWidgetSettings('wg-weather')" style="height: 160px;">
-                        <i class="fas fa-cloud-sun" style="font-size: 28px;"></i>
-                        <div style="margin-top:8px; font-size: 22px; font-weight: 500;">24°</div>
-                        <div style="font-size: 13px; opacity: 0.9;">多云转晴</div>
-                    </div>
-                                        <div class="widget widget-polaroid" id="wg-polaroid" data-drag-id="sys-wg-polaroid" ondblclick="openWidgetSettings('wg-polaroid')" title="双击自由定制样式大小">
-                        <div class="wg-polaroid-img" id="wg-polaroid-img" onclick="document.getElementById('wg-polaroid-upload').click()">
-                            <span id="wg-polaroid-hint">点击换图<br><span style="font-weight:normal; opacity:0.8; font-size:10px;">(双击改样式)</span></span>
-                        </div>
-                        <div class="wg-polaroid-text" id="wg-polaroid-text" onclick="editPolaroidText()">My Memory</div>
-                        <input type="file" id="wg-polaroid-upload" accept="image/*" style="display:none;" onchange="handleWidgetPolaroidUpload(event)">
-                    </div>
-                    
-
-
                     <!-- 第一页常用 APP -->
-                    <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
                     <div class="app-container" onclick="changeHomeWallpaper()" data-drag-id="sys-wallpaper"><div class="app-icon" style="background: linear-gradient(135deg, rgba(230, 215, 220, 0.4) 0%, rgba(205, 190, 200, 0.1) 100%);"><i class="fas fa-image"></i></div><div class="app-label">换壁纸</div></div>
-                    <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
                     <div class="app-container" onclick="openApp('beautify-app')" data-drag-id="sys-beauty"><div class="app-icon" style="background: linear-gradient(135deg, rgba(200, 220, 230, 0.4) 0%, rgba(180, 200, 210, 0.1) 100%);"><i class="fas fa-paint-brush"></i></div><div class="app-label">美化中心</div></div>
                     <div class="app-container" onclick="openApp('theme-app')" data-drag-id="sys-theme"><div class="app-icon" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"><i class="fas fa-paint-roller" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">主题布局</div></div>
+                    <div class="app-container" onclick="openApp('moments-app')" data-drag-id="sys-moments"><div class="app-icon" style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(34, 197, 94, 0.1) 100%);"><i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">朋友圈</div></div>
+                    
+                    <div class="app-container" onclick="openApp('music-app')" data-drag-id="sys-music"><div class="app-icon" style="background: linear-gradient(135deg, rgba(210, 200, 210, 0.4) 0%, rgba(185, 175, 185, 0.1) 100%);"><i class="fas fa-music"></i></div><div class="app-label">音乐</div></div>
+                    <div class="app-container" onclick="openAlbumApp()" data-drag-id="sys-album"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-images" style="color: #f39c12;"></i></div><div class="app-label">共享相册</div></div>
+                    <div class="app-container" onclick="openApp('pet-app')" data-drag-id="sys-pet"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 225, 180, 0.4) 0%, rgba(255, 190, 160, 0.1) 100%);"><i class="fas fa-paw" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小宠物</div></div>
                     <div class="app-container" onclick="openApp('heart-chat-app')" data-drag-id="sys-heart"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-coffee" style="color: rgba(0,0,0,0.6);"></i></div><div class="app-label">线下约会</div></div>
-                    <div class="app-container" onclick="openApp('study-app')" data-drag-id="sys-study"><div class="app-icon" style="background: linear-gradient(135deg, rgba(161, 140, 209, 0.4) 0%, rgba(251, 194, 235, 0.1) 100%);"><i class="fas fa-graduation-cap" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">自习室</div></div>
-
                 </div>
 
-                <!-- ============ 第二页 (进阶生活) ============ -->
+                <!-- ============ 第二页 (效率与社交) ============ -->
                 <div class="home-page" id="page-2">
+                    <!-- 顶部日历 -->
                     <div class="widget widget-calendar-pro glass-effect" id="wg-cal" data-drag-id="sys-wg-cal" ondblclick="openWidgetSettings('wg-cal')" title="双击自由定制样式大小">
                         <div class="wg-cal-header"><span id="wg-cal-header-month">2026年7月</span><i class="fas fa-calendar-alt"></i></div>
                         <div class="wg-cal-grid" id="wg-cal-grid"></div>
                     </div>
 
+                    <!-- 备忘录 -->
+                    <div class="widget widget-memo glass-effect" id="wg-memo" data-drag-id="sys-memo" ondblclick="openWidgetSettings('wg-memo')">
+                        <div class="memo-header">
+                            <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
+                            <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
+                        </div>
+                        <div id="memo-list" class="memo-list scrollable"></div>
+                    </div>
+
+                    <div class="app-container" onclick="openApp('study-app')" data-drag-id="sys-study"><div class="app-icon" style="background: linear-gradient(135deg, rgba(161, 140, 209, 0.4) 0%, rgba(251, 194, 235, 0.1) 100%);"><i class="fas fa-graduation-cap" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">自习室</div></div>
+                    <div class="app-container" onclick="openApp('health-app')" data-drag-id="sys-health"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 99, 132, 0.4) 0%, rgba(255, 154, 158, 0.1) 100%);"><i class="fas fa-heartbeat" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">健康监测</div></div>
+                    <div class="app-container" onclick="openApp('screentime-app')" data-drag-id="sys-screentime"><div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-chart-pie" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">屏幕时间</div></div>
+                    <div class="app-container" onclick="openApp('map-app')" data-drag-id="sys-map"><div class="app-icon" style="background: linear-gradient(135deg, #1fa2ff 0%, #12d8fa 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-map-marked-alt" style="color: #fff;"></i></div><div class="app-label">地图雷达</div></div>
+
+                    <div class="app-container" onclick="openApp('x-app')" data-drag-id="sys-x"><div class="app-icon" style="background: #000000; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 32px; height: 32px; fill: #ffffff;"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.964H5.078z"></path></g></svg></div><div class="app-label">X (推特)</div></div>
+                    <div class="app-container" onclick="openApp('zhihu-app')" data-drag-id="sys-zhihu"><div class="app-icon" style="background: #0084FF; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.4);"><i class="fab fa-zhihu" style="color: #ffffff; font-size: 32px;"></i></div><div class="app-label">知乎</div></div>
+                    <div class="app-container" onclick="openApp('tieba-app')" data-drag-id="sys-tieba"><div class="app-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);"><i class="fas fa-comments" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">贴吧社区</div></div>
+                    <div class="app-container" onclick="openApp('shop-app')" data-drag-id="sys-shop"><div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);"><i class="fas fa-shopping-bag" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">西海购物</div></div>
+                </div>
+
+                <!-- ============ 第三页 (娱乐与游戏) ============ -->
+                <div class="home-page" id="page-3">
+                    <!-- 顶部音乐播放器 -->
                     <div class="widget widget-music-player glass-effect" id="wg-music" data-drag-id="sys-wg-music" ondblclick="openWidgetSettings('wg-music')" title="双击自由定制样式大小">
                         <div class="wg-music-cover" id="wg-music-cover"></div>
                         <div class="wg-music-info">
@@ -3989,99 +4006,46 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                         </div>
                     </div>
 
-                    <div class="app-container" onclick="openApp('pet-app')" data-drag-id="sys-pet"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 225, 180, 0.4) 0%, rgba(255, 190, 160, 0.1) 100%);"><i class="fas fa-paw" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小宠物</div></div>
-                    <div class="app-container" onclick="openApp('moments-app')" data-drag-id="sys-moments"><div class="app-icon" style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(34, 197, 94, 0.1) 100%);"><i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">朋友圈</div></div>
-                    <div class="app-container" onclick="openApp('remote-app')" data-drag-id="sys-remote"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.4) 0%, rgba(255, 20, 147, 0.1) 100%);"><i class="fas fa-gamepad" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小遥控</div></div>
-                    <div class="app-container" onclick="openApp('snoop-app')" data-drag-id="sys-snoop"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 160, 255, 0.4) 0%, rgba(100, 100, 255, 0.1) 100%);"><i class="fas fa-mobile-alt" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">TA的手机</div></div>
-                    <div class="app-container" onclick="openApp('tieba-app')" data-drag-id="sys-tieba"><div class="app-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);"><i class="fas fa-comments" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">贴吧社区</div></div>
-                    <div class="app-container" onclick="openApp('x-app')" data-drag-id="sys-x"><div class="app-icon" style="background: #000000; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 32px; height: 32px; fill: #ffffff;"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.964H5.078z"></path></g></svg></div><div class="app-label">X (推特)</div></div>
-                    <div class="app-container" onclick="openApp('health-app')" data-drag-id="sys-health"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 99, 132, 0.4) 0%, rgba(255, 154, 158, 0.1) 100%);"><i class="fas fa-heartbeat" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">健康监测</div></div>
+                    <!-- 倒数日与拍立得并排 -->
+                    <div class="widget widget-countdown glass-effect" id="wg-countdown" data-drag-id="sys-wg-countdown" ondblclick="openWidgetSettings('wg-countdown')" title="双击定制大小样式，点击数字修改日期">
+                        <div class="wg-cd-bg" id="wg-cd-bg"></div>
+                        <div class="wg-cd-overlay"></div>
+                        <div class="wg-cd-content">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0;">
+                                <div class="wg-cd-today"><i class="far fa-calendar-alt"></i> <span id="wg-cd-today-text">月 日</span></div>
+                                <i class="fas fa-image" style="cursor: pointer; padding: 4px; opacity: 0.8; font-size: 14px; text-shadow: 0 1px 4px rgba(0,0,0,0.8);" onclick="document.getElementById('wg-cd-upload').click()" title="更换背景图"></i>
+                            </div>
+                            <div class="wg-cd-main" onclick="editCountdownSettings(event)">
+                                <div class="wg-cd-days" id="wg-cd-days">--<span>天</span></div>
+                                <div class="wg-cd-title" id="wg-cd-title">距离纪念日</div>
+                            </div>
+                        </div>
+                        <input type="file" id="wg-cd-upload" accept="image/*" style="display:none;" onchange="handleWidgetCountdownUpload(event)">
+                    </div>
+                    <div class="widget widget-polaroid" id="wg-polaroid" data-drag-id="sys-wg-polaroid" ondblclick="openWidgetSettings('wg-polaroid')" title="双击自由定制样式大小">
+                        <div class="wg-polaroid-img" id="wg-polaroid-img" onclick="document.getElementById('wg-polaroid-upload').click()">
+                            <span id="wg-polaroid-hint">点击换图<br><span style="font-weight:normal; opacity:0.8; font-size:10px;">(双击改样式)</span></span>
+                        </div>
+                        <div class="wg-polaroid-text" id="wg-polaroid-text" onclick="editPolaroidText()">My Memory</div>
+                        <input type="file" id="wg-polaroid-upload" accept="image/*" style="display:none;" onchange="handleWidgetPolaroidUpload(event)">
+                    </div>
+
+                    <div class="app-container" onclick="openApp('novel-app')" data-drag-id="sys-novel"><div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-book-reader" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小说</div></div>
+                    <div class="app-container" onclick="openApp('if-theater-app')" data-drag-id="sys-iftheater"><div class="app-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-theater-masks" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">IF剧场</div></div>
+                    <div class="app-container" onclick="openApp('story-relay-app')" data-drag-id="sys-storyrelay"><div class="app-icon" style="background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-book-open" style="color: #fff;"></i></div><div class="app-label">故事接龙</div></div>
                     <div class="app-container" onclick="openApp('draw-app')" data-drag-id="sys-draw"><div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-camera-retro" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">生图</div></div>
-                      <div class="app-container" onclick="openApp('survey-app')" data-drag-id="sys-survey">
-    <div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-clipboard-check" style="color: #4a90e2;"></i>
-    </div>
-    <div class="app-label">问卷调查</div>
-</div>
-                    <div class="app-container" onclick="openAlbumApp()" data-drag-id="sys-album">
-                        <div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                            <i class="fas fa-images" style="color: #f39c12;"></i>
-                        </div>
-                        <div class="app-label">共享相册</div>
-                    </div>
-                    <div class="app-container" onclick="openApp('wardrobe-app')" data-drag-id="sys-wardrobe">
-    <div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-tshirt" style="color: rgba(255,255,255,0.95);"></i></div>
-    <div class="app-label">衣橱</div>
-</div>
 
-<div class="app-container" onclick="openApp('map-app')" data-drag-id="sys-map">
-    <div class="app-icon" style="background: linear-gradient(135deg, #1fa2ff 0%, #12d8fa 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-map-marked-alt" style="color: #fff;"></i>
-    </div>
-    <div class="app-label">地图雷达</div>
-</div>
-
-                    <!-- 👇 新增：亚克力半身立牌小组件 👇 -->
-                    <div class="widget widget-standee glass-effect" id="wg-standee" data-drag-id="sys-wg-standee" ondblclick="openWidgetSettings('wg-standee')" title="双击自由定制样式大小">
-                        <div class="wg-standee-img" id="wg-standee-img" onclick="document.getElementById('wg-standee-upload').click()">
-                            <span id="wg-standee-hint">点击上传立牌<br><span style="font-size:10px; font-weight:normal; opacity:0.8;">(推荐上传透明底 PNG)</span></span>
-                        </div>
-                        <input type="file" id="wg-standee-upload" accept="image/*" style="display:none;" onchange="handleWidgetStandeeUpload(event)">
-                    </div>
-                    <!-- 👆 新增结束 👆 -->
-
-
-
-
-
+                    <div class="app-container" onclick="openApp('group-chat-app')" data-drag-id="sys-groupchat"><div class="app-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);"><i class="fas fa-users" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">群聊</div></div>
+                    <div class="app-container" onclick="openApp('guess-app')" data-drag-id="sys-guess"><div class="app-icon" style="background: linear-gradient(135deg, #ffd1ff 0%, #fa709a 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-puzzle-piece" style="color: #fff;"></i></div><div class="app-label">猜猜派对</div></div>
+                    <div class="app-container" onclick="openApp('survey-app')" data-drag-id="sys-survey"><div class="app-icon" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-clipboard-check" style="color: #4a90e2;"></i></div><div class="app-label">问卷调查</div></div>
+                    <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
                 </div>
 
-                <!-- ============ 第三页 (应用与工具) ============ -->
-                <div class="home-page" id="page-3">
-                    <div class="widget widget-memo glass-effect" id="wg-memo" data-drag-id="sys-memo" ondblclick="openWidgetSettings('wg-memo')">
-                        <div class="memo-header">
-                            <span><i class="fas fa-clipboard-list" style="color:var(--accent); margin-right:6px;"></i>同步备忘录 (TA也能看)</span>
-                            <i class="fas fa-plus" style="cursor: pointer; padding: 4px;" onclick="promptAddMemo()" title="添加事项"></i>
-                        </div>
-                        <div id="memo-list" class="memo-list scrollable"></div>
-                    </div>
-                    
-                    <div class="app-container" onclick="openApp('novel-app')" data-drag-id="sys-novel"><div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-book-reader" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小说</div></div>
-                    <div class="app-container" onclick="openApp('zhihu-app')" data-drag-id="sys-zhihu"><div class="app-icon" style="background: #0084FF; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.4);"><i class="fab fa-zhihu" style="color: #ffffff; font-size: 32px;"></i></div><div class="app-label">知乎</div></div>
-                    <div class="app-container" onclick="openApp('home-app')" data-drag-id="sys-home"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 200, 150, 0.4) 0%, rgba(255, 150, 100, 0.1) 100%);"><i class="fas fa-home" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">家庭空间</div></div>
-                    <div class="app-container" onclick="openApp('screentime-app')" data-drag-id="sys-screentime"><div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-chart-pie" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">屏幕时间</div></div>
-                    <div class="app-container" onclick="openApp('relation-app')" data-drag-id="sys-relation"><div class="app-icon" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);"><i class="fas fa-project-diagram" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">关系网</div></div>
-                    <div class="app-container" onclick="openApp('group-chat-app')" data-drag-id="sys-groupchat"><div class="app-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);"><i class="fas fa-users" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">群聊</div></div>
-                    <div class="app-container" onclick="openApp('if-theater-app')" data-drag-id="sys-iftheater"><div class="app-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-theater-masks" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">IF剧场</div></div>
-                    <div class="app-container" onclick="openApp('dino-app')" data-drag-id="sys-dino"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 190, 180, 0.4) 0%, rgba(140, 170, 160, 0.1) 100%);"><i class="fas fa-dragon"></i></div><div class="app-label">断网恐龙</div></div>
-                      <div class="app-container" onclick="openApp('guess-app')" data-drag-id="sys-guess">
-    <div class="app-icon" style="background: linear-gradient(135deg, #ffd1ff 0%, #fa709a 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-puzzle-piece" style="color: #fff;"></i>
-    </div>
-    <div class="app-label">猜猜派对</div>
-</div>
-                            <div class="app-container" onclick="openApp('anon-app')" data-drag-id="sys-anon">
-    <div class="app-icon" style="background: linear-gradient(135deg, #434343 0%, #000000 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <i class="fas fa-user-secret" style="color: #fff;"></i>
-    </div>
-    <div class="app-label">匿名信</div>
-</div>
-                    <div class="app-container" onclick="openApp('shop-app')" data-drag-id="sys-shop">
-                        <div class="app-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);"><i class="fas fa-shopping-bag" style="color: rgba(255,255,255,0.95);"></i></div>
-                        <div class="app-label">西海购物</div>
-                    </div>
-
-                    <div class="app-container" onclick="openApp('story-relay-app')" data-drag-id="sys-storyrelay">
-    <div class="app-icon" style="background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <i class="fas fa-book-open" style="color: #fff;"></i>
-    </div>
-    <div class="app-label">故事接龙</div>
-</div>
-
-                                        <!-- 👇 新增：相片堆叠(滑动)小组件 👇 -->
- <div class="widget widget-photo-stack" id="wg-photo-stack" data-drag-id="sys-wg-photo-stack" ondblclick="openWidgetSettings('wg-photo-stack')" title="双击定制大小/透明度，左右滑动切换照片">
-                       <div class="wg-ps-container" id="wg-ps-container">
-                            <!-- 堆叠的 3 张长方形卡片 -->
+                <!-- ============ 第四页 (沉浸交互空间) ============ -->
+                <div class="home-page" id="page-4">
+                    <!-- 顶部滑动照片堆叠 -->
+                    <div class="widget widget-photo-stack" id="wg-photo-stack" data-drag-id="sys-wg-photo-stack" ondblclick="openWidgetSettings('wg-photo-stack')" title="双击定制大小/透明度，左右滑动切换照片">
+                        <div class="wg-ps-container" id="wg-ps-container">
                             <div class="wg-ps-card" id="wg-ps-card-1" data-idx="1" onclick="handlePhotoStackClick(1)">
                                 <span id="wg-ps-hint-1">相片 1<br><span style="font-size:9px; font-weight:normal;">点击换图</span></span>
                             </div>
@@ -4092,51 +4056,34 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                                 <span id="wg-ps-hint-3">相片 3<br><span style="font-size:9px; font-weight:normal;">点击换图</span></span>
                             </div>
                         </div>
-                        <!-- 对应的 3 个隐藏上传接口 -->
                         <input type="file" id="wg-ps-upload-1" accept="image/*" style="display:none;" onchange="handlePhotoStackUpload(1, event)">
                         <input type="file" id="wg-ps-upload-2" accept="image/*" style="display:none;" onchange="handlePhotoStackUpload(2, event)">
                         <input type="file" id="wg-ps-upload-3" accept="image/*" style="display:none;" onchange="handlePhotoStackUpload(3, event)">
                     </div>
-                    <!-- 👆 新增结束 👆 -->
-                                         <!-- 👇 新增：倒数日期小组件 👇 -->
-                    <div class="widget widget-countdown glass-effect" id="wg-countdown" data-drag-id="sys-wg-countdown" ondblclick="openWidgetSettings('wg-countdown')" title="双击定制大小样式，点击数字修改日期">
-                        <div class="wg-cd-bg" id="wg-cd-bg"></div>
-                        <div class="wg-cd-overlay"></div>
-                        <div class="wg-cd-content">
-                            <!-- 顶部栏，加入专属换图小图标，防止拦截双击事件 -->
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0;">
-                                <div class="wg-cd-today"><i class="far fa-calendar-alt"></i> <span id="wg-cd-today-text">月 日</span></div>
-                                <i class="fas fa-image" style="cursor: pointer; padding: 4px; opacity: 0.8; font-size: 14px; text-shadow: 0 1px 4px rgba(0,0,0,0.8);" onclick="document.getElementById('wg-cd-upload').click()" title="更换背景图"></i>
-                            </div>
-                            
-                            <!-- 文字主体区域 -->
-                            <div class="wg-cd-main" onclick="editCountdownSettings(event)">
-                                <div class="wg-cd-days" id="wg-cd-days">--<span>天</span></div>
-                                <div class="wg-cd-title" id="wg-cd-title">距离纪念日</div>
-                            </div>
+
+                    <!-- 亚克力立牌与应用完美融合 -->
+                    <div class="widget widget-standee glass-effect" id="wg-standee" data-drag-id="sys-wg-standee" ondblclick="openWidgetSettings('wg-standee')" title="双击自由定制样式大小" style="grid-column: span 4;">
+                        <div class="wg-standee-img" id="wg-standee-img" onclick="document.getElementById('wg-standee-upload').click()">
+                            <span id="wg-standee-hint">点击上传立牌<br><span style="font-size:10px; font-weight:normal; opacity:0.8;">(推荐上传透明底 PNG)</span></span>
                         </div>
-                        <input type="file" id="wg-cd-upload" accept="image/*" style="display:none;" onchange="handleWidgetCountdownUpload(event)">
+                        <input type="file" id="wg-standee-upload" accept="image/*" style="display:none;" onchange="handleWidgetStandeeUpload(event)">
                     </div>
-                    <!-- 👆 新增结束 👆 -->
 
-                    
+                    <div class="app-container" onclick="openApp('snoop-app')" data-drag-id="sys-snoop"><div class="app-icon" style="background: linear-gradient(135deg, rgba(160, 160, 255, 0.4) 0%, rgba(100, 100, 255, 0.1) 100%);"><i class="fas fa-mobile-alt" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">TA的手机</div></div>
+                    <div class="app-container" onclick="openApp('remote-app')" data-drag-id="sys-remote"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.4) 0%, rgba(255, 20, 147, 0.1) 100%);"><i class="fas fa-gamepad" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">小遥控</div></div>
+                    <div class="app-container" onclick="openApp('anon-app')" data-drag-id="sys-anon"><div class="app-icon" style="background: linear-gradient(135deg, #434343 0%, #000000 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.2);"><i class="fas fa-user-secret" style="color: #fff;"></i></div><div class="app-label">匿名信</div></div>
+                    <div class="app-container" onclick="openApp('relation-app')" data-drag-id="sys-relation"><div class="app-icon" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);"><i class="fas fa-project-diagram" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">关系网</div></div>
 
-
-
-
-
-
+                    <div class="app-container" onclick="openApp('worldbook-app')" data-drag-id="sys-wb"><div class="app-icon" style="background: linear-gradient(135deg, rgba(215, 210, 220, 0.4) 0%, rgba(185, 180, 195, 0.1) 100%);"><i class="fas fa-book-open"></i></div><div class="app-label">世界书</div></div>
+                    <div class="app-container" onclick="openApp('wardrobe-app')" data-drag-id="sys-wardrobe"><div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"><i class="fas fa-tshirt" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">衣橱</div></div>
+                    <div class="app-container" onclick="openApp('home-app')" data-drag-id="sys-home"><div class="app-icon" style="background: linear-gradient(135deg, rgba(255, 200, 150, 0.4) 0%, rgba(255, 150, 100, 0.1) 100%);"><i class="fas fa-home" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">家庭空间</div></div>
                 </div>
-                <!-- ============ 第四页 (扩展空间) ============ -->
-<div class="home-page" id="page-4">
-    
-    <!-- 这里可以自由放置小组件和APP图标，支持拖拽排列 -->
-     <!-- 在 id="page-4" 的 div 内部添加 -->
-
-
-</div>
 
             </div>
+
+
+
+                
             
 
 
@@ -8614,10 +8561,20 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
 （如果你执行了操作，请在对话中自然表现出来，比如“我切了一首更有氛围的歌~”或“这首歌很好听，我按播放了哦”）`;
 
 
-                let drawInjectBlock = `\n\n【专属生图相机机制】：
+                // 替换 triggerAIResponse 中的 drawInjectBlock 变量赋值
+let drawInjectBlock = '';
+if (drawConfig.url && drawConfig.key) {
+    drawInjectBlock = `\n\n【专属生图相机机制】：
 如果你觉得聊天氛围非常合适，或者用户主动要求你发照片/自拍，你可以使用隐藏指令调用你的专属相机。
 只需在回复中独立输出：$$DRAW:这里填写你当前动作、表情、所处环境的纯英文提示词$$。
 系统会根据你的提示词自动拍照并发给用户。注意：发图不要过于频繁。`;
+} else {
+    drawInjectBlock = `\n\n【场景描述自拍机制（无相机模式）】：
+如果你觉得聊天氛围非常合适，或者用户主动要求你发照片/自拍，你可以使用隐藏指令发送一段详细的场景画面描述来替代照片。
+只需在回复中独立输出：$$DRAW:用中文详细描述你此刻所在的地点、正在做什么、穿着什么、表情和姿态，要有强烈的画面感，50-100字$$。
+系统会将你的描述以精美卡片的形式发送给用户，相当于发了一张"文字版自拍"。注意：不要过于频繁。`;
+}
+
             
 
                               let builtInRules = `\n\n【系统核心与灵魂准则】：
@@ -14177,32 +14134,38 @@ openApp = function(appId) {
     }
 
               // 后台真实生图并替换占位气泡
-    async function doAIGenerateImage(actionDesc, msgWrapperId) {
-        const container = document.getElementById(msgWrapperId);
-        
-                // 核心方法：强制更新历史记录，彻底防止刷新后卡在加载动画
-        const updateHistory = (newContent, newMsgType) => {
-            const histIndex = messageHistory.findIndex(m => 
-                (m.rawApiContent && m.rawApiContent.includes(msgWrapperId)) || 
-                (m.content && m.content.includes(msgWrapperId))
-            );
-            if(histIndex !== -1) {
-                messageHistory[histIndex].content = newContent;
-                messageHistory[histIndex].rawApiContent = newContent;
-                messageHistory[histIndex].msgType = newMsgType;
-                localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
-                return histIndex; // <--- 加上这行返回值，供删除按钮绑定索引
-            }
-            return -1;
-        };
-
-
-        if(!drawConfig.url || !drawConfig.key) {
-            const errMsg = `<span style="color:#ff6b6b; font-size:13px;">[相机故障：主人没在生图App配置API密钥...]</span>`;
-            if(container) container.innerHTML = errMsg;
-            updateHistory(errMsg, 'text');
-            return;
+    // 替换 doAIGenerateImage 函数
+async function doAIGenerateImage(actionDesc, msgWrapperId) {
+    const container = document.getElementById(msgWrapperId);
+    
+    const updateHistory = (newContent, newMsgType) => {
+        const histIndex = messageHistory.findIndex(m => 
+            (m.rawApiContent && m.rawApiContent.includes(msgWrapperId)) || 
+            (m.content && m.content.includes(msgWrapperId))
+        );
+        if(histIndex !== -1) {
+            messageHistory[histIndex].content = newContent;
+            messageHistory[histIndex].rawApiContent = newContent;
+            messageHistory[histIndex].msgType = newMsgType;
+            localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            return histIndex;
         }
+        return -1;
+    };
+
+    // 👇 核心修改：没有生图API时，降级为文字场景描述气泡
+    if(!drawConfig.url || !drawConfig.key) {
+        const sceneText = `📷 [自拍/场景描述]\n${actionDesc}`;
+        const styledHtml = `<div style="background: linear-gradient(135deg, rgba(161,140,209,0.2), rgba(251,194,235,0.1)); border: 1px dashed rgba(161,140,209,0.5); border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.6; color: var(--text-main);">
+            <div style="font-size: 11px; color: var(--accent); margin-bottom: 8px; font-weight: bold;"><i class="fas fa-camera"></i> 场景画面</div>
+            <div style="font-style: italic;">${actionDesc}</div>
+        </div>`;
+        if(container) container.parentElement.innerHTML = styledHtml;
+        updateHistory(styledHtml, 'text');
+        scrollToBottom();
+        return;
+    }
+    
         
                 // 缝合提示词：预设外貌 + AI动作 + 预设画风
         const finalPrompt = `${drawConfig.appearance}, ${actionDesc}, ${drawConfig.style}`;
