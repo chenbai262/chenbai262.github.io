@@ -3754,12 +3754,13 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
 
 
 
-                /* ========================================== */
+                        /* ========================================== */
         /* 🚀 终极全屏强制铺满补丁 (彻底解决向右偏移与左侧黑线) */
         /* ========================================== */
         html, body {
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important; /* 👈 引入动态视口高度，完美包裹 iOS 底部安全区，消灭底边黑线 */
             max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -3775,7 +3776,8 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         .phone, :fullscreen .phone, :-webkit-full-screen .phone {
             /* 不再使用 100vw 这种会产生滚动条误差的单位，严格使用 100% */
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important; /* 👈 同步引入动态视口高度，彻底撑满到底部 */
             max-width: none !important;
             max-height: none !important;
             margin: 0 !important;
@@ -3803,6 +3805,7 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
             top: 0 !important;
             left: 0 !important;
         }
+
 
 
         
