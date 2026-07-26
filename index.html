@@ -19896,41 +19896,54 @@ window.addEventListener('load', function() {
 
 // 终极兜底：无论如何不超过 10 秒
 setTimeout(hideSplashEarly, 10000);
-    // ==========================================
-    // 👑 核心修复：解决 APK 环境下虚拟键盘遮挡输入框的问题
+        // ==========================================
+    // 👑 终极修复：解决 Median/APK 环境下输入法完全遮挡输入框
     // ==========================================
     
-    // 1. 监听输入框获得焦点的动作（延迟300ms等待键盘动画结束）
-    document.addEventListener('focus', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            setTimeout(function() {
-                // 强制将当前输入框滚动到可视区域
-                e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                
-                // 同步将各个聊天面板的聊天记录推到最底部
-                if (typeof scrollToBottom === 'function') scrollToBottom();
-                if (typeof scrollGroupToBottom === 'function') scrollGroupToBottom();
-                
-                // 针对线下约会等没有封装函数的独立容器进行探底
-                const heartContainer = document.getElementById('heart-container');
-                if (heartContainer) heartContainer.scrollTop = heartContainer.scrollHeight;
-                
-                const srChatBody = document.getElementById('sr-chat-body');
-                if (srChatBody) srChatBody.scrollTop = srChatBody.scrollHeight;
-            }, 300); // 300ms 是安卓键盘弹起的通用动画时间
-        }
-    }, true);
+    function fixViewportHeight() {
+        const phoneContainer = document.querySelector('.phone');
+        if (!phoneContainer) return;
+        
+        // 核心：获取剔除键盘后的【真实可视区域高度】
+        const realHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        
+        // 暴力破解 100vh 的限制，强制把整个外壳的高度压缩到键盘上方
+        phoneContainer.style.height = realHeight + 'px';
+        
+        // 高度压缩后，由于你的布局是 flex，输入框自然会被顶上来。这里再顺便让聊天滚到底
+        requestAnimationFrame(() => {
+            if (typeof scrollToBottom === 'function') scrollToBottom();
+            if (typeof scrollGroupToBottom === 'function') scrollGroupToBottom();
+            const heartContainer = document.getElementById('heart-container');
+            if (heartContainer) heartContainer.scrollTop = heartContainer.scrollHeight;
+            const srChatBody = document.getElementById('sr-chat-body');
+            if (srChatBody) srChatBody.scrollTop = srChatBody.scrollHeight;
+        });
+    }
 
-    // 2. 监听 APK 窗体因键盘弹起产生的 resize 事件，进行二次位置校准
-    window.addEventListener('resize', function() {
-        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
-            setTimeout(function() {
-                document.activeElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                if (typeof scrollToBottom === 'function') scrollToBottom();
-                if (typeof scrollGroupToBottom === 'function') scrollGroupToBottom();
-            }, 100);
+    // 1. 监听现代浏览器的可视视口变化（键盘弹起/收回的最准确事件）
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', fixViewportHeight);
+    }
+    // 2. 兜底监听常规窗口 resize
+    window.addEventListener('resize', fixViewportHeight);
+
+    // 3. 焦点事件兜底（防止某些安卓机型事件丢失）
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            setTimeout(fixViewportHeight, 200); 
         }
     });
+    
+    document.addEventListener('focusout', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            setTimeout(fixViewportHeight, 200); 
+        }
+    });
+
+    // 网页加载时先初始化一次
+    fixViewportHeight();
+
 
 
 
