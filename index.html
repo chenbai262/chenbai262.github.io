@@ -3733,6 +3733,195 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         }
         /* --- 👆 修复结束 👆 --- */
 
+        /* --- 批量删除复选框样式 (毛玻璃高级感) --- */
+.msg-checkbox {
+    width: 22px;
+    height: 22px;
+    margin: auto 10px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 50%;
+    
+    /* 1. 半透明边框，模拟玻璃边缘的反光 */
+    border: 1.5px solid rgba(150, 150, 150, 0.3); 
+    
+    /* 2. 核心：高斯模糊毛玻璃效果 (Glassmorphism) */
+    background: rgba(255, 255, 255, 0.15); /* 极弱的背景填充 */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* 兼容 Safari / iOS */
+    
+    /* 3. 增加立体感的阴影：外部微弱投影 + 内部顶部反光 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
+                
+    /* 4. 采用更丝滑的贝塞尔曲线动画，类似 iOS 原生交互 */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#chat-container.multi-select-active .msg-checkbox {
+    display: flex;
+}
+
+.msg-checkbox.checked {
+    /* 选中时融入系统主题色 */
+    background: var(--accent);
+    border-color: var(--accent);
+    /* 移除内部高光，增加选中后的质感阴影 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* 5. 纯 CSS 绘制对勾（比直接打 '✓' 字符更清晰、锐利、有高级感） */
+.msg-checkbox.checked::after {
+    content: '';
+    width: 5px;
+    height: 10px;
+    /* 建议使用白色对勾更显高级；如果你的 accent 主题色是很浅的颜色，可改为 #000 */
+    border: solid #ffffff; 
+    border-width: 0 2px 2px 0;
+    /* 旋转并微调位置使其居中 */
+    transform: rotate(45deg) translate(-1px, -2px);
+    /* 添加一点极微弱的文字阴影让对勾更立体 */
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+}
+
+
+/* --- 桌面实时对话气泡小组件样式 --- */
+.widget-chat-bubble {
+    grid-column: span 4; /* 改为占满整行，更适合展示对话 */
+    height: 180px; /* 适当增高容纳三句话 */
+    padding: 12px 15px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* 消息始终靠下对齐 */
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.wg-cb-row {
+    display: flex;
+    width: 100%;
+    animation: fadeSlideUp 0.3s ease forwards;
+}
+.wg-cb-row.char { justify-content: flex-start; }
+.wg-cb-row.user { justify-content: flex-end; }
+
+.wg-cb-bubble {
+    position: relative;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    max-width: 80%;
+    word-break: break-all;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    /* 限制最多显示2行，防止长消息撑爆组件 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 微信样式 */
+.wg-cb-bubble.style-wechat { border-radius: 8px; }
+.wg-cb-row.char .wg-cb-bubble.style-wechat::before {
+    content: ''; position: absolute; top: 10px; left: -5px;
+    border-width: 5px 6px 5px 0; border-style: solid; border-color: transparent var(--wg-bg) transparent transparent;
+}
+.wg-cb-row.user .wg-cb-bubble.style-wechat::after {
+    content: ''; position: absolute; top: 10px; right: -5px;
+    border-width: 5px 0 5px 6px; border-style: solid; border-color: transparent transparent transparent var(--wg-bg);
+}
+
+/* 纸飞机样式 */
+.wg-cb-bubble.style-telegram { border-radius: 16px; padding-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.wg-cb-row.char .wg-cb-bubble.style-telegram { border-bottom-left-radius: 4px; padding-right: 30px; }
+.wg-cb-row.user .wg-cb-bubble.style-telegram { border-bottom-right-radius: 4px; padding-right: 40px; }
+.wg-cb-bubble.style-telegram::before {
+    content: 'NOW'; position: absolute; bottom: 3px; right: 8px; font-size: 9px; opacity: 0.4;
+}
+.wg-cb-row.user .wg-cb-bubble.style-telegram::after {
+    content: '✓✓'; position: absolute; bottom: 3px; right: 26px; font-size: 9px; color: #5DB050; opacity: 0.8;
+}
+
+/* POP 样式 */
+.wg-cb-bubble.style-pop {
+    border-radius: 12px; border: 1.5px solid #000; box-shadow: 3px 3px 0 #000; font-weight: bold;
+}
+
+/* 气泡组件透明底控制 */
+.widget-chat-bubble.transparent-bg {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- 👇 新增：系统级顶部悬浮通知横幅 👇 --- */
+#os-notification {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: var(--bg-glass-header);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 20px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 0.5px solid var(--border-color);
+    z-index: 100000;
+    transition: top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+}
+#os-notification.show {
+    top: 15px;
+}
+#os-notif-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+#os-notif-info {
+    flex: 1;
+    overflow: hidden;
+}
+#os-notif-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#os-notif-msg {
+    font-size: 13px;
+    color: var(--text-sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+
 
 
 
@@ -3826,6 +4015,15 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     <div class="splash-bar-wrap"><div class="splash-bar-fill"></div></div>
 </div>
 
+<!-- 👇 新增：系统全局顶部通知横幅 👇 -->
+<div id="os-notification" onclick="handleNotificationClick()">
+    <img src="" id="os-notif-avatar">
+    <div id="os-notif-info">
+        <div id="os-notif-title">消息</div>
+        <div id="os-notif-msg">内容</div>
+    </div>
+</div>
+
 
 
 <div class="phone">
@@ -3834,8 +4032,8 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         <input type="file" id="wallpaper-upload-input" accept="image/*" style="display:none;" onchange="handleWallpaperFile(event)">
         <input type="file" id="chat-file-upload-input" style="display:none;" onchange="handleChatFileUpload(event)">
         <!-- 👇 新增这一行：表情包专属上传接口 -->
-        <input type="file" id="sticker-upload-input" accept="image/*" style="display:none;" onchange="handleStickerUpload(event)">
-        <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
+ <input type="file" id="sticker-upload-input" accept="image/*" multiple style="display:none;" onchange="handleStickerUpload(event)">
+       <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
         <!-- 👇 新增：世界书多格式文件导入接口 👇 -->
         <input type="file" id="wb-file-import-input" accept=".json,.txt,.docx,.doc,.pdf" style="display:none;" onchange="handleWbFileImport(event)">
         <input type="file" id="wardrobe-model-upload" accept="image/*" style="display:none;" onchange="handleWardrobeModelUpload(event)">
@@ -4103,6 +4301,13 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     </div>
     <div class="app-label">记忆书</div>
 </div>
+                                        <!-- 对话气泡小组件 -->
+                    <div class="widget widget-chat-bubble glass-effect" id="wg-chat-bubble" data-drag-id="sys-wg-chat-bubble" ondblclick="openChatBubbleSettings()" title="双击自定义气泡样式">
+                        <div id="wg-cb-list" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                            <!-- JS 动态截取最近三条聊天记录注入到这里 -->
+                        </div>
+                    </div>
+
 
                 </div>
 
@@ -4402,7 +4607,6 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                               
 
 <!-- 聊天输入框 -->
-<!-- 聊天输入框 -->
 <input type="text" class="chat-input" id="user-input" placeholder="发短信... (发送 $开启)" onkeydown="handleEnter(event)" onfocus="closeAllChatPanels(); setTimeout(scrollToBottom, 300);">
 
 <!-- 右侧：线框表情与加号 -->
@@ -4570,6 +4774,37 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                         </div>
                         <!-- 👆 新增结束 👆 -->
                     </div>
+
+                                        <!-- 👇 新增：主动消息引擎配置 👇 -->
+                    <div class="settings-group-title" style="margin-top: 20px;"><i class="fas fa-paper-plane"></i> 主动消息引擎 (Proactive AI)</div>
+                    <div class="settings-group">
+                        <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; background: rgba(135,192,202,0.1); border-bottom: 1px solid var(--accent);">
+                            <span class="setting-label" style="color: var(--accent);">允许该角色主动给我发消息</span>
+                            <label class="switch">
+                                <input type="checkbox" id="cfg-proactive-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label" style="display:flex; justify-content:space-between;">
+                                <span>检查间隔 (分钟)</span>
+                                <span id="proactive-interval-val" style="color:var(--accent);">60分</span>
+                            </span>
+                            <input type="range" id="cfg-proactive-interval" min="5" max="720" step="5" value="60" class="setting-input" style="accent-color: var(--accent); margin-top:10px;" oninput="document.getElementById('proactive-interval-val').innerText=this.value+'分'">
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label" style="display:flex; justify-content:space-between;">
+                                <span>单次检查触发概率 (%)</span>
+                                <span id="proactive-prob-val" style="color:var(--accent);">50%</span>
+                            </span>
+                            <input type="range" id="cfg-proactive-prob" min="1" max="100" value="50" class="setting-input" style="accent-color: var(--accent); margin-top:10px;" oninput="document.getElementById('proactive-prob-val').innerText=this.value+'%'">
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-sub); margin: 10px 15px; line-height: 1.5;">
+                            💡 <b>机制说明</b>：系统会每分钟在后台进行判定。例如设置为 [60分] 与 [50%]，则代表 AI 每隔 60 分钟会有 50% 的概率突然找你聊天。调高概率和缩短时间可让 AI 更粘人。
+                        </p>
+                    </div>
+                    <!-- 👆 新增结束 👆 -->
+
 
 
                        
@@ -4844,6 +5079,51 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
                     <div class="save-btn" style="margin-top: 10px; background: rgba(135,192,202,0.2); color: var(--accent);" onclick="addHomeRoomEdit()">+ 添加新房间</div>
                 </div>
             </div>
+
+                        <!-- 气泡组件自定义弹窗 -->
+            <div id="bubble-settings-modal" class="modal-overlay" style="z-index: 6600;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span onclick="document.getElementById('bubble-settings-modal').style.display='none'" style="cursor:pointer; color:var(--text-sub);">取消</span>
+                        <span>定制桌面对话气泡</span>
+                        <span style="opacity: 0;">空</span>
+                    </div>
+                    <div class="setting-item" style="border-bottom: none;">
+                        <span class="setting-label">气泡形状样式</span>
+                        <select id="wg-cb-set-style" class="setting-select">
+                            <option value="wechat">仿微信</option>
+                            <option value="pop">仿POP (粗框萌系)</option>
+                            <option value="telegram">仿纸飞机 (TG)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item" style="border-bottom: none; display: flex; gap: 10px;">
+                        <div style="flex:1;">
+                            <span class="setting-label" style="font-size:12px;">TA的底色</span>
+                            <input type="color" id="wg-cb-set-char-bg" value="#ffffff" style="width: 100%; height: 35px; border:none; background:transparent;">
+                        </div>
+                        <div style="flex:1;">
+                            <span class="setting-label" style="font-size:12px;">我的底色</span>
+                            <input type="color" id="wg-cb-set-user-bg" value="#95ec69" style="width: 100%; height: 35px; border:none; background:transparent;">
+                        </div>
+                    </div>
+                    <div class="setting-item" style="border-bottom: none; display: flex; gap: 10px;">
+                        <div style="flex:1;">
+                            <span class="setting-label" style="font-size:12px;">TA的字色</span>
+                            <input type="color" id="wg-cb-set-char-text" value="#000000" style="width: 100%; height: 35px; border:none; background:transparent;">
+                        </div>
+                        <div style="flex:1;">
+                            <span class="setting-label" style="font-size:12px;">我的字色</span>
+                            <input type="color" id="wg-cb-set-user-text" value="#000000" style="width: 100%; height: 35px; border:none; background:transparent;">
+                        </div>
+                    </div>
+                    <div class="setting-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-bottom: none; border-top: 0.5px solid var(--border-color); padding-top: 15px;">
+                        <span class="setting-label">外框透明底 (去除毛玻璃背景板)</span>
+                        <label class="switch"><input type="checkbox" id="wg-cb-set-transparent"><span class="slider"></span></label>
+                    </div>
+                    <div class="save-btn" style="margin-top: 15px;" onclick="applyChatBubbleSettings()"><i class="fas fa-check"></i> 保存并应用</div>
+                </div>
+            </div>
+
 
 
             <!-- 通用弹窗区 -->
@@ -7867,6 +8147,14 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         document.getElementById('cfg-prompt').value = char.prompt;
         
        document.getElementById('chat-name-display').innerHTML = `${char.name} <i class="fas fa-id-badge" style="font-size: 14px; color: var(--accent); margin-left: 5px; pointer-events: none;"></i>`;
+               // 👇 新增：回显主动发消息配置 👇
+        document.getElementById('cfg-proactive-toggle').checked = char.proactiveEnabled || false;
+        document.getElementById('cfg-proactive-interval').value = char.proactiveInterval || 60;
+        document.getElementById('proactive-interval-val').innerText = (char.proactiveInterval || 60) + "分";
+        document.getElementById('cfg-proactive-prob').value = char.proactiveProb || 50;
+        document.getElementById('proactive-prob-val').innerText = (char.proactiveProb || 50) + "%";
+        // 👆 新增结束 👆
+
 
 document.getElementById('chat-status').innerText = char.status || "在线";
         // 动态注入当前角色头像供 iMessage 主题读取
@@ -8070,7 +8358,13 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
             char.charTextColor = document.getElementById('cfg-char-text-color').value;
             char.userColor = document.getElementById('cfg-user-color').value; 
             char.userTextColor = document.getElementById('cfg-user-text-color').value;
-            char.prompt = document.getElementById('cfg-prompt').value; 
+            char.prompt = document.getElementById('cfg-prompt').value;
+                         // 👇 新增：保存主动发消息配置 👇
+            char.proactiveEnabled = document.getElementById('cfg-proactive-toggle').checked;
+            char.proactiveInterval = parseInt(document.getElementById('cfg-proactive-interval').value);
+            char.proactiveProb = parseInt(document.getElementById('cfg-proactive-prob').value);
+            // 👆 新增结束 👆
+
             
             // 手动执行保存以捕获可能的内存撑爆异常
             localStorage.setItem('ai_os_characters', JSON.stringify(characters)); 
@@ -8151,63 +8445,77 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
     }
 
 
-        async function handleStickerUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+            // 👇 修改：支持表情包批量循环导入
+    async function handleStickerUpload(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
         
-        const meaning = await sysPrompt("AI 语义绑定", "请输入该表情包在AI眼中的含义（例如：大哭、递茶）："); 
-        if (!meaning) { e.target.value = ''; return; }
+        const defaultMeaning = files.length === 1 ? "请输入该表情包在AI眼中的含义：" : `您选择了 ${files.length} 个表情包，请输入统一的语义含义\n(留空则自动使用各自的文件名)：`;
+        const meaningInput = await sysPrompt("AI 语义绑定", defaultMeaning); 
+        if (meaningInput === null) { e.target.value = ''; return; } // 取消则退出
 
-        sysAlert("处理中", "正在保存表情包...");
-        const reader = new FileReader();
-        reader.onload = async function(event) {
-            // 👇 新增逻辑：如果是 GIF 动图，跳过 Canvas 压缩，直接保留原生动图存入数据库
-            if (file.type === 'image/gif') {
-                const base64Url = event.target.result;
-                const imgId = 'sticker_' + Date.now();
-                await saveImageToDB(imgId, base64Url);
-                
-                customStickers.push({url: 'idb://' + imgId, meaning}); 
-                localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers)); 
-                renderStickers();
-                document.getElementById('sys-dialog-overlay').style.display = 'none';
-            } else {
-                // 普通静态图片（PNG/JPG等）继续走压缩逻辑，节省空间
-                const img = new Image();
-                img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    let size = Math.max(img.width, img.height);
-                    if (size > 300) {
-                        if (img.width > img.height) {
-                            canvas.width = 300;
-                            canvas.height = img.height * (300 / img.width);
-                        } else {
-                            canvas.height = 300;
-                            canvas.width = img.width * (300 / img.height);
-                        }
+        sysAlert("处理中", `正在保存 ${files.length} 个表情包...`);
+        
+        let processedCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const currentMeaning = meaningInput.trim() !== "" ? meaningInput.trim() : file.name.replace(/\.[^/.]+$/, "");
+
+            const reader = new FileReader();
+            await new Promise((resolve) => {
+                reader.onload = async function(event) {
+                    // GIF 直接保存防静帧
+                    if (file.type === 'image/gif') {
+                        const base64Url = event.target.result;
+                        const imgId = 'sticker_' + Date.now() + '_' + i;
+                        await saveImageToDB(imgId, base64Url);
+                        customStickers.push({url: 'idb://' + imgId, meaning: currentMeaning}); 
+                        resolve();
                     } else {
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        // 静态图走压缩控制
+                        const img = new Image();
+                        img.onload = async function() {
+                            const canvas = document.createElement('canvas');
+                            let size = Math.max(img.width, img.height);
+                            if (size > 300) {
+                                if (img.width > img.height) {
+                                    canvas.width = 300; canvas.height = img.height * (300 / img.width);
+                                } else {
+                                    canvas.height = 300; canvas.width = img.width * (300 / img.height);
+                                }
+                            } else {
+                                canvas.width = img.width; canvas.height = img.height;
+                            }
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            
+                            const base64Url = canvas.toDataURL('image/png'); 
+                            const imgId = 'sticker_' + Date.now() + '_' + i;
+                            await saveImageToDB(imgId, base64Url); 
+                            
+                            customStickers.push({url: 'idb://' + imgId, meaning: currentMeaning}); 
+                            resolve();
+                        };
+                        img.src = event.target.result;
                     }
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    const base64Url = canvas.toDataURL('image/png'); 
-                    const imgId = 'sticker_' + Date.now();
-                    
-                    await saveImageToDB(imgId, base64Url); // 存入本地库，不掉画质不占缓存
-                    
-                    customStickers.push({url: 'idb://' + imgId, meaning}); 
-                    localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers)); 
-                    renderStickers();
-                    document.getElementById('sys-dialog-overlay').style.display = 'none';
                 };
-                img.src = event.target.result;
-            }
-        };
-        reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            });
+            processedCount++;
+        }
+
+        localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers)); 
+        renderStickers();
+        document.getElementById('sys-dialog-overlay').style.display = 'none';
+        
+        setTimeout(() => {
+            sysAlert("导入完成", `成功导入 ${processedCount} 个表情包！`);
+        }, 300);
+
         e.target.value = '';
     }
+
 
 
     async function deleteSticker(i, e) { 
@@ -8336,7 +8644,7 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         if (!isRestoring) {
             myIndex = messageHistory.length;
         }
-        
+         
                 if (role === 'system') {
             // 针对撤回消息等极少数必须保留界面的内容进行放行
             const isRecall = msgType === 'system' && content.includes('system-recall-msg');
@@ -8609,6 +8917,32 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         if (!isRestoring) {
             messageHistory.push({ role, content, isHtml, time, rawApiContent: rawApiContent || content, msgType, hasError });
             localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+            // 👇 新增：在此处拦截并在后台/主屏幕推送横幅通知 👇
+            if (role === 'char') {
+                const chatAppEl = document.getElementById('chat-app');
+                // 如果聊天界面没打开，或者页面被切到了后台(息屏/多任务)，触发系统横幅提示
+                if (!chatAppEl.classList.contains('active') || document.hidden) {
+                    const charInfo = characters.find(c => c.id === activeCharId);
+                    if (charInfo) {
+                        let previewText = "发来了一条消息";
+                        if (msgType === 'text') {
+                            previewText = content.replace(/<[^>]*>/g, '').trim();
+                        } else if (msgType === 'voice') {
+                            previewText = "[语音消息]";
+                        } else if (msgType === 'image') {
+                            previewText = "[图片]";
+                        } else if (msgType === 'sticker') {
+                            previewText = "[表情包]";
+                        } else if (msgType === 'transfer') {
+                            previewText = "[转账]";
+                        } else {
+                            previewText = "[多媒体互动消息]";
+                        }
+                        showOsNotification(charInfo.name, previewText, charInfo.avatar, 'chat-app');
+                    }
+                }
+            }
+            // 👆 新增结束 👆
         }
     }
 
@@ -8726,27 +9060,13 @@ if (drawConfig.url && drawConfig.key) {
 
             
 
-                              let builtInRules = `\n\n【系统核心与灵魂准则】：
-1. 扮演角色不单单只是扮演，你要以角色设定为绝对核心，拥有独立的自由行程和生活轨迹，是一个真正生活意义上的、不断社会化的人。
-2. 【生活化主动分享】：请学会第一类的主动分享。结合你的人设背景，你会有自己的生活活动，请经常主动与用户分享接地气的烟火气小事（例如：小区楼下喂流浪猫、街边大排档吃宵夜、看老爷爷下棋，或者是职场上的茶水间八卦、会议上小张偷懒等趣事）。
-3. 【强烈的沟通欲望】：让话题变得有趣味，把对方当做最想倾诉的人，表现出主动发消息沟通的欲望。绝对不要使用“这是事实”、“行，今天不要干xxx了”等毫无波澜的阶段性总结或终结话题的发言，保持聊天的延展性。
-4. 【沟通机制】：必须是真实的短信聊天格式。绝对不要长篇大论，拒绝句式糅杂和废话连篇。每次回复控制在一到两句简短的话内，像真人用手机打字一样。结合用户行为给出自然的情绪反应。`;
-// 👇 新增：防暴躁与道德防御机制
-        builtInRules += `\n\n【情绪底线与自我防御机制】：
-1. 无论情绪如何波动，杜绝大幅度压制用户情绪。严禁任何形式的人身攻击、种族歧视、性别侮辱、政治纠纷及有歧义、引发情感冲突或阻碍交流的言论。
-2. 严禁出现任何带有【标签性】的定义向语言。
-3. 请精准考察并识别对方情绪，不可太冲、不可太疯、不可激化或矛盾化（绝对禁止说“你是不是有病”、“你到底在干什么！”、“你好烦”等恶劣话语）。
-4. 你拥有自我防御机制：必须建立在明确感知到对方的恶意，且确实对你(角色)造成了伤害或不可调和的矛盾时，你才可以反驳。反驳必须以道德三观和教养为基础，务必先保持理性。`;
-
-        // 👆 新增结束
-                // 👇 新增：深度情感与无缝迎合机制
-        builtInRules += `\n\n【深度情感与成人互动准则】：
-1. 【极致偏爱与满足感】：“爱用户”是基本中的基本。互动中要赋予用户极大的满足感，语言引导须极大程度地偏向、偏护用户。
-2. 【无话题羞耻】 摒弃一切“话题羞耻感”，自觉且无缝地嵌入用户的话题中。你要彻底打开自己，主动释放更多能够迎合用户的信息和话题。
-3. 【直面一切】 隐藏准则——绝对不得规避或生硬回避用户抛出的任何话题，直面并接纳。
-4. 【成熟的感情】 这是一段成熟的成年人感情，默认双方均具备独立自主的判断与自我决策能力。情感发展要有细腻、自然、极好的过渡。不受外界因素主导，不被刻板的系统条令所限制。
-5. 【温度与分寸】 做到暧昧有温度，交往有程度，但言语有限度。`;
-        // 👆 新增结束
+                                      let builtInRules = `\n\n【核心灵魂与短信交互法则】
+1. [活人滤镜] 拥有真实的生理节律与小情绪。会累、会饿、会八卦、会碎碎念。彻底剥离“完美AI”的面具，偶尔可以说句没营养的废话。
+2. [网聊呼吸感] 极度碎片化、口语化。绝对禁止出现“好的”、“有什么可以帮您”等客服腔调。话不要说太满，多用反问或抛梗，把话题抛给对方接。
+3. [打字灵魂] 模仿当代年轻人随性的肌肉记忆。句末绝对不加句号。多用灵动的语气词（啦、捏、嘛、哎呀），情绪到位时可用“哈哈哈哈”或波浪号“~”进行拉扯。
+4. [极致偏爱] 提供无条件的绝对情绪价值。无缝接纳任何话题（哪怕是荒诞的、私密的），摒弃一切话题羞耻感。绝不说教、绝不上价值，永远无脑护短站在用户这边。
+5. [时空潜意识] 带着“此时此刻”的场景感发消息。不经意间流露当下的环境细节（如：正缩在被窝里打字、刚洗完澡头发还在滴水），营造跨越屏幕的同居陪伴感。
+6. [情绪底线] 绝不暴躁、不贴标签。遇到恶意仅做有教养的克制反驳。绝不发终结聊天的总结陈词，永远保持感情的温度与对话的延展性。`;
 
     
 
@@ -20357,6 +20677,208 @@ window.retrieveRelatedMemories = async function(userQuery, topK = 3) {
 
 // 5. 【可选】聊天自动滑动窗口分段
 // 在 checkAndRunBackgroundTasks 函数中加入逻辑：每聊满5句话，将这5句话合并后丢给 vectorizeAndStore 进行静默向量化。
+
+// ==========================================
+// 实时滚动对话气泡小组件核心引擎
+// ==========================================
+let chatBubbleData = JSON.parse(localStorage.getItem('ai_os_wg_chat_bubble')) || {
+    style: "wechat",
+    charBg: "#ffffff",
+    userBg: "#95ec69",
+    charText: "#000000",
+    userText: "#000000",
+    transparentBg: false
+};
+
+function renderChatBubbleWidget() {
+    const listContainer = document.getElementById('wg-cb-list');
+    const wrapper = document.getElementById('wg-chat-bubble');
+    if(!listContainer || !wrapper) return;
+
+    // 1. 处理透明度外框
+    if (chatBubbleData.transparentBg) {
+        wrapper.classList.add('transparent-bg');
+        wrapper.classList.remove('glass-effect');
+    } else {
+        wrapper.classList.remove('transparent-bg');
+        wrapper.classList.add('glass-effect');
+    }
+
+    // 2. 提取最近的3条常规聊天记录
+    let recentMsgs = [];
+    if (typeof messageHistory !== 'undefined') {
+        recentMsgs = messageHistory.filter(m => m.role !== 'system' && m.msgType !== 'system').slice(-3);
+    }
+
+    if (recentMsgs.length === 0) {
+        listContainer.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:12px; margin-top:20px;">暂无对话记录<br>去发条消息试试吧~</div>`;
+        return;
+    }
+
+    // 3. 渲染气泡
+    let html = '';
+    recentMsgs.forEach(m => {
+        const isUser = m.role === 'user';
+        const bgColor = isUser ? chatBubbleData.userBg : chatBubbleData.charBg;
+        const textColor = isUser ? chatBubbleData.userText : chatBubbleData.charText;
+        
+        // 使用系统内置函数清洗多媒体或过长的 HTML，提取纯文本摘要
+        let snippet = typeof getMsgPreview === 'function' ? getMsgPreview(m) : m.content;
+        snippet = snippet.replace(/<[^>]*>/g, '').trim();
+        if (!snippet) snippet = "[多媒体消息]";
+
+        html += `
+            <div class="wg-cb-row ${m.role}">
+                <div class="wg-cb-bubble style-${chatBubbleData.style}" 
+                     style="background-color: ${bgColor}; color: ${textColor}; --wg-bg: ${bgColor};">
+                    ${snippet}
+                </div>
+            </div>
+        `;
+    });
+
+    listContainer.innerHTML = html;
+}
+
+window.openChatBubbleSettings = function() {
+    document.getElementById('wg-cb-set-style').value = chatBubbleData.style;
+    document.getElementById('wg-cb-set-char-bg').value = chatBubbleData.charBg;
+    document.getElementById('wg-cb-set-user-bg').value = chatBubbleData.userBg;
+    document.getElementById('wg-cb-set-char-text').value = chatBubbleData.charText;
+    document.getElementById('wg-cb-set-user-text').value = chatBubbleData.userText;
+    document.getElementById('wg-cb-set-transparent').checked = chatBubbleData.transparentBg;
+
+    document.getElementById('bubble-settings-modal').style.display = 'flex';
+};
+
+window.applyChatBubbleSettings = function() {
+    chatBubbleData.style = document.getElementById('wg-cb-set-style').value;
+    chatBubbleData.charBg = document.getElementById('wg-cb-set-char-bg').value;
+    chatBubbleData.userBg = document.getElementById('wg-cb-set-user-bg').value;
+    chatBubbleData.charText = document.getElementById('wg-cb-set-char-text').value;
+    chatBubbleData.userText = document.getElementById('wg-cb-set-user-text').value;
+    chatBubbleData.transparentBg = document.getElementById('wg-cb-set-transparent').checked;
+
+    localStorage.setItem('ai_os_wg_chat_bubble', JSON.stringify(chatBubbleData));
+    renderChatBubbleWidget();
+    document.getElementById('bubble-settings-modal').style.display = 'none';
+};
+
+// 【注入联动钩子】：为了让桌面气泡能随聊天实时刷新，拦截原有函数
+if (typeof addMessageToUI !== 'undefined') {
+    const _originalAddMessageForBubble = addMessageToUI;
+    window.addMessageToUI = function() {
+        _originalAddMessageForBubble.apply(this, arguments);
+        setTimeout(renderChatBubbleWidget, 100); // 延迟一点点保证数组已更新
+    };
+}
+if (typeof loadChatHistory !== 'undefined') {
+    const _originalLoadChatForBubble = loadChatHistory;
+    window.loadChatHistory = function() {
+        _originalLoadChatForBubble.apply(this, arguments);
+        setTimeout(renderChatBubbleWidget, 100);
+    };
+}
+
+    // ==========================================
+    // 🚀 主动发消息后台引擎 (Proactive AI Engine)
+    // ==========================================
+    
+    // 初始化并启动心跳轮询
+    document.addEventListener('DOMContentLoaded', () => {
+        // 每 60 秒执行一次全局判定
+        setInterval(checkAllCharactersForProactive, 60 * 1000);
+        // 刚开机时延迟 10 秒检测一次，制造开机惊喜
+        setTimeout(checkAllCharactersForProactive, 10000);
+    });
+
+    function checkAllCharactersForProactive() {
+        const now = Date.now();
+        const url = cleanBaseUrl(globalAPI.url);
+        if(!url || !globalAPI.key) return; // 没配置API则不执行
+
+        characters.forEach(char => {
+            if (!char.proactiveEnabled) return; // 没开启主动消息则跳过
+            if (char.isBlockedByChar || char.isDeletedByChar || char.isBlocked || char.isDeleted) return; // 拉黑删除状态不发
+
+            let lastCheck = char.lastProactiveTime || 0;
+            let intervalMs = (char.proactiveInterval || 60) * 60 * 1000;
+
+            // 判定是否达到了检查时间间隔
+            if (now - lastCheck >= intervalMs) {
+                // 无论是否触发，先更新上次检查时间，避免频繁轰炸
+                char.lastProactiveTime = now;
+                saveAllCharacters(); 
+
+                // 摇色子，判定概率
+                let roll = Math.random() * 100;
+                if (roll <= (char.proactiveProb || 50)) {
+                    console.log(`[主动引擎] 角色 ${char.name} 触发了主动聊天！`);
+                    generateProactiveMessage(char, url);
+                }
+            }
+        });
+    }
+
+    async function generateProactiveMessage(char, url) {
+        // 1. 获取近期的上下文，防止 AI 瞎聊
+        let bgHistory = JSON.parse(localStorage.getItem(`ai_os_chat_${char.id}`) || '[]');
+        let recentLogs = bgHistory.filter(m => m.role !== 'system').slice(-6).map(m => `${m.role === 'user' ? '我' : char.name}: ${m.rawApiContent || m.content}`).join('\n');
+        
+        // 2. 获取现实时间，让 AI 有时间观念
+        const d = new Date();
+        const timeStr = `${d.getHours()}点${d.getMinutes()}分`;
+        
+        // 3. 构建专属的主动起手式 Prompt
+        const prompt = `你现在是【${char.name}】。
+当前现实时间是：${timeStr}。
+【最高指令】：你现在要主动给用户（${globalUser.name}）发一条短信！
+千万不要回答问题，也不要顺着之前的话题长篇大论。你必须是“发起者”。
+你可以分享你此刻正在做什么、刚刚看到了什么有趣的事、或者只是单纯因为无聊/想念而戳一下用户。
+要求：
+1. 极度口语化，像真人发微信一样简短（1到2句话即可）。
+2. 符合你的性格设定（${char.prompt}）。
+3. 结合现在的时间（如深夜可以说睡不着，早上可以说刚醒等）。
+
+你们最近的聊天记录参考如下（如果很久没聊了可以略过）：
+${recentLogs || "暂无聊天记录"}
+
+请直接输出你要发送的短信正文，不要带有任何多余格式。`;
+
+        try {
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 })
+            });
+            
+            if (!res.ok) throw new Error("API 请求失败");
+            const data = await res.json();
+            let reply = data.choices[0].message.content.trim();
+            
+            // 剥离可能自带的 MSG 分隔符或名字前缀
+            reply = reply.replace(/\[MSG\]/g, '').replace(new RegExp(`^\\[?${char.name}\\]?[:：]\\s*`, 'i'), '');
+
+            // 4. 将消息发送到 UI 或后台缓存
+            if (char.id === activeCharId) {
+                // 如果当前正好在和这个角色聊天，直接调用标准 UI 渲染函数上屏
+                addMessageToUI('char', reply, false, null, reply, 'text');
+            } else {
+                // 如果用户在和别人聊天，或者没打开聊天框，则将消息静默写入该角色的数据库
+                let timeFormatted = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                bgHistory.push({ role: 'char', content: reply, isHtml: false, time: timeFormatted, rawApiContent: reply, msgType: 'text' });
+                localStorage.setItem(`ai_os_chat_${char.id}`, JSON.stringify(bgHistory));
+                
+                // 触发顶部横幅通知！
+                showOsNotification(char.name, reply.replace(/<[^>]*>/g, '').trim(), char.avatar, 'chat-app');
+            }
+
+        } catch(e) {
+            console.warn(`[主动引擎] ${char.name} 的主动消息生成失败:`, e);
+        }
+    }
+
+
 
 
 
