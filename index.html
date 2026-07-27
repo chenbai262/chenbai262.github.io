@@ -4812,16 +4812,24 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
 
                        
 
-                    <div class="settings-group-title">核心设定 (Prompt)</div>
+                                        <div class="settings-group-title">核心设定 (Prompt)</div>
                     <div class="settings-group">
                         <div class="setting-item">
                             <textarea id="cfg-prompt" class="setting-textarea" placeholder="输入性格、说话方式、世界观..."></textarea>
+                        </div>
+                    </div>
+                    <!-- 新增的正则限制输入框 -->
+                    <div class="settings-group-title" style="color: #ff453a;"><i class="fas fa-gavel"></i> 绝对格式规则 (正则与格式权威)</div>
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <textarea id="cfg-format-rule" class="setting-textarea" style="height: 80px;" placeholder="在此输入必须遵守的发送格式要求或正则表达式，AI将被最高权重强制读取执行。例如：必须以「主人，」开头..."></textarea>
                         </div>
                     </div>
                     <div class="btn-row">
                         <div class="save-btn" onclick="saveActiveCharacter()">保存当前角色</div>
                         <div class="del-btn" onclick="deleteActiveCharacter()"><i class="fas fa-trash"></i></div>
                     </div>
+
 
                                                 <!-- 👇 修改后的：角色完整数据备份与恢复 👇 -->
                     <div class="settings-group-title">角色完整数据搬家 (设定 + 记录)</div>
@@ -8145,6 +8153,8 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
         document.getElementById('cfg-user-color').value = char.userColor; 
         document.getElementById('cfg-user-text-color').value = char.userTextColor;
         document.getElementById('cfg-prompt').value = char.prompt;
+                if(document.getElementById('cfg-format-rule')) document.getElementById('cfg-format-rule').value = char.formatRule || "";
+
         
        document.getElementById('chat-name-display').innerHTML = `${char.name} <i class="fas fa-id-badge" style="font-size: 14px; color: var(--accent); margin-left: 5px; pointer-events: none;"></i>`;
                // 👇 新增：回显主动发消息配置 👇
@@ -8345,7 +8355,7 @@ const base64Url = canvas.toDataURL('image/png');
 
 
 
-function createNewCharacter() { const newChar = { id: generateId(), name: "新角色", avatar: "https://ui-avatars.com/api/?name=New&background=random", chatBg: "", charColor: "#2c2c2e", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff", prompt: "这是一个新角色。", useActionDesc: false, nudgeAction: "拍了拍" }; characters.push(newChar); saveAllCharacters(); loadCharacterState(newChar.id, true); }
+function createNewCharacter() { const newChar = { id: generateId(), name: "新角色", avatar: "https://ui-avatars.com/api/?name=New&background=random", chatBg: "", charColor: "#2c2c2e", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff", prompt: "这是一个新角色。", useActionDesc: false, nudgeAction: "拍了拍", formatRule: "" }; characters.push(newChar); saveAllCharacters(); loadCharacterState(newChar.id, true); }
 
        async function saveActiveCharacter() { 
         try {
@@ -8359,6 +8369,8 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
             char.userColor = document.getElementById('cfg-user-color').value; 
             char.userTextColor = document.getElementById('cfg-user-text-color').value;
             char.prompt = document.getElementById('cfg-prompt').value;
+                        if(document.getElementById('cfg-format-rule')) char.formatRule = document.getElementById('cfg-format-rule').value;
+
                          // 👇 新增：保存主动发消息配置 👇
             char.proactiveEnabled = document.getElementById('cfg-proactive-toggle').checked;
             char.proactiveInterval = parseInt(document.getElementById('cfg-proactive-interval').value);
@@ -9030,10 +9042,11 @@ async function triggerAIResponse() {
         
         contextBlocks.push(builtInRules);
 
-        // 🚨 灵魂注入：极其严厉的分条 Prompt 警告
+                // 🚨 灵魂注入：连发排版指令优化
         if (globalAPI.multiMsgCount > 1) {
-            contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
+            contextBlocks.push(`【连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯，将回复切分为 1 到 ${globalAPI.multiMsgCount} 条短消息（日常对话建议保持在 1~5 条区间）。\n要求：句意必须完整自然，绝不要盲目掐断句子造成混乱！每说完整的一句话，必须用 \`[MSG]\` 隔开，保持排版整洁。`);
         }
+
 
         contextBlocks.push(`【最高系统指令：状态面板通道】\n回复末尾必带此代码(用竖线分隔，内容详尽)：\n$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着详细描写|当前具体地点$$`);
 
@@ -9050,7 +9063,8 @@ async function triggerAIResponse() {
             ti.innerText = '对方正在输入...'; 
         }
 
-        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！`;
+        let formatInjection = activeChar.formatRule ? `\n\n【最高格式约束 / 强制正则权威】：\n必须绝对无条件遵守以下发送格式或正则要求，任何回复不得违背：\n${activeChar.formatRule}` : "";
+        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！` + formatInjection;
 
         let apiMessages = [{ role: "system", content: finalSystemContent }];
 
@@ -9147,35 +9161,22 @@ async function triggerAIResponse() {
         cmdMap.forEach(cmd => { reply = reply.replace(cmd.rx, cmd.tpl); });
         reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (m, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
 
-        // 🚨 核心切碎算法：最严格的分条机制
+                // 🚨 核心切分算法：尊重 AI 自己的 [MSG] 切分，不再根据标点暴力掐断
         let msgs = [];
         let blocks = reply.split(/\[MSG\]/i).map(s => s.trim()).filter(s => s);
         
         blocks.forEach(block => {
-            // 1. 如果是系统指令，绝对放行，绝不破坏
+            if (!block) return;
+            // 1. 如果是系统指令，放行
             if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|BLOCK|UNBLOCK|RECALL)/i)) {
                 if (!block.endsWith(']')) block += ']';
                 msgs.push(block);
-                return;
-            }
-            
-            // 2. 如果是纯文本，并且开启了多条连发
-            if (globalAPI.multiMsgCount > 1) {
-                // 暴力切开所有的句号、问号、叹号、换行符！确保一句一个独立气泡！
-                let parts = block.split(/([。！？\!\?\n]+)/g);
-                let tempStr = "";
-                for (let j = 0; j < parts.length; j++) {
-                    tempStr += parts[j];
-                    // 遇到标点符号或走到末尾，立刻结账存入新气泡
-                    if (/^[。！？\!\?\n]+$/.test(parts[j]) || j === parts.length - 1) {
-                        if (tempStr.trim()) msgs.push(tempStr.trim());
-                        tempStr = "";
-                    }
-                }
             } else {
-                if (block.trim()) msgs.push(block.trim());
+                // 2. 纯文本，直接作为一个完整气泡存入，保证句意自然不截断
+                msgs.push(block);
             }
         });
+
 
         if (extractedPanelData) msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
 
@@ -16029,7 +16030,9 @@ async function triggerAIResponse() {
             ti.innerText = '对方正在输入...'; 
         }
 
-        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！`;
+        let formatInjection = activeChar.formatRule ? `\n\n【最高格式约束 / 强制正则权威】：\n必须绝对无条件遵守以下发送格式或正则要求，任何回复不得违背：\n${activeChar.formatRule}` : "";
+        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！` + formatInjection;
+
 
         let apiMessages = [{ role: "system", content: finalSystemContent }];
 
@@ -16310,6 +16313,10 @@ async function triggerGroupAIResponse(mode = 'random', specificId = null) {
         }).join('\n');
         groupPrompt += `\n【群成员之间的人际关系网】：\n${relLines}\n请务必依据这些人物关系在聊天中进行互动，对喜欢的人友好，对讨厌的人可以互怼。\n`;
     }
+        if (targetChar.formatRule && targetChar.formatRule.trim()) {
+        groupPrompt += `\n【最高格式约束 / 强制正则权威】：\n你必须绝对无条件遵守以下发送格式或正则要求，任何回复不得违背：\n${targetChar.formatRule}\n`;
+    }
+
 
     groupPrompt += `\n【你的任务】：
 此时此刻，你正在扮演【${targetChar.name}】！你的语气、三观必须完全契合【${targetChar.name}】的设定！
