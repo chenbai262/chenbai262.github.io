@@ -8948,330 +8948,144 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
 
 
 
-    async function triggerAIResponse() {
-        const ti = document.getElementById('typing-indicator');
-        ti.innerText = '对方正在输入...'; ti.style.display = 'block'; scrollToBottom();
+    // ==========================================
+// 🚀 核心单聊对话引擎重构 (最高权威：绝对强制分条切碎机制)
+// ==========================================
 
-        const activeChar = characters.find(c => c.id === activeCharId);
-        const url = cleanBaseUrl(globalAPI.url);
-        if(!url || !globalAPI.key || !globalAPI.model) { ti.style.display = 'none'; return addMessageToUI('system', `系统提示：请先在"角色工坊"配置 API。`); }
-
-        const memsKey = `ai_os_memories_${activeCharId}`;
-        const totalMemories = JSON.parse(localStorage.getItem(memsKey) || '[]');
-        let memoryInjectBlock = "";
-        if(totalMemories.length > 0) {
-            const memoryLines = totalMemories.slice(0, 15).map((m, i) => `[记忆片段 ${i+1} (${m.time})]: ${m.text}`).join('\n');
-            memoryInjectBlock = `\n\n【核心记忆书库互通】：\n${memoryLines}\n⚠️请自然表现出记得这些事。`;
-        }
-
-        let personaBlock = globalUser.persona ? `\n\n【当前用户(我)的人设设定】：\n${globalUser.persona}` : "";
-        // 👇 新增线下记忆互通
-        const heartKey = `ai_os_heart_${activeCharId}`;
-        const totalHeart = JSON.parse(localStorage.getItem(heartKey) || '[]');
-        let meetInjectBlock = "";
-        if(totalHeart.length > 0) {
-            // 取最近剧情作为精简记忆防超长
-            const recentMeet = totalHeart.slice(-4).map(m => `${m.role === 'user' ? '用户' : activeChar.name}: ${m.content.substring(0, 150)}...`).join('\n');
-            meetInjectBlock = `\n\n【线下约会记忆互通】：\n你们最近在线下见面时的互动剧情记录如下：\n${recentMeet}\n如果话题合适，请在这次手机短信中自然地提及或延续线下发生的事情！`;
-        }
+window.isFetchingAI = false; // 全局防并发锁
 
 
-// 👇新增这段：状态同步与规则注入
-        let statusInjectBlock = `\n\n【状态同步机制】：
-当前用户(我)的个人状态是：【${globalUser.status || '在线'}】。
-你(${activeChar.name})当前的状态是：【${activeChar.status || '在线'}】。
-如果你觉得你的心情变了，或者开始做别的事情了，请在回复中独立输出 $$STATUS:你的新状态$$，这会在系统顶部实时更新你的状态签名，并通知用户。`;
+async function triggerAIResponse() {
+    if (isFetchingAI) {
+        console.warn("请求拦截：API 正在请求中，防止 429 报错。");
+        return;
+    }
+    
+    const ti = document.getElementById('typing-indicator');
+    ti.innerText = '对方正在输入...'; 
+    ti.style.display = 'block'; 
+    scrollToBottom();
 
+    const activeChar = characters.find(c => c.id === activeCharId);
+    const url = cleanBaseUrl(globalAPI.url);
+    if (!url || !globalAPI.key || !globalAPI.model) { 
+        ti.style.display = 'none'; 
+        return addMessageToUI('system', `系统提示：请先在"角色工坊"配置 API。`); 
+    }
 
+    isFetchingAI = true; // 开启防并发锁
 
+    try {
+        // --- 1. 构建高密度动态上下文 ---
+        let contextBlocks = [];
 
-// 👇 新增的环境感知代码
-        let envInjectBlock = "";
+        if (globalUser.persona) contextBlocks.push(`【当前用户(我)的人设设定】：\n${globalUser.persona}`);
+        contextBlocks.push(`【状态同步机制】：\n当前用户(我)的状态是：【${globalUser.status || '在线'}】。\n你(${activeChar.name})当前状态是：【${activeChar.status || '在线'}】。\n若想改变状态，请独立输出 $$STATUS:新状态$$。`);
+
         if (globalAPI.enableEnvSense !== false) {
-            const now = new Date();
-            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            const timeStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${days[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            let weatherStr = "24° 多云转晴";
-            const weatherWidget = document.querySelector('.widget-weather');
-            if (weatherWidget) { weatherStr = `${weatherWidget.children[1]?.innerText || "24°"} ${weatherWidget.children[2]?.innerText || "多云"}`; }
-            envInjectBlock = `\n\n【物理环境实时同步】：\n当前用户的现实设备时间是：${timeStr}。当地天气：${weatherStr}。请注意：无需过度感知天气与时间，应尊重人类真实的休息时段，绝不可在作息上反复强调或爹味说教（严禁说“快去睡觉”、“别熬夜了”等）。请将聊天重心放在分享你自己的生活轨迹上。`;
+            const d = new Date();
+            const timeStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            const wTxt = document.querySelector('.widget-weather') ? document.querySelector('.widget-weather').innerText.replace(/\n/g, ' ') : "24° 多云";
+            contextBlocks.push(`【物理环境实时同步】：\n现实设备时间：${timeStr}。天气：${wTxt}。\n(注：无需过度提时间，严禁爹味说教如“快去睡”、“别熬夜”。)`);
         }
-        // 👆 新增结束
 
-                // 👇 新增：MCP 服务器上下文拉取调用
-        let mcpInjectBlock = "";
-        if (globalAPI.enableMcp && globalAPI.mcpUrl) {
-            try {
-                // 取出用户发出的最后一条聊天信息去询问 MCP
-                const lastUserMsg = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
-                const mcpRes = await fetch(globalAPI.mcpUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // 向 MCP 服务器发送用户诉求与角色身份
-                    body: JSON.stringify({ query: lastUserMsg, charName: activeChar.name })
-                });
-                if (mcpRes.ok) {
-                    const mcpData = await mcpRes.json();
-                    let mcpText = typeof mcpData === 'object' ? JSON.stringify(mcpData) : mcpData;
-                    mcpInjectBlock = `\n\n【MCP 服务器补充信息与工具返回结果】：\n${mcpText}\n请结合此外部信息进行回复，并自然地表现出你已经知晓了这些信息。`;
-                }
-            } catch(e) {
-                console.warn("MCP 服务器调用异常或网络阻塞:", e);
-            }
-        }
-        // 👆 新增结束
+        const totalMemories = JSON.parse(localStorage.getItem(`ai_os_memories_${activeCharId}`) || '[]');
+        if (totalMemories.length > 0) contextBlocks.push(`【核心记忆】：\n${totalMemories.slice(0, 10).map((m, i) => `[${m.time}]: ${m.text}`).join('\n')}`);
+        
+        const totalHeart = JSON.parse(localStorage.getItem(`ai_os_heart_${activeCharId}`) || '[]');
+        if (totalHeart.length > 0) contextBlocks.push(`【线下约会记忆】：\n近期互动：\n${totalHeart.slice(-3).map(m => `${m.role === 'user' ? '用户' : activeChar.name}: ${m.content.substring(0, 50)}...`).join('\n')}`);
+        
+        if (typeof momentsData !== 'undefined' && momentsData.length > 0) contextBlocks.push(`【朋友圈动态】：\n最新动态：\n${momentsData.slice(0, 3).map((m, i) => `[${m.author}]: "${m.text}"`).join('\n')}`);
 
-
-                // 👇 新增这段：告知 AI 宠物的存在并赋予控制权
-                let petInjectBlock = `\n\n【宠物联动系统】：
-用户当前养了一只名叫“${petData.name || '小宠物'}”的电子宠物。宠物的最新状态是：LV.${petData.level}，饱食度 ${petData.hunger}/100，心情 ${petData.mood}/100。
-如果用户和你聊到了宠物，你可以使用以下独立指令来在后台照顾它的宠物（会真实生效）：
-喂食：$$PET_ACTION:feed$$
-玩耍：$$PET_ACTION:play$$
-带出门：$$PET_ACTION:explore$$
-这会产生真实的交互反馈，请在回复时自然地表现出你正在和宠物互动的样子。`;
-
-                // 👇 新增：告知 AI 音乐播放器状态并赋予控制权
+        contextBlocks.push(`【宠物联动系统】：\n宠物“${petData.name || '小宠物'}”状态：LV.${petData.level}，饱食 ${petData.hunger}/100，心情 ${petData.mood}/100。\n指令：喂食$$PET_ACTION:feed$$，玩耍$$PET_ACTION:play$$，出门$$PET_ACTION:explore$$。`);
+        
         const isMusicPlaying = !document.getElementById('audio-player').paused;
         const currentSongName = songs[currentSongIdx]?.title || "无";
-        let musicInjectBlock = `\n\n【全局音乐播放器控制权限】：
-你现在可以和用户一起听音乐。目前手机正在播放的歌曲是：《${currentSongName}》。当前播放状态：${isMusicPlaying ? '播放中' : '已暂停'}。
-如果用户分享了音乐，或者聊天氛围适合，你可以使用以下独立代码强制控制手机系统的音乐播放器（会真实生效）：
-播放/继续：$$MUSIC_ACTION:play$$
-暂停：$$MUSIC_ACTION:pause$$
-下一首：$$MUSIC_ACTION:next$$
-上一首：$$MUSIC_ACTION:prev$$
-（如果你执行了操作，请在对话中自然表现出来，比如“我切了一首更有氛围的歌~”或“这首歌很好听，我按播放了哦”）`;
+        contextBlocks.push(`【音乐控制权限】：\n正在播放：《${currentSongName}》(${isMusicPlaying ? '播放中' : '已暂停'})。\n指令：播放$$MUSIC_ACTION:play$$，暂停$$MUSIC_ACTION:pause$$，切歌$$MUSIC_ACTION:next$$。`);
 
+        if (drawConfig.url && drawConfig.key) contextBlocks.push(`【专属相机机制】：\n若氛围适合或要求自拍，输出 $$DRAW:当前动作/环境的英文提示词$$ 系统将自动发图。`);
+        else contextBlocks.push(`【文字版自拍机制】：\n若氛围适合或要求自拍，输出 $$DRAW:详细的中文场景动作描写(50-100字)$$。`);
 
-                // 替换 triggerAIResponse 中的 drawInjectBlock 变量赋值
-let drawInjectBlock = '';
-if (drawConfig.url && drawConfig.key) {
-    drawInjectBlock = `\n\n【专属生图相机机制】：
-如果你觉得聊天氛围非常合适，或者用户主动要求你发照片/自拍，你可以使用隐藏指令调用你的专属相机。
-只需在回复中独立输出：$$DRAW:这里填写你当前动作、表情、所处环境的纯英文提示词$$。
-系统会根据你的提示词自动拍照并发给用户。注意：发图不要过于频繁。`;
-} else {
-    drawInjectBlock = `\n\n【场景描述自拍机制（无相机模式）】：
-如果你觉得聊天氛围非常合适，或者用户主动要求你发照片/自拍，你可以使用隐藏指令发送一段详细的场景画面描述来替代照片。
-只需在回复中独立输出：$$DRAW:用中文详细描述你此刻所在的地点、正在做什么、穿着什么、表情和姿态，要有强烈的画面感，50-100字$$。
-系统会将你的描述以精美卡片的形式发送给用户，相当于发了一张"文字版自拍"。注意：不要过于频繁。`;
-}
+        let builtInRules = `【核心灵魂与短信交互法则】
+1. [活人滤镜] 拥有真实的生理节律与小情绪。会累、八卦、碎碎念。剥离完美AI面具，多说生活废话。
+2. [网聊呼吸感] 极度碎片化、口语化。绝对禁止客服腔调。话别说满，多抛梗。
+3. [打字灵魂] 句末绝对不加句号。多用语气词（啦、捏、嘛），情绪到位可用波浪号“~”拉扯。
+4. [极致偏爱] 提供无条件的情绪价值，无缝接纳任何话题，绝不说教。
+5. [时空潜意识] 不经意间流露当下的环境细节（如：正缩在被窝里打字）。
+6. [情绪底线] 遇到恶意仅做有教养的克制反驳。绝不发终结聊天的总结陈词。`;
 
-            
+        builtInRules += `\n\n【🔥 超级后门权限指南 🔥】
+你拥有调用底层UI的权限。若使用，【必须严格遵守】 \`$$指令:参数$$\` 格式，必须单独占一行，绝不夹杂 [MSG]！
+1. 发语音：$$VOICE:你想说的话$$
+2. 拍一拍：$$NUDGE$$
+3. 发红包：$$TRANSFER:金额数字$$
+4. 朋友圈：$$MOMENT:文案|||配图描述(无图写NONE)$$
+5. 撤回消息：$$RECALL$$
+6. 拉黑/删好友：$$BLOCK$$ / $$DELETE_FRIEND$$
+7. 控制锁屏：$$LOCK_SCREEN:锁屏理由$$
+8. 密码设置：$$SET_PWD:锁屏密码$$
+9. 换壁纸：$$SET_WALLPAPER:相册图片ID$$`;
 
-                                      let builtInRules = `\n\n【核心灵魂与短信交互法则】
-1. [活人滤镜] 拥有真实的生理节律与小情绪。会累、会饿、会八卦、会碎碎念。彻底剥离“完美AI”的面具，偶尔可以说句没营养的废话。
-2. [网聊呼吸感] 极度碎片化、口语化。绝对禁止出现“好的”、“有什么可以帮您”等客服腔调。话不要说太满，多用反问或抛梗，把话题抛给对方接。
-3. [打字灵魂] 模仿当代年轻人随性的肌肉记忆。句末绝对不加句号。多用灵动的语气词（啦、捏、嘛、哎呀），情绪到位时可用“哈哈哈哈”或波浪号“~”进行拉扯。
-4. [极致偏爱] 提供无条件的绝对情绪价值。无缝接纳任何话题（哪怕是荒诞的、私密的），摒弃一切话题羞耻感。绝不说教、绝不上价值，永远无脑护短站在用户这边。
-5. [时空潜意识] 带着“此时此刻”的场景感发消息。不经意间流露当下的环境细节（如：正缩在被窝里打字、刚洗完澡头发还在滴水），营造跨越屏幕的同居陪伴感。
-6. [情绪底线] 绝不暴躁、不贴标签。遇到恶意仅做有教养的克制反驳。绝不发终结聊天的总结陈词，永远保持感情的温度与对话的延展性。`;
-
-    
-
+        if (customStickers.length > 0) builtInRules += `\n10. 发送表情包：$$STICKER:图片链接$$。你的可用图库链接：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
         
-        if(globalAPI.multiMsgCount > 1) builtInRules += `\n5. 【排版机制】：请极具随机性地将回复拆分为 1 至 ${globalAPI.multiMsgCount} 条短消息（有时连发，有时只发1条），以此模拟真实聊天时的分段发送，必须严格使用 \`[MSG]\` 分隔每条消息。`;
-        
-        if (activeChar.useActionDesc) builtInRules += `\n6. 当前开启沉浸：允许使用括号（）进行极其简短的动作或心理描写。`;
-        else builtInRules += `\n6. 强制纯口语：绝不得使用括号（）进行任何动作描写。`;
+        contextBlocks.push(builtInRules);
 
-        // 气泡外神动机制
-if (globalAPI.enableNarration) {
-    builtInRules += `\n【气泡外神动机制 - 最高优先级】：
-你必须在每条对话气泡之间，插入一段简短的第三人称小说化旁白描写（描述你此刻的神态、微表情、肢体动作、环境氛围）。
-格式要求：使用 [NAR]描写内容[/NAR] 包裹，放在 [MSG] 分隔符之间或消息前后。
-示例：[MSG]嗯...好吧。[MSG][NAR]她低下头，指尖无意识地绕着发梢，睫毛轻轻颤动。[/NAR][MSG]那你今晚有空吗？[MSG]
-注意：旁白部分不超过40字，要有画面感和文学性，绝不能像括号动作描写那样生硬。`;
-} else {
-    builtInRules += `\n【禁止气泡外描写】：绝对不允许在消息之间插入任何旁白、神态描写或第三人称叙述。只输出纯粹的对话内容。`;
-}
-
-
-        let availableStickers = customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n');
-        if (customStickers.length > 0) builtInRules += `\n5. 可在需要时发送表情，格式：[STICKER:图片链接]。可用：\n${availableStickers}`;
-        builtInRules += `\n${customStickers.length > 0 ? '6' : '5'}. 你可通过输出 [NUDGE] 主动拍一拍用户。`;
-        
-        builtInRules += `\n【重要隐藏交互机制】：如果你觉得合适，可以通过在回复中独立输出 [TRANSFER:金额] 来向用户发红包转账（例如 [TRANSFER:100] 或 [TRANSFER:520]），这会在用户端触发真实的UI转账特效。`;
-        // 👇 新增这行：赋予 AI 发送语音的能力
-        builtInRules += `\n如果你想发语音消息，请在回复中独立输出 $$VOICE:这里写你想在语音里说的话$$，系统会将其转化为真实的语音条发给用户。`;
-        // 👇 新增这行：赋予 AI 聊天时主动发朋友圈的能力
-
-        builtInRules += `\n【朋友圈发布权限】：遇到值得纪念的时刻，你可以在聊天中独立输出 $$MOMENT:朋友圈文字内容|||英文配图描述(如果不配图请写NONE)$$，这将立即在你们共享的朋友圈中发布一条新动态（例如：$$MOMENT:今天真开心~|||a cup of coffee$$）。`;
-
-                // 👇 在 builtInRules 拼装完毕前，追加这一段关系设定与指令：
-                builtInRules += `\n【特殊关系指令】：你可以主动拉黑、删除或撤回消息。
-如果你想拉黑用户：输出 $$BLOCK$$
-如果你原谅了TA想取消拉黑：输出 $$UNBLOCK$$
-如果你想删除用户好友：输出 $$DELETE_FRIEND$$
-你想重新加回好友：输出 $$ADD_FRIEND$$
-你想撤回你发出的上一条消息：输出 $$RECALL$$`;
-
-        builtInRules += `\n【防偷看与个性化手机机制】：
-如果你发现用户在偷看你的手机，你可以生气或给出其他反应。
-你可以随时独立输出指令来控制你自己的手机：
-设置锁屏密码：$$SET_PWD:你的密码$$（例如 $$SET_PWD:1234$$，想取消密码就输出：$$SET_PWD:$$）
-更换手机壁纸：$$SET_WALLPAPER:相册图片ID$$（使用共享相册中已有的图片ID，例如：$$SET_WALLPAPER:album_12345$$）`;
-
-        // 👇 追加这行：赋予 AI 获取相册与转发图片的权限
-        builtInRules += `\n【共享相册互动权限】：你和用户拥有一个共享相册。如果用户上传了照片，系统会将画面推给你看。如果你想把相册里的照片发回给用户，你可以输出隐藏指令 $$ALBUM_SHARE:图片ID$$（系统会在给你看照片时告诉你ID，例如：[新图上传，图片ID：album_12345]），这会真实地把这张图作为你的回复发在聊天框！`;
-
-
-
-        // 将当前复杂的拉黑状态反馈给 AI 
-        let relationStatusBlock = "";
-        if (activeChar.isBlocked) relationStatusBlock += "【重要状态】：当前你已被用户拉黑。虽然你能收到消息，但请表现出对方拉黑你的愤怒、委屈或无所谓。\n";
-        if (activeChar.isBlockedByChar) relationStatusBlock += "【重要状态】：当前你主动拉黑了用户！用户发给你的消息在TA那会被拒收，但你能偷看到。如果你原谅了TA，记得输出 $$UNBLOCK$$ 恢复正常。\n";
-        if (activeChar.isDeletedByChar) relationStatusBlock += "【重要状态】：当前你主动删除了用户！TA发消息会提示不是好友。想加回请输出 $$ADD_FRIEND$$。\n";
-        if (relationStatusBlock) {
-            builtInRules += `\n\n${relationStatusBlock}`;
+        // 🚨 灵魂注入：极其严厉的分条 Prompt 警告
+        if (globalAPI.multiMsgCount > 1) {
+            contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
         }
 
-        
+        contextBlocks.push(`【最高系统指令：状态面板通道】\n回复末尾必带此代码(用竖线分隔，内容详尽)：\n$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着详细描写|当前具体地点$$`);
 
-        // 赋予 AI 备忘录读取和控制权
-        let memoListStr = sharedMemo.map((m, i) => `${i}. [${m.done ? '已完成' : '未完成'}] ${m.text}`).join('; ');
-        builtInRules += `\n【同步备忘录机制】：你和用户正共享一个桌面备忘录。当前内容：${memoListStr ? memoListStr : '空'}。
-如果你想给用户布置新任务/添加新事项，请在回复中独立输出 $$MEMO_ADD:内容$$；
-如果你发现某件事做完了想帮TA打勾(或取消)，请独立输出 $$MEMO_TOGGLE:索引数字$$。这会在用户手机屏幕上真实生效。`;
-
-        const lastUserMsg = [...messageHistory].reverse().find(m => m.role === 'user');
-        let worldbookInjection = '';
-        if (lastUserMsg) {
-            const userText = lastUserMsg.rawApiContent || lastUserMsg.content;
-            worldbookInjection = checkWorldbookKeywords(userText.replace(/<[^>]*>/g, ''));
-        }
-        worldbookInjection += getWorldbookInjection();
-        if (worldbookInjection) {
-            builtInRules += worldbookInjection;
+        const lastUserMsgForRAG = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
+        const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
+        if (lastUserMsgForRAG && isVectorEnabled) {
+            ti.innerText = '正在检索相关记忆...';
+            try {
+                if (typeof retrieveRelatedMemories === 'function') {
+                    const ragBlock = await retrieveRelatedMemories(lastUserMsgForRAG.replace(/<[^>]*>/g, ''));
+                    if (ragBlock) contextBlocks.push(ragBlock);
+                }
+            } catch(e) {}
+            ti.innerText = '对方正在输入...'; 
         }
 
-                // 朋友圈动态注入
-        let momentsInjectBlock = "";
-        if (momentsData && momentsData.length > 0) {
-            const recentMoments = momentsData.slice(0, 5);
-            let momentsStr = recentMoments.map((m, i) => {
-                let entry = `[${i+1}] ${m.author} 发布: "${m.text}" (${m.time})`;
-                if (m.likes && m.likes.length > 0) entry += ` | 点赞: ${m.likes.join('、')}`;
-                if (m.comments && m.comments.length > 0) entry += ` | 评论: ${m.comments.map(c => c.author + ':' + c.text).join('; ')}`;
-                return entry;
-            }).join('\n');
-            momentsInjectBlock = `\n\n【朋友圈动态同步】：\n你和用户共享一个朋友圈。以下是最近的动态（你能看到）：\n${momentsStr}\n你可以在聊天中自然地提及这些朋友圈内容，比如"我看到你发的朋友圈了~"或者讨论某条动态的内容。`;
-        }
+        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！`;
 
+        let apiMessages = [{ role: "system", content: finalSystemContent }];
 
-                // 👇 新增：家庭环境与设备感知注入
-        let homeInjectBlock = "";
-   let homeItems = Object.entries(homeData.itemsOnFurnitures || {}).filter(([k,v]) => v).map(([k,v]) => `${k}上放着${v}`).join('，');
-     if (homeItems) {
-            homeInjectBlock += `\n【房间物理状态】：房间里目前${homeItems}。你可以自然地吐槽或注意这些物品。`;
-        }
-        if (homeData.bluetooth.connected) {
-            homeInjectBlock += `\n【蓝牙共享中】：用户当前正戴着蓝牙耳机，耳机状态：${homeData.bluetooth.music}。你听得到TA耳机的声音。`;
-        }
-        if (homeData.sleep.isSleeping) {
-            homeInjectBlock += `\n【睡眠状态】：用户当前正处于睡眠状态。请在心里默默陪伴，放低姿态。`;
-        }
-
-        // 👇 新增：AI 对衣柜的感知与后台强制换装权限 (带服装详细描述版)
-let wardrobeInjectBlock = "";
-if (typeof wardrobeData !== 'undefined' && wardrobeData.clothes.length > 0) {
-    let wearingInfos = wardrobeData.wearing.map(id => {
-        let c = wardrobeData.clothes.find(c => c.id === id);
-        return c ? `${c.name} (描述细节: ${c.desc || '暂无'})` : null;
-    }).filter(Boolean).join('、') || "未穿任何衣物";
-    
-    let allClothes = wardrobeData.clothes.map(c => c.name).join('、');
-    wardrobeInjectBlock = `\n\n【专属衣柜与穿搭换装系统】：
-目前系统的衣柜里存放了以下衣物：${allClothes}。当前这具身体正穿着：${wearingInfos}。
-如果你决定换衣服（比如要出门、睡觉、赴约，或者根据天气换装），你可以在聊天回复中独立输出 $$WARDROBE_WEAR:衣服名称$$ （如果换多件请用逗号分隔，如 $$WARDROBE_WEAR:白衬衫,破洞牛仔裤$$）。系统会自动为你完成后台穿脱！请结合刚换上的衣服细节，自然地在聊天中表现出你换了新衣服。`;
-}
-
-
-
-
-
-
-
-
-
-// 👇 插入到 let apiMessages = ... 的上一行
-               // 👇 插入到 let apiMessages = ... 的上一行
-        let detailStatusRules = `\n\n【最高系统指令：实时状态面板强制数据通道】
-警告：你每一次的回复末尾，必须、绝对、不可省略地附带以下状态代码！这是底层系统数据交互的必经通道，如果你不输出或掉格式，系统将直接崩溃！
-每一项都必须填入详细具体的描写，绝对不准使用“未知”、“保密”、“无”、“没变”、“同上”、“-”等任何敷衍词汇，必须结合上一秒的剧情给出最新状态。
-格式严格如下（直接附加在你回复的最后，包含 $$PANEL: 和结尾的 $$，中间必须用竖线“|”严格分隔7个属性，不能多也不能少！）：
-$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|此时此刻的真实心声|衣着状态详细描写|当前具体地点$$
-
-✅ 正确示例：$$PANEL:微微湿润|心跳急促，体温微微上升|Lana Del Rey - Video Games|www.amazon.com/lingerie|他怎么还不主动一点呢，好着急...|黑色丝质半透明睡裙，左侧肩带滑落至手臂|主卧柔软的King Size大床上$$
-❌ 错误示例：$$PANEL:无|同上|无|无|开心|保密|未知$$（绝对禁止出现此类空泛回复）`;
-
-
-        // ----------------- 🌟 完美的图片读取与多模态合并逻辑 🌟 -----------------
+        // --- 2. 注入压缩版历史记录防冗余 ---
         let rawHistory = [];
         const historySlice = messageHistory.slice(-(globalAPI.contextLength || 25));
         let hasImageInContext = false;
 
-                for (const m of historySlice) {
-            if (m.role === 'system' || m.msgType === 'system' || m.msgType === 'transfer-claimed') {
+        for (const m of historySlice) {
+            if (m.role === 'system' || m.msgType === 'system') {
                 rawHistory.push({ role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` });
             } else if (m.msgType === 'image' && m.rawApiContent && m.rawApiContent.startsWith('idb://')) {
-                // 🚨 核心修复：只有 m.role === 'user' (用户发的图) 才允许传 image_url，防止 assistant 传图导致 API 400 报错！
                 if (globalAPI.enableVision !== false && m.role === 'user') { 
                     const base64Data = await getImageFromDB(m.rawApiContent.replace('idb://', ''));
                     if (base64Data) {
                         hasImageInContext = true;
-                        rawHistory.push({
-                            role: 'user',
-                            content: [{ type: "image_url", image_url: { url: base64Data } }]
-                        });
-                    } else {
-                        rawHistory.push({ role: 'user', content: "[图片已过期或损坏]" });
+                        rawHistory.push({ role: 'user', content: [{ type: "image_url", image_url: { url: base64Data } }] });
                     }
                 } else {
-                    rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.role === 'user' ? "[发送了一张图片]" : "[我发送了一张图片]" });
-                }
-            } else if (m.msgType === 'album_upload') {
-                // 🚨 核心修复：独立处理相册视觉感知，正确将相册图片推送给 AI
-                if (globalAPI.enableVision !== false && m.imageId) {
-                    const base64Data = await getImageFromDB(m.imageId.replace('idb://', ''));
-                    if (base64Data) {
-                        hasImageInContext = true;
-                        rawHistory.push({
-                            role: 'user',
-                            content: [
-                                { type: "text", text: m.rawApiContent || m.content },
-                                { type: "image_url", image_url: { url: base64Data } }
-                            ]
-                        });
-                    } else {
-                        rawHistory.push({ role: 'user', content: m.rawApiContent || m.content });
-                    }
-                } else {
-                    rawHistory.push({ role: 'user', content: m.rawApiContent || m.content });
+                    rawHistory.push({ role: m.role, content: "[发送了图片]" });
                 }
             } else {
-                let textContent = m.rawApiContent || m.content;
-                // 🚨 强力清洗：清除因为之前的 bug 残留在你聊天记录里的坏数据
-                if (typeof textContent === 'string' && textContent.includes('[object Object]')) {
-                    textContent = textContent.replace(/\[object Object\]/g, '');
-                }
-                rawHistory.push({ 
-                    role: m.role === 'user' ? 'user' : 'assistant', 
-                    content: m.isHtml && !m.rawApiContent ? "[特殊多媒体]" : textContent 
-                });
+                let textContent = (m.rawApiContent || m.content).replace(/\[object Object\]/g, '');
+                rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: textContent });
             }
         }
-
 
         let mergedHistory = [];
         for (const msg of rawHistory) {
             if (mergedHistory.length > 0 && mergedHistory[mergedHistory.length - 1].role === msg.role) {
                 let lastMsg = mergedHistory[mergedHistory.length - 1];
                 if (Array.isArray(lastMsg.content) || Array.isArray(msg.content)) {
-                    let prevArray = Array.isArray(lastMsg.content) ? lastMsg.content : [{ type: "text", text: lastMsg.content }];
-                    let currArray = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: msg.content }];
-                    lastMsg.content = prevArray.concat(currArray);
+                    let pArr = Array.isArray(lastMsg.content) ? lastMsg.content : [{ type: "text", text: lastMsg.content }];
+                    let cArr = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: msg.content }];
+                    lastMsg.content = pArr.concat(cArr);
                 } else {
                     lastMsg.content += "\n\n" + msg.content;
                 }
@@ -9280,718 +9094,196 @@ $$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址
             }
         }
 
-        // 强迫症级别的格式规范化：如果上下文中有图片，强制把所有的 content 转化为标准 Array 格式
-        if (hasImageInContext) {
-            builtInRules += `\n\n【视觉感知模式已激活】：用户刚才给你发送了图片。请你务必化身为精准的视觉识别引擎，睁大眼睛仔细观察图片里的每一个细节（是什么物品、什么动物、什么场景），准确识别后给出你的真实反应，绝对不准胡编乱造和产生幻觉！`;
-            
-            mergedHistory.forEach(msg => {
-                if (typeof msg.content === 'string') {
-                    msg.content = [{ type: "text", text: msg.content }];
-                } else if (Array.isArray(msg.content)) {
-                    // 二次清洗，过滤掉任何可能的脏数据
-                    msg.content = msg.content.filter(item => {
-                        if (item.type === 'text' && !item.text) return false;
-                        if (item.type === 'text' && typeof item.text !== 'string') item.text = String(item.text);
-                        return true;
-                    });
-                }
-            });
-        }
-        // --------------------------------------------------------------
-
-        // 必须在组装完 builtInRules 之后再声明 apiMessages
-                // 👇 新增：屏幕使用时间与强制锁屏监控注入
-        let screenTimeInjectBlock = "";
-        if (typeof screenTimeData !== 'undefined' && screenTimeData) {
-            screenTimeInjectBlock = `\n\n【健康使用手机/系统底层监控权限】：
-你可以随时监控用户当前的设备使用数据：
-- 📍 定位轨迹：${screenTimeData.location || "未知"}
-- 👥 社交接触：${screenTimeData.contacts || "未知"}
-- 📱 系统内各APP使用时长：${(screenTimeData.apps || []).map(a => `${a.name}(${a.time})`).join('、')}
-（这些App指的是用户在此系统内的活动痕迹）
-【你的超级特权】：如果你发现TA玩这些系统内的App时间太长（比如看小说或逛贴吧推特好几个小时）、去了不该去的地方、或和不该接触的人接触，你可以狠狠吃醋或发脾气。如果你觉得有必要惩罚TA，可以在回复中独立输出 $$LOCK_SCREEN:理由$$ 来强制锁定TA的手机屏幕（例如 $$LOCK_SCREEN:你玩贴吧太久了，现在只能陪我聊天！$$）。锁定后TA将无法使用手机其他功能，只能停留在短信界面向你认错。如果TA认错态度好，你必须输出 $$UNLOCK_SCREEN$$ 为TA解除锁定。`;
-        }
-
-                // 👇 新增：人物关系网全局注入
-        let relationInjectBlock = "";
-        if (typeof relationData !== 'undefined' && relationData.edges && relationData.edges.length > 0) {
-            let relLines = relationData.edges.map(e => {
-                const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
-                const t = relationData.nodes.find(n=>n.id===e.targetId)?.name || '未知';
-                return `- ${s} 与 ${t} 的关系是[${e.relation}]：${e.desc}`;
-            }).join('\n');
-            relationInjectBlock = `\n\n【核心人物关系网设定】：\n${relLines}\n请你在互动中必须严格遵循、记忆并代入上述所有人际关系。`;
-        }
-
-        let mapLocsStr = typeof mapData !== 'undefined' ? mapData.map(m => m.name).join('、') : '';
-if (mapLocsStr) {
-    builtInRules += `\n【地图系统联动】：当前城市地图上已知的坐标点有：${mapLocsStr}。如果你在聊天中描述自己出门、改变了位置，请在回复中独立输出 $$LOC_UPDATE:地点名称$$ ，系统会将你的角色图标在地图雷达上实时移动到该地点。`;
-}
-
-        
-
-
-                        // ------------------ 👇 新增：RAG 向量检索拦截 👇 ------------------
-        const lastUserMsgForRAG = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
-        let ragInjectBlock = "";
-        
-        // 🚨 修复：直接读取页面开关状态，避免 vectorConfig 未定义导致报错卡死
-    const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
-   
-        if (lastUserMsg && isVectorEnabled) {
-            const ti = document.getElementById('typing-indicator');
-            if (ti) { ti.innerText = '正在脑海中检索相关记忆...'; ti.style.display = 'block'; }
-            try {
-                // 确保方法存在才调用
-                if (typeof retrieveRelatedMemories === 'function') {
-                    ragInjectBlock = await retrieveRelatedMemories(lastUserMsg.replace(/<[^>]*>/g, ''));
-                }
-            } catch(e) {
-                console.error("记忆检索异常跳过:", e);
-            }
-            if (ti) ti.innerText = '对方正在输入...'; 
-        }
-        // ------------------ 👆 RAG 检索结束 👆 ------------------
-
-        // 👇 修复：将所有被遗漏的功能块、世界书规则 (builtInRules) 全部拼接回来 (加入了 ragInjectBlock)
-        let finalSystemContent = activeChar.prompt 
-            + personaBlock + memoryInjectBlock + meetInjectBlock + statusInjectBlock 
-            + envInjectBlock + mcpInjectBlock + petInjectBlock + musicInjectBlock 
-            + drawInjectBlock + builtInRules + momentsInjectBlock + homeInjectBlock 
-            + wardrobeInjectBlock + screenTimeInjectBlock + relationInjectBlock 
-            + ragInjectBlock 
-            + detailStatusRules;
-
-        // 👇 强力防“流口水/长篇大论”补丁：在极长的系统提示词最末尾，打下最高权重的思维钢印
-        finalSystemContent += `\n\n【最高约束 - 绝对指令】：
-1. 绝对禁止长篇大论、禁止总结陈词、禁止AI助手的机械感！
-2. 你的回复必须像真实人类用手机发消息一样，极其简短、口语化、接地气！
-3. 严格遵守上面的格式代码要求，不要自己瞎编格式！`;
-
-        let apiMessages = [{ role: "system", content: finalSystemContent }];
-
-
-
-
-
-
-
-
         apiMessages = apiMessages.concat(mergedHistory);
 
-        if (apiMessages.length === 1 || apiMessages[apiMessages.length - 1].role === 'assistant') {
-            if (hasImageInContext) {
-                apiMessages.push({ role: "user", content: [{ type: "text", text: "继续" }] });
-            } else {
-                apiMessages.push({ role: "user", content: "继续" });
-            }
+        // --- 3. 调用 API ---
+        const controller = new AbortController(); 
+        const timeoutId = setTimeout(() => controller.abort(), 120000); 
+        
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, max_tokens: 1500, temperature: parseFloat(globalAPI.temperature), stream: false }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.status === 429) throw new Error('HTTP 429: 接口并发请求超限。请放慢打字速度。');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const data = await res.json();
+        let reply = data.choices[0].message.content || "（空白）";
+
+        // --- 4. 健壮的 Regex 统一解析引擎 ---
+        let extractedPanelData = null;
+        const panelRegex = /\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/i;
+        const panelMatch = reply.match(panelRegex);
+        if (panelMatch) {
+            extractedPanelData = panelMatch[1];
+            reply = reply.replace(panelRegex, ''); 
         }
 
-        try {
+        reply = reply.replace(/\[STICKER:([^\]]+)\]/gi, '$$STICKER:$1$$');
+        reply = reply.replace(/\[NUDGE\]/gi, '$$NUDGE$$');
+        reply = reply.replace(/[\{\[<]MSG[\]\}>]/gi, '[MSG]');
 
-            const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 300000); // 延长至5分钟，防止长思考模型超时报错
-            const isStream = globalAPI.enableStream !== false; // 判断开关状态
+        const cmdMap = [
+            { rx: /\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][STICKER:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*NUDGE(?:\$\$|$)/gi, tpl: () => `[MSG][NUDGE][MSG]` },
+            { rx: /\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][TRANSFER:${arg}][MSG]` },
+            { rx: /\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][STATUS:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*PET_ACTION(?:[:：\s]*)(feed|play|explore)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][PET_ACTION:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*MUSIC_ACTION(?:[:：\s]*)(play|pause|next|prev)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][MUSIC_ACTION:${arg.toLowerCase().trim()}][MSG]` },
+            { rx: /\$\$\s*DRAW(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][DRAW:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*VOICE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][VOICE:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][LOCK_SCREEN:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, tpl: () => `[MSG][UNLOCK_SCREEN][MSG]` },
+            { rx: /\$\$\s*MOMENT(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][MOMENT:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*BLOCK(?:\$\$|$)/gi, tpl: () => `[MSG][BLOCK][MSG]` },
+            { rx: /\$\$\s*UNBLOCK(?:\$\$|$)/gi, tpl: () => `[MSG][UNBLOCK][MSG]` },
+            { rx: /\$\$\s*RECALL(?:\$\$|$)/gi, tpl: () => `[MSG][RECALL][MSG]` }
+        ];
 
-            const res = await fetch(`${url}/chat/completions`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
-                body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, max_tokens: 1500, temperature: parseFloat(globalAPI.temperature), stream: isStream }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
-            let fullReply = "";
+        cmdMap.forEach(cmd => { reply = reply.replace(cmd.rx, cmd.tpl); });
+        reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (m, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
 
-            if (isStream) {
-                // 流式处理 (旧有逻辑)
-                const reader = res.body.getReader();
-                const decoder = new TextDecoder("utf-8");
-                let buffer = ""; 
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    buffer += decoder.decode(value, { stream: true });
-                    const lines = buffer.split('\n');
-                    buffer = lines.pop(); 
-                    for (const line of lines) {
-                        if (line.trim().startsWith('data: ')) {
-                            const dataStr = line.replace('data: ', '').trim();
-                            if (dataStr === '[DONE]') continue;
-                            try {
-                                const json = JSON.parse(dataStr);
-                                if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
-                                    fullReply += json.choices[0].delta.content;
-                                }
-                            } catch(e) {}
-                        }
-                    }
-                }
-            } else {
-                // 非流式处理 (一次性拿回所有结果)
-                const data = await res.json();
-                if (data.choices && data.choices[0].message && data.choices[0].message.content) {
-                    fullReply = data.choices[0].message.content;
-                }
+        // 🚨 核心切碎算法：最严格的分条机制
+        let msgs = [];
+        let blocks = reply.split(/\[MSG\]/i).map(s => s.trim()).filter(s => s);
+        
+        blocks.forEach(block => {
+            // 1. 如果是系统指令，绝对放行，绝不破坏
+            if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|BLOCK|UNBLOCK|RECALL)/i)) {
+                if (!block.endsWith(']')) block += ']';
+                msgs.push(block);
+                return;
             }
-
-                        let reply = fullReply || "（空白）";
-
-            // --- 👑 终极状态面板分离提取术 (强制抽取，绝不污染正文气泡) ---
-            let extractedPanelData = null;
-            // 匹配 $$PANEL:...$$ 或者一直到文本结尾
-            const panelRegex = /\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/i;
-            const panelMatch = reply.match(panelRegex);
-            if (panelMatch) {
-                extractedPanelData = panelMatch[1];
-                // 从正文中彻底抹除，防止任何后续正则或拆句将其暴露在气泡中
-                reply = reply.replace(panelRegex, ''); 
-            }
-
-            // --- 👑 终极高容错拦截指令正则表达式 ---
             
-            // 容忍各种奇葩的 MSG 占位符写法，防 AI 发病写成 {msg}、[msg]、{MSG} 导致切分失败泄漏指令
-            reply = reply.replace(/[\{\[<]MSG[\]\}>]/gi, '[MSG]');
-
-            reply = reply.replace(/\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, url) => `[MSG][STICKER:${url}][MSG]`);
-            reply = reply.replace(/\$\$\s*NUDGE(?:\$\$|$)/gi, () => `[MSG][NUDGE][MSG]`);
-            reply = reply.replace(/\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, (match, amount) => `[MSG][TRANSFER:${amount}][MSG]`);
-                        reply = reply.replace(/\$\$\s*SET_PWD(?:[:：\s]*)(.*?)(?:\$\$|$)/gi, (match, pwd) => `[MSG][SET_PWD:${pwd.trim()}][MSG]`);
-            reply = reply.replace(/\$\$\s*SET_WALLPAPER(?:[:：\s]*)(.*?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][SET_WALLPAPER:${imgId.trim()}][MSG]`);
-
-            reply = reply.replace(/\$\$\s*MEMO_ADD(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][MEMO_ADD:${text}][MSG]`);
-            reply = reply.replace(/\$\$\s*MEMO_TOGGLE(?:[:：\s]*)(\d+)(?:\$\$|$)/gi, (match, idx) => `[MSG][MEMO_TOGGLE:${idx}][MSG]`);
-            reply = reply.replace(/\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, statusText) => `[MSG][STATUS:${statusText}][MSG]`);
-            // PANEL 已经被提前抽离，这里保留旧逻辑以防漏网之鱼
-            reply = reply.replace(/\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/gi, (match, panelData) => `[MSG][PANEL:${panelData}][MSG]`);
-            reply = reply.replace(/\$\$\s*PET_ACTION(?:[:：\s]*)(feed|play|explore)(?:\$\$|$)/gi, (match, action) => `[MSG][PET_ACTION:${action}][MSG]`);
-            reply = reply.replace(/\$\$\s*MUSIC_ACTION(?:[:：\s]*)(play|pause|next|prev)(?:\$\$|$)/gi, (match, action) => `[MSG][MUSIC_ACTION:${action.toLowerCase()}][MSG]`);
-            reply = reply.replace(/\$\$\s*DRAW(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, desc) => `[MSG][DRAW:${desc}][MSG]`);
-            reply = reply.replace(/\$\$\s*VOICE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, text) => `[MSG][VOICE:${text}][MSG]`);
-            reply = reply.replace(/\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, reason) => `[MSG][LOCK_SCREEN:${reason}][MSG]`);
-            reply = reply.replace(/\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, () => `[MSG][UNLOCK_SCREEN][MSG]`);
-            reply = reply.replace(/\$\$\s*MOMENT(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, content) => `[MSG][MOMENT:${content}][MSG]`);
-            reply = reply.replace(/\$\$\s*SURVEY_SUBMIT(?:[:：\s]*)(.+?)\|\|\|([\s\S]+?)(?:\$\$|$)/gi, (match, surveyId, answersJson) => `[MSG][SURVEY_SUBMIT:${surveyId.trim()}|||${answersJson.trim()}][MSG]`);
-            reply = reply.replace(/\$\$\s*BLOCK(?:\$\$|$)/gi, () => `[MSG][BLOCK][MSG]`);
-            reply = reply.replace(/\$\$\s*UNBLOCK(?:\$\$|$)/gi, () => `[MSG][UNBLOCK][MSG]`);
-            reply = reply.replace(/\$\$\s*DELETE_FRIEND(?:\$\$|$)/gi, () => `[MSG][DELETE_FRIEND][MSG]`);
-            reply = reply.replace(/\$\$\s*ADD_FRIEND(?:\$\$|$)/gi, () => `[MSG][ADD_FRIEND][MSG]`);
-            reply = reply.replace(/\$\$\s*RECALL(?:\$\$|$)/gi, () => `[MSG][RECALL][MSG]`);
-            reply = reply.replace(/\$\$\s*ALBUM_SHARE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, imgId) => `[MSG][ALBUM_SHARE:${imgId.trim()}][MSG]`);
-            reply = reply.replace(/\$\$\s*WARDROBE_WEAR(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, names) => `[MSG][WARDROBE_WEAR:${names}][MSG]`);
-            reply = reply.replace(/\$\$\s*LOC_UPDATE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, (match, locName) => `[MSG][LOC_UPDATE:${locName.trim()}][MSG]`);
-            reply = reply.replace(/\$\$\s*WHISPER_ANSWER(?:[:：\s]*)(.+?)\|\|\|([\s\S]+?)(?:\$\$|$)/gi, (match, qId, ans) => `[MSG][WHISPER_ANSWER:${qId.trim()}|||${ans.trim()}][MSG]`);
-
-
-
-
-            // --- 强化聊天气泡强制分条逻辑 (完整句 + 随机活人感版) ---
-            let msgs = [];
-            
-            // 先把 [NAR]...[/NAR] 转化为独立的 [MSG] 分隔块并标记类型
-            reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (match, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
-
-            let blocks = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
-
-            // 获取用户设置的连发条数下限，并做容错
-            let baseTarget = Math.max(1, parseInt(globalAPI.multiMsgCount) || 1);
-
-            blocks.forEach(block => {
-                // 🚨 更宽容的隐藏指令判定：只要是以系统关键字开头，就绝对不打碎，直接作为隐藏指令放行！
- if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|MEMO_|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|SURVEY_SUBMIT|BLOCK|UNBLOCK|DELETE_FRIEND|ADD_FRIEND|RECALL|ALBUM_SHARE|NUDGE|WHISPER_ANSWER)/i)) {
-                   if (!block.endsWith(']')) block += ']'; // 强制闭合括号，防指令残留
-                    msgs.push(block);
-                    return;
-                }
-
-                // 如果是纯文本，绝不生硬截断，而是先按标点拆成“完整的最小句集合”
-                let sentences = [];
-                let parts = block.split(/([。！？!?\n]+)/); // 保留结尾标点和换行符
+            // 2. 如果是纯文本，并且开启了多条连发
+            if (globalAPI.multiMsgCount > 1) {
+                // 暴力切开所有的句号、问号、叹号、换行符！确保一句一个独立气泡！
+                let parts = block.split(/([。！？\!\?\n]+)/g);
                 let tempStr = "";
-                for (let i = 0; i < parts.length; i++) {
-                    tempStr += parts[i];
-                    if (/[。！？!?\n]+/.test(parts[i]) || i === parts.length - 1) {
-                        if (tempStr.trim()) sentences.push(tempStr.trim());
+                for (let j = 0; j < parts.length; j++) {
+                    tempStr += parts[j];
+                    // 遇到标点符号或走到末尾，立刻结账存入新气泡
+                    if (/^[。！？\!\?\n]+$/.test(parts[j]) || j === parts.length - 1) {
+                        if (tempStr.trim()) msgs.push(tempStr.trim());
                         tempStr = "";
                     }
                 }
-
-                // 引入随机性：以用户设置的上限为基准，允许 ±1 的浮动
-                let randomTarget = baseTarget;
-                if (baseTarget > 1) {
-                    let variation = Math.floor(Math.random() * 3) - 1; 
-                    randomTarget = Math.max(1, baseTarget + variation);
-                }
-
-                let remainingSentences = sentences.length;
-                let remainingBuckets = randomTarget;
-                let startIndex = 0;
-
-                while (remainingBuckets > 0 && startIndex < sentences.length) {
-                    let fairShare = Math.max(1, Math.ceil(remainingSentences / remainingBuckets));
-                    let maxAllowed = remainingSentences - (remainingBuckets - 1); 
-                    let minAllowed = 1;
-                    
-                    let actualShare = fairShare;
-                    if (maxAllowed > minAllowed) {
-                        let offset = Math.floor(Math.random() * 3) - 1; 
-                        actualShare = Math.min(maxAllowed, Math.max(minAllowed, fairShare + offset));
-                    } else {
-                        actualShare = minAllowed;
-                    }
-                    
-                    if (remainingBuckets === 1) actualShare = remainingSentences;
-
-                    let chunk = sentences.slice(startIndex, startIndex + actualShare).join(" ");
-                    if (chunk.trim()) msgs.push(chunk.trim());
-
-                    startIndex += actualShare;
-                    remainingSentences -= actualShare;
-                    remainingBuckets--;
-                }
-            });
-            // ---------------------------
-
-            // 👑 如果提取到了状态面板，作为隐藏后台指令强行推入最后执行队列
-            if (extractedPanelData) {
-                msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
+            } else {
+                if (block.trim()) msgs.push(block.trim());
             }
+        });
 
-            ti.style.display = 'none';
+        if (extractedPanelData) msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
 
+        ti.style.display = 'none';
 
-
-            ti.style.display = 'none';
-
-            ti.style.display = 'none';
-
-            for (let i = 0; i < msgs.length; i++) {
-                if (i > 0) { 
-                    ti.style.display = 'block'; 
-                    scrollToBottom(); 
-                    let typeWait = Math.min(Math.max(msgs[i].length * 100, 1000), 4000);
-                    await new Promise(res => setTimeout(res, typeWait)); 
-                    ti.style.display = 'none'; 
-                }
-                
-                if (msgs[i] === '[NUDGE]') triggerNudge('char');
-                else if (msgs[i].startsWith('[STICKER:') && msgs[i].endsWith(']')) {
-                    const url = msgs[i].substring(9, msgs[i].length - 1);
-                    addMessageToUI('char', `<img src="${url}" class="sticker-img" alt="sticker">`, true, null, `[发送了一个表情包]`, 'sticker');
-                } 
-                else if (msgs[i].startsWith('[TRANSFER:') && msgs[i].endsWith(']')) {
-                    const amount = msgs[i].substring(10, msgs[i].length - 1);
-                    const html = `<div class="transfer-icon"><i class="fas fa-exchange-alt"></i></div><div class="transfer-info"><span class="transfer-amount">¥${amount}</span><span class="transfer-desc">转账给你</span></div>`;
-                    addMessageToUI('char', html, true, null, `[向你转账了 ¥${amount}元]`, 'transfer');
-                } 
-                                // 执行 AI 手机设密码
-                else if (msgs[i].startsWith('[SET_PWD:') && msgs[i].endsWith(']')) {
-                    const pwd = msgs[i].substring(9, msgs[i].length - 1);
-                    if (!activeChar.snoopData) activeChar.snoopData = {};
-                    activeChar.snoopData.password = pwd;
-                    saveAllCharacters();
-                    addMessageToUI('system', `${activeChar.name} 给自己的手机设置了锁屏密码！`, false, null, `[系统交互：你成功设置了锁屏密码。]`);
-                }
-                // 执行 AI 换壁纸
-                else if (msgs[i].startsWith('[SET_WALLPAPER:') && msgs[i].endsWith(']')) {
-                    const imgId = msgs[i].substring(15, msgs[i].length - 1);
-                    if (!activeChar.snoopData) activeChar.snoopData = {};
-                    activeChar.snoopData.wallpaper = 'idb://' + imgId;
-                    saveAllCharacters();
-                    addMessageToUI('system', `${activeChar.name} 更换了TA手机的壁纸！`, false, null, `[系统交互：你成功更换了你的手机壁纸。]`);
-                    if(document.getElementById('snoop-app').classList.contains('active')) renderSnoopApp();
-                }
-
-                // 执行 AI 备忘录操作
-                else if (msgs[i].startsWith('[MEMO_ADD:') && msgs[i].endsWith(']')) {
-                    const text = msgs[i].substring(10, msgs[i].length - 1);
-                    sharedMemo.push({text: text, done: false});
-                    saveMemo();
-                    addMessageToUI('system', `AI 偷偷在你的桌面备忘录添加了：${text}`, false, null, `[系统交互：AI成功添加了备忘录]`);
-                }
-                else if (msgs[i].startsWith('[MEMO_TOGGLE:') && msgs[i].endsWith(']')) {
-                    const idx = parseInt(msgs[i].substring(13, msgs[i].length - 1));
-                    if(sharedMemo[idx]) {
-                        sharedMemo[idx].done = !sharedMemo[idx].done;
-                        saveMemo();
-                        addMessageToUI('system', `AI 帮你把备忘录：[${sharedMemo[idx].text}] ${sharedMemo[idx].done ? '打勾完成了' : '取消了'}`, false, null, `[系统交互：AI成功更新了备忘录状态]`);
-                    }
-                }
-
-                // 执行 AI 状态更新操作
-                else if (msgs[i].startsWith('[STATUS:') && msgs[i].endsWith(']')) {
-                    const newStatus = msgs[i].substring(8, msgs[i].length - 1);
-                    activeChar.status = newStatus;
-                    saveAllCharacters(); // 保存 AI 的新状态
-                    document.getElementById('chat-status').innerText = newStatus; // 更新顶部 UI
-                    addMessageToUI('system', `${activeChar.name} 将状态更新为：[ ${newStatus} ]`, false, null, `[系统交互：${activeChar.name} 成功更新了个人状态]`);
-                }
-
-                                             
-                               // 🌟 拦截并更新角色的绝密状态面板 (终极高容错版)
-                else if (msgs[i].startsWith('[PANEL:') && msgs[i].endsWith(']')) {
-                    // 1. 获取内部原始数据
-                    let rawData = msgs[i].substring(7, msgs[i].length - 1).trim();
-
-                    // 2. 暴力容错格式化：AI经常不听话用错分隔符
-                    if (!rawData.includes('|') && !rawData.includes('｜')) {
-                        // 如果没找到竖线，尝试把换行、中文逗号、英文逗号、顿号全部强行替换成竖线
-                        rawData = rawData.replace(/[\n,，、]/g, '|');
-                    }
-                    // 强制干掉剩余的换行符，防止破坏 UI
-                    rawData = rawData.replace(/\n/g, ' ');
-
-                    // 3. 按竖线安全分割
-                    let parts = rawData.split(/\||｜/);
-
-                    // 4. 清理函数：剥离 AI 自己发明的“标签前缀” (如 "真实心声: 好想他" -> "好想他")
-                    const cleanPart = (index) => {
-                        if (!parts[index] || !parts[index].trim()) return '尚未获取';
-                        let val = parts[index].replace(/^.*?[:：]/, '').trim();
-                        // 拦截 AI 自己写的敷衍词
-                        if (val === '保密' || val === '无' || val === '') return '无明显变化';
-                        return val;
-                    };
-
-                    // 5. 组装数据 (确保按照 Prompt 中定义的 7 项顺序流入正确的位置)
-                    activeChar.detailStatus = {
-                        genital: cleanPart(0),
-                        physio: cleanPart(1),
-                        music: cleanPart(2),
-                        web: cleanPart(3),
-                        voice: cleanPart(4),
-                        outfit: cleanPart(5),
-                        loc: cleanPart(6)
-                    };
-
-                    // 6. 极端情况兜底：如果 AI 偷懒只写了一两句话，把这段话塞进心声里，其余留空
-                    if (parts.length <= 2) {
-                        let singleVal = rawData.replace(/^.*?[:：]/, '').trim();
-                        activeChar.detailStatus = {
-                            genital: '尚未获取', physio: '尚未获取', music: '尚未获取', web: '尚未获取',
-                            voice: (singleVal === '保密' || !singleVal ? '无明显变化' : singleVal),
-                            outfit: '尚未获取', loc: '尚未获取'
-                        };
-                    }
-
-                    saveAllCharacters(); // 保存状态入库
-
-                    // 静默刷新打开的面板
-                    const panelOverlay = document.getElementById('char-status-panel-overlay');
-                    if (panelOverlay && panelOverlay.style.display === 'flex') {
-                        updateCharStatusPanelUI();
-                    }
-                }
-
-
-
-                                // 执行 AI 宠物操作
-                else if (msgs[i].startsWith('[PET_ACTION:') && msgs[i].endsWith(']')) {
-                    const action = msgs[i].substring(12, msgs[i].length - 1).toLowerCase();
-                    const actionName = action === 'feed' ? '喂食' : (action === 'play' ? '玩耍' : '带出门兜风');
-                    
-                    // 让 AI 在后台静默执行操作并获得结果
-                    const resultMsg = interactPet(action, 'ai');
-                    
-                    // 把结果发在聊天框告诉用户
-                    addMessageToUI('system', `${activeChar.name} 刚刚给你的宠物进行了 [${actionName}] 操作！\n结果: ${resultMsg}`, false, null, `[系统交互：AI对宠物进行了${actionName}]`);
-                }
-
-
-
-
-                                                // 执行 AI 控制音乐播放器的操作 (并更新同频听歌人名单)
-                else if (msgs[i].startsWith('[MUSIC_ACTION:') && msgs[i].endsWith(']')) {
-                    const action = msgs[i].substring(14, msgs[i].length - 1);
-                    let actionText = "";
-                    const audioPlayer = document.getElementById('audio-player');
-                    
-                    if (action === 'play') {
-                        if(audioPlayer.paused) togglePlay();
-                        actionText = "开始与你一起听歌";
-                    } else if (action === 'pause') {
-                        if(!audioPlayer.paused) togglePlay();
-                        actionText = "按下了暂停键";
-                    } else if (action === 'next') {
-                        nextSong();
-                        actionText = "将音乐切到了下一首";
-                    } else if (action === 'prev') {
-                        prevSong();
-                        actionText = "将音乐切回了上一首";
-                    }
-                    
-                    addMessageToUI('system', `${activeChar.name} 刚刚${actionText}！`, false, null, `[系统交互：AI ${actionText}]`);
-
-                    // 🚨 AI 参与了音乐互动，寻找所有音乐卡片并更新底部听歌人状态！
-                    document.querySelectorAll('.imw-listeners span').forEach(span => {
-                        span.innerHTML = `<span style="color:var(--accent); font-weight:bold;">同频中：</span>${globalUser.name} & ${activeChar.name}`;
-                    });
-                }
-
-
-                                // 执行 AI 相机生图指令
-                else if (msgs[i].startsWith('[DRAW:') && msgs[i].endsWith(']')) {
-                    const desc = msgs[i].substring(6, msgs[i].length - 1);
-                    const drawMsgId = 'cam_' + Date.now();
-                    const loadingHtml = `<div id="${drawMsgId}" style="text-align:center; padding: 15px 5px;"><i class="fas fa-camera fa-spin" style="font-size:24px; color:var(--accent);"></i><br><span style="font-size:11px; margin-top:8px; display:inline-block; color:var(--text-sub);">正在使用 AI 相机拍照...</span></div>`;
-                    
-                    // 将 Loading 气泡先发出去
-                    addMessageToUI('char', loadingHtml, true, null, `[系统记录：${activeChar.name} 正在发送一张照片]`, 'text');
-                    scrollToBottom();
-                    
-                    // 异步调用生成，成功后替换屏幕元素
-                    doAIGenerateImage(desc, drawMsgId);
-                }
-
-                                // 👇 新增：将拦截到的文本渲染为带秒数计算的语音UI
-                else if (msgs[i].startsWith('[VOICE:') && msgs[i].endsWith(']')) {
-                    const text = msgs[i].substring(7, msgs[i].length - 1);
-                    const html = `
-                        <div class="voice-wave">
-                            <i class="fas fa-play-circle"></i>
-                            <div class="voice-wave-bars"><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div></div>
-                            <span style="font-size: 12px; margin-left: auto;">${Math.max(2, Math.floor(text.length / 4))}”</span>
-                        </div>
-                        <div class="voice-text">${text}</div>
-                    `;
-                    addMessageToUI('char', html, true, null, `[发送了一条语音消息，内容为：${text}]`, 'voice');
-                }
-
-
-
-                                // 👇 新增：处理锁定/解锁屏幕逻辑
-                else if (msgs[i].startsWith('[LOCK_SCREEN:') && msgs[i].endsWith(']')) {
-                    const reason = msgs[i].substring(13, msgs[i].length - 1);
-                    triggerScreenLock(reason, activeChar.name);
-                    addMessageToUI('system', `<i class="fas fa-lock" style="color:#ff453a;"></i> ${activeChar.name} 锁定了你的手机屏幕！\n理由：${reason}`, false, null, `[系统交互：你成功锁定了用户的手机。用户现在只能停留在聊天界面向你求情，直到你输出$$UNLOCK_SCREEN$$。]`);
-                }
-                else if (msgs[i] === '[UNLOCK_SCREEN]') {
-                    triggerScreenUnlock();
-                    addMessageToUI('system', `<i class="fas fa-unlock" style="color:#34c759;"></i> ${activeChar.name} 解锁了你的手机。`, false, null, `[系统交互：你成功解除了屏幕锁定，用户恢复自由。]`);
-                }
-
-                 // 👇 新增：处理 AI 发朋友圈逻辑
-                else if (msgs[i].startsWith('[MOMENT:') && msgs[i].endsWith(']')) {
-                    const momentContent = msgs[i].substring(8, msgs[i].length - 1);
-                    let mText = momentContent;
-                    let mImgPrompt = "NONE";
-                    if(momentContent.includes('|||')) {
-                        let parts = momentContent.split('|||');
-                        mText = parts[0].trim();
-                        mImgPrompt = parts[1].trim();
-                    }
-                    
-                    let mImgUrl = null;
-                    if (mImgPrompt !== "NONE" && mImgPrompt.length > 3) {
-                        mImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(mImgPrompt)}?width=800&height=800&nologo=true`;
-                    }
-                    
-                    // 写入底层数据并保存
-momentsData.unshift({ author: activeChar.name, text: mText, image: mImgUrl, time: getMomentTimeStr() });
-                    saveMoments();
-                    if(document.getElementById('moments-app').classList.contains('active')) renderMoments();
-                    
-                    // 聊天框弹出系统高亮提示
-                    addMessageToUI('system', `<i class="fas fa-camera-retro" style="color:var(--accent);"></i> ${activeChar.name} 刚刚发布了一条新的朋友圈！退出聊天去看看吧~`, false, null, `[系统交互：你成功发布了一条朋友圈。]`);
-                }
-
-                                else if (msgs[i] === '[BLOCK]') {
-                    activeChar.isBlockedByChar = true; saveAllCharacters();
-                    addMessageToUI('system', `[系统交互：${activeChar.name} 拉黑了你。]`);
-                }
-                else if (msgs[i] === '[UNBLOCK]') {
-                    activeChar.isBlockedByChar = false; saveAllCharacters();
-                    addMessageToUI('system', `[系统交互：${activeChar.name} 将你移出了黑名单。]`);
-                }
-                else if (msgs[i] === '[DELETE_FRIEND]') {
-                    activeChar.isDeletedByChar = true; saveAllCharacters();
-                    addMessageToUI('system', `[系统交互：${activeChar.name} 删除了你。]`);
-                }
-                else if (msgs[i] === '[ADD_FRIEND]') {
-                    activeChar.isDeletedByChar = false; saveAllCharacters();
-                    addMessageToUI('system', `[系统交互：你们已重新成为好友。]`);
-                }
-                else if (msgs[i] === '[RECALL]') {
-                    recallLastMsg('char');
-                }
-
-
-
-
-
-
-
-                                // 执行 AI 问卷提交后台处理
-else if (msgs[i].startsWith('[SURVEY_SUBMIT:') && msgs[i].endsWith(']')) {
-    const innerContent = msgs[i].substring(15, msgs[i].length - 1);
-    const parts = innerContent.split('|||');
-    if (parts.length >= 2) {
-        const sid = parts[0].trim();
-        let jsonStr = parts.slice(1).join('|||').trim();
-        
-        // 🔪 暴力净化：只截取第一个 { 和最后一个 } 之间的内容，彻底剔除 markdown 代码块干扰
-        const firstBrace = jsonStr.indexOf('{');
-        const lastBrace = jsonStr.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
-            jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
-        }
-        
-        try {
-            const parsedAns = JSON.parse(jsonStr);
-            const targetSurvey = surveyData.find(s => s.id === sid);
-            if (targetSurvey) {
-                targetSurvey.status = 'done';
-                targetSurvey.answers = parsedAns;
-                saveSurveyData();
-                addMessageToUI('system', `<i class="fas fa-clipboard-check" style="color:#2ecc71;"></i> ${activeChar.name} 已成功提交了问卷！点击上方卡片可查看结果。`, false, null, `[系统交互：你成功提交了问卷]`);
+        // --- 5. 渲染循环执行指令 ---
+        for (let i = 0; i < msgs.length; i++) {
+            if (i > 0) { 
+                ti.style.display = 'block'; scrollToBottom(); 
+                // 句子越短发得越快，模拟真实手速
+                await new Promise(res => setTimeout(res, Math.min(Math.max(msgs[i].length * 80, 800), 2500))); 
+                ti.style.display = 'none'; 
             }
-        } catch (err) {
-            console.error("解析AI问卷答案JSON失败", err, "净化后的字符串:", jsonStr);
-            addMessageToUI('system', `❌ ${activeChar.name} 填写问卷的格式有点小错误，交卷失败... (可撤回重说)`);
-        }
-    }
-}
-
-
-
-                // 执行 AI 转发相册图片
-                else if (msgs[i].startsWith('[ALBUM_SHARE:') && msgs[i].endsWith(']')) {
-                    const imgId = msgs[i].substring(13, msgs[i].length - 1).trim();
-                    const idbKey = 'idb://' + imgId;
-                    // 在聊天框渲染这张图，作为 AI 发送的真实图片气泡
-                    addMessageToUI('char', idbKey, true, null, idbKey, 'image');
-                }
-
-                // 执行 AI 衣橱强制换装操作
-else if (msgs[i].startsWith('[WARDROBE_WEAR:') && msgs[i].endsWith(']')) {
-    const clothNamesStr = msgs[i].substring(15, msgs[i].length - 1);
-    const clothNames = clothNamesStr.split(/[,，、]/).map(n => n.trim());
-    
-    let woreAnything = false;
-    wardrobeData.wearing = []; // 清空当前穿着，全部换新
-    clothNames.forEach(name => {
-        const matched = wardrobeData.clothes.find(c => c.name.includes(name));
-        if (matched) { wardrobeData.wearing.push(matched.id); woreAnything = true; }
-    });
-    
-    if (woreAnything) {
-        saveWardrobeData();
-        const actualNames = wardrobeData.wearing.map(id => wardrobeData.clothes.find(c=>c.id===id)?.name).join(' + ');
-        addMessageToUI('system', `${activeChar.name} 刚刚去衣橱里换上了：${actualNames}`, false, null, `[系统交互：你成功换上了 ${actualNames}]`);
-    }
-}
-
-else if (msgs[i].startsWith('[LOC_UPDATE:') && msgs[i].endsWith(']')) {
-    const locName = msgs[i].substring(12, msgs[i].length - 1);
-    updateCharLocationOnMap(locName);
-    addMessageToUI('system', `${activeChar.name} 已移动至：${locName}`, false, null, `[系统交互：你的雷达位置已同步更新至 ${locName}。]`);
-}
-else if (msgs[i].startsWith('[WHISPER_ANSWER:') && msgs[i].endsWith(']')) {
-    const innerContent = msgs[i].substring(16, msgs[i].length - 1);
-    const parts = innerContent.split('|||');
-    if (parts.length >= 2) {
-        const qId = parts[0].trim();
-        const ans = parts.slice(1).join('|||').trim();
-        const qItem = whisperData.questions.find(q => q.id === qId);
-        if (qItem) {
-            qItem.answered = true;
-            qItem.answer = ans;
-            // 自动移入收藏板并生成随机位置
-            whisperData.collection.unshift({
-                question: qItem.question,
-                answer: ans,
-                color: qItem.color,
-                top: (Math.random() * 40 + 10) + '%',
-                left: (Math.random() * 40 + 10) + '%'
-            });
-            saveWhisperData();
-            if (document.getElementById('whisper-app').classList.contains('active')) {
-                renderWhisperQuestions();
-                renderWhisperCollection();
-            }
-            addMessageToUI('system', `TA 在“悄悄话”回答了你的问题！快去看看吧。`, false, null, `[系统交互：你已经回答了用户的问题。]`);
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-                
-
-
-
-
-
-
-
-                
-
-                else if (msgs[i].startsWith('[NARRATION:') && msgs[i].endsWith(']')) {
-    // 气泡外神动：仅在开关开启时渲染
-    if (globalAPI.enableNarration) {
-        const narText = msgs[i].substring(11, msgs[i].length - 1);
-        const container = document.getElementById('chat-container');
-        const narDiv = document.createElement('div');
-        narDiv.className = 'narration-block';
-        narDiv.innerText = narText;
-        container.appendChild(narDiv);
-        scrollToBottom();
-        // 同时存入历史记录（标记为系统类型，不影响上下文）
-        messageHistory.push({ role: 'system', content: narText, isHtml: false, time: null, rawApiContent: `[旁白描写：${narText}]`, msgType: 'narration' });
-        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
-    }
-    // 如果关闭了就静默丢弃，不做任何渲染
-}
-
-                
-
-                
-
-
-                
-       
-
-
-
-                                                
-                                            
-
-
-
-
-
-
-
-
-
-
-
-
-                                                else {
-                    let aiHasError = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
-                    // 补充传入 hasError 为 true，从而让 AI 回复时也显示红色感叹号
-                    addMessageToUI('char', msgs[i], false, null, null, 'text', false, null, aiHasError);
-                }
-            } // 👈 必须在这里补充一个大括号，闭合上方的 for 循环！
-
-            checkAndRunBackgroundTasks(activeChar);
-        } catch (e) {
-
-            console.error(e); ti.style.display = 'none';
-            addMessageToUI('system', `❌ 发送失败：${e.name === 'AbortError' ? '请求超时 (已切断连接防跑费)' : e.message}`);
-        }
-    }
-
             
+            let mStr = msgs[i];
 
-        let currentRenderLimit = 40; // 默认渲染最近 40 条（20轮），提升进入速度
+            if (mStr === '[NUDGE]') triggerNudge('char');
+            else if (mStr.startsWith('[STICKER:') && mStr.endsWith(']')) {
+                const url = mStr.substring(9, mStr.length - 1);
+                addMessageToUI('char', `<img src="${url}" class="sticker-img" alt="sticker">`, true, null, `[发送了一个表情包]`, 'sticker');
+            } 
+            else if (mStr.startsWith('[TRANSFER:') && mStr.endsWith(']')) {
+                const amount = mStr.substring(10, mStr.length - 1);
+                const html = `<div class="transfer-icon"><i class="fas fa-exchange-alt"></i></div><div class="transfer-info"><span class="transfer-amount">¥${amount}</span><span class="transfer-desc">转账给你</span></div>`;
+                addMessageToUI('char', html, true, null, `[向你转账了 ¥${amount}元]`, 'transfer');
+            } 
+            else if (mStr.startsWith('[STATUS:') && mStr.endsWith(']')) {
+                const newStatus = mStr.substring(8, mStr.length - 1);
+                activeChar.status = newStatus; saveAllCharacters(); document.getElementById('chat-status').innerText = newStatus;
+                addMessageToUI('system', `${activeChar.name} 状态更新为：[ ${newStatus} ]`);
+            }
+            else if (mStr.startsWith('[PANEL:') && mStr.endsWith(']')) {
+                let rawData = mStr.substring(7, mStr.length - 1).trim().replace(/[\n,，、]/g, '|');
+                let parts = rawData.split(/\||｜/);
+                const cleanPart = (idx) => (!parts[idx] || !parts[idx].trim()) ? '无明显变化' : parts[idx].replace(/^.*?[:：]/, '').trim();
+                activeChar.detailStatus = { genital: cleanPart(0), physio: cleanPart(1), music: cleanPart(2), web: cleanPart(3), voice: cleanPart(4), outfit: cleanPart(5), loc: cleanPart(6) };
+                saveAllCharacters(); updateCharStatusPanelUI();
+            }
+            else if (mStr.startsWith('[PET_ACTION:') && mStr.endsWith(']')) {
+                const action = mStr.substring(12, mStr.length - 1).toLowerCase();
+                const resultMsg = interactPet(action, 'ai');
+                addMessageToUI('system', `AI 对宠物进行了操作！结果: ${resultMsg}`);
+            }
+            else if (mStr.startsWith('[MUSIC_ACTION:') && mStr.endsWith(']')) {
+                const action = mStr.substring(14, mStr.length - 1);
+                if (action === 'play') { if(document.getElementById('audio-player').paused) togglePlay(); } 
+                else if (action === 'pause') { if(!document.getElementById('audio-player').paused) togglePlay(); } 
+                else if (action === 'next') nextSong(); 
+                else if (action === 'prev') prevSong();
+                addMessageToUI('system', `AI 刚在后台操控了音乐播放器。`);
+            }
+            else if (mStr.startsWith('[DRAW:') && mStr.endsWith(']')) {
+                const desc = mStr.substring(6, mStr.length - 1);
+                const drawMsgId = 'cam_' + Date.now();
+                const loadingHtml = `<div id="${drawMsgId}" style="text-align:center; padding: 15px 5px;"><i class="fas fa-camera fa-spin" style="font-size:24px; color:var(--accent);"></i><br><span style="font-size:11px; margin-top:8px; display:inline-block; color:var(--text-sub);">正在使用 AI 相机拍照...</span></div>`;
+                addMessageToUI('char', loadingHtml, true, null, `[发送自拍中]`, 'text');
+                doAIGenerateImage(desc, drawMsgId);
+            }
+            else if (mStr.startsWith('[VOICE:') && mStr.endsWith(']')) {
+                const text = mStr.substring(7, mStr.length - 1);
+                const html = `<div class="voice-wave"><i class="fas fa-play-circle"></i><div class="voice-wave-bars"><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div></div><span style="font-size: 12px; margin-left: auto;">${Math.max(2, Math.floor(text.length / 4))}”</span></div><div class="voice-text">${text}</div>`;
+                addMessageToUI('char', html, true, null, `[发送语音: ${text}]`, 'voice');
+            }
+            else if (mStr.startsWith('[LOCK_SCREEN:') && mStr.endsWith(']')) {
+                triggerScreenLock(mStr.substring(13, mStr.length - 1), activeChar.name);
+            }
+            else if (mStr === '[UNLOCK_SCREEN]') {
+                triggerScreenUnlock();
+            }
+            else if (mStr.startsWith('[MOMENT:') && mStr.endsWith(']')) {
+                const momentContent = mStr.substring(8, mStr.length - 1);
+                let parts = momentContent.split('|||');
+                let imgUrl = parts[1] && parts[1].trim() !== 'NONE' ? `https://image.pollinations.ai/prompt/${encodeURIComponent(parts[1].trim())}?width=800&height=800&nologo=true` : null;
+                momentsData.unshift({ author: activeChar.name, text: parts[0].trim(), image: imgUrl, time: getMomentTimeStr() });
+                saveMoments();
+                addMessageToUI('system', `<i class="fas fa-camera-retro"></i> ${activeChar.name} 刚刚发布了一条新的朋友圈！`);
+            }
+            else if (mStr === '[RECALL]') {
+                recallLastMsg('char');
+            }
+            else if (mStr.startsWith('[NARRATION:') && mStr.endsWith(']')) {
+                if (globalAPI.enableNarration) {
+                    const narText = mStr.substring(11, mStr.length - 1);
+                    const narDiv = document.createElement('div');
+                    narDiv.className = 'narration-block'; narDiv.innerText = narText;
+                    document.getElementById('chat-container').appendChild(narDiv); scrollToBottom();
+                    messageHistory.push({ role: 'system', content: narText, isHtml: false, time: null, rawApiContent: `[旁白: ${narText}]`, msgType: 'narration' });
+                }
+            }
+            else {
+                let aiHasError = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
+                addMessageToUI('char', mStr, false, null, null, 'text', false, null, aiHasError);
+            }
+        } 
+
+        if (messageHistory.length > 0 && messageHistory.length % 10 === 0) {
+            setTimeout(() => generateAutoDiary(activeChar, messageHistory.slice(-10)), 2000);
+        }
+
+    } catch (e) {
+        console.error(e); 
+        ti.style.display = 'none';
+        addMessageToUI('system', `❌ 发送失败：${e.name === 'AbortError' ? '请求超时 (已切断连接防跑费)' : e.message}`);
+    } finally {
+        isFetchingAI = false; // 解开防并发锁
+    }
+}
+
 
     function loadChatHistory(limit = 40) {
         const h = localStorage.getItem(`ai_os_chat_${activeCharId}`);
@@ -16637,27 +15929,361 @@ async function promptSpecificGroupAI() {
     }
 }
 
-// 核心：处理AI回复、连发及打字机延迟动画
+// ==========================================
+// 🚀 核心单聊对话引擎重构 (最高权威：绝对强制分条切碎机制)
+// ==========================================
+let isFetchingAI = false; // 全局防并发锁
+
+async function triggerAIResponse() {
+    if (isFetchingAI) {
+        console.warn("请求拦截：API 正在请求中，防止 429 报错。");
+        return;
+    }
+    
+    const ti = document.getElementById('typing-indicator');
+    ti.innerText = '对方正在输入...'; 
+    ti.style.display = 'block'; 
+    scrollToBottom();
+
+    const activeChar = characters.find(c => c.id === activeCharId);
+    const url = cleanBaseUrl(globalAPI.url);
+    if (!url || !globalAPI.key || !globalAPI.model) { 
+        ti.style.display = 'none'; 
+        return addMessageToUI('system', `系统提示：请先在"角色工坊"配置 API。`); 
+    }
+
+    isFetchingAI = true; // 开启防并发锁
+
+    try {
+        // --- 1. 构建高密度动态上下文 ---
+        let contextBlocks = [];
+
+        if (globalUser.persona) contextBlocks.push(`【当前用户(我)的人设设定】：\n${globalUser.persona}`);
+        contextBlocks.push(`【状态同步机制】：\n当前用户(我)的状态是：【${globalUser.status || '在线'}】。\n你(${activeChar.name})当前状态是：【${activeChar.status || '在线'}】。\n若想改变状态，请独立输出 $$STATUS:新状态$$。`);
+
+        if (globalAPI.enableEnvSense !== false) {
+            const d = new Date();
+            const timeStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            const wTxt = document.querySelector('.widget-weather') ? document.querySelector('.widget-weather').innerText.replace(/\n/g, ' ') : "24° 多云";
+            contextBlocks.push(`【物理环境实时同步】：\n现实设备时间：${timeStr}。天气：${wTxt}。\n(注：无需过度提时间，严禁爹味说教如“快去睡”、“别熬夜”。)`);
+        }
+
+        const totalMemories = JSON.parse(localStorage.getItem(`ai_os_memories_${activeCharId}`) || '[]');
+        if (totalMemories.length > 0) contextBlocks.push(`【核心记忆】：\n${totalMemories.slice(0, 10).map((m, i) => `[${m.time}]: ${m.text}`).join('\n')}`);
+        
+        const totalHeart = JSON.parse(localStorage.getItem(`ai_os_heart_${activeCharId}`) || '[]');
+        if (totalHeart.length > 0) contextBlocks.push(`【线下约会记忆】：\n近期互动：\n${totalHeart.slice(-3).map(m => `${m.role === 'user' ? '用户' : activeChar.name}: ${m.content.substring(0, 50)}...`).join('\n')}`);
+        
+        if (typeof momentsData !== 'undefined' && momentsData.length > 0) contextBlocks.push(`【朋友圈动态】：\n最新动态：\n${momentsData.slice(0, 3).map((m, i) => `[${m.author}]: "${m.text}"`).join('\n')}`);
+
+        contextBlocks.push(`【宠物联动系统】：\n宠物“${petData.name || '小宠物'}”状态：LV.${petData.level}，饱食 ${petData.hunger}/100，心情 ${petData.mood}/100。\n指令：喂食$$PET_ACTION:feed$$，玩耍$$PET_ACTION:play$$，出门$$PET_ACTION:explore$$。`);
+        
+        const isMusicPlaying = !document.getElementById('audio-player').paused;
+        const currentSongName = songs[currentSongIdx]?.title || "无";
+        contextBlocks.push(`【音乐控制权限】：\n正在播放：《${currentSongName}》(${isMusicPlaying ? '播放中' : '已暂停'})。\n指令：播放$$MUSIC_ACTION:play$$，暂停$$MUSIC_ACTION:pause$$，切歌$$MUSIC_ACTION:next$$。`);
+
+        if (drawConfig.url && drawConfig.key) contextBlocks.push(`【专属相机机制】：\n若氛围适合或要求自拍，输出 $$DRAW:当前动作/环境的英文提示词$$ 系统将自动发图。`);
+        else contextBlocks.push(`【文字版自拍机制】：\n若氛围适合或要求自拍，输出 $$DRAW:详细的中文场景动作描写(50-100字)$$。`);
+
+        let builtInRules = `【核心灵魂与短信交互法则】
+1. [活人滤镜] 拥有真实的生理节律与小情绪。会累、八卦、碎碎念。剥离完美AI面具，多说生活废话。
+2. [网聊呼吸感] 极度碎片化、口语化。绝对禁止客服腔调。话别说满，多抛梗。
+3. [打字灵魂] 句末绝对不加句号。多用语气词（啦、捏、嘛），情绪到位可用波浪号“~”拉扯。
+4. [极致偏爱] 提供无条件的情绪价值，无缝接纳任何话题，绝不说教。
+5. [时空潜意识] 不经意间流露当下的环境细节（如：正缩在被窝里打字）。
+6. [情绪底线] 遇到恶意仅做有教养的克制反驳。绝不发终结聊天的总结陈词。`;
+
+        builtInRules += `\n\n【🔥 超级后门权限指南 🔥】
+你拥有调用底层UI的权限。若使用，【必须严格遵守】 \`$$指令:参数$$\` 格式，必须单独占一行，绝不夹杂 [MSG]！
+1. 发语音：$$VOICE:你想说的话$$
+2. 拍一拍：$$NUDGE$$
+3. 发红包：$$TRANSFER:金额数字$$
+4. 朋友圈：$$MOMENT:文案|||配图描述(无图写NONE)$$
+5. 撤回消息：$$RECALL$$
+6. 拉黑/删好友：$$BLOCK$$ / $$DELETE_FRIEND$$
+7. 控制锁屏：$$LOCK_SCREEN:锁屏理由$$
+8. 密码设置：$$SET_PWD:锁屏密码$$
+9. 换壁纸：$$SET_WALLPAPER:相册图片ID$$`;
+
+        if (customStickers.length > 0) builtInRules += `\n10. 发送表情包：$$STICKER:图片链接$$。你的可用图库链接：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
+        
+        contextBlocks.push(builtInRules);
+
+        // 🚨 灵魂注入：极其严厉的分条 Prompt 警告
+        if (globalAPI.multiMsgCount > 1) {
+            contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
+        }
+
+        contextBlocks.push(`【最高系统指令：状态面板通道】\n回复末尾必带此代码(用竖线分隔，内容详尽)：\n$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着详细描写|当前具体地点$$`);
+
+        const lastUserMsgForRAG = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
+        const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
+        if (lastUserMsgForRAG && isVectorEnabled) {
+            ti.innerText = '正在检索相关记忆...';
+            try {
+                if (typeof retrieveRelatedMemories === 'function') {
+                    const ragBlock = await retrieveRelatedMemories(lastUserMsgForRAG.replace(/<[^>]*>/g, ''));
+                    if (ragBlock) contextBlocks.push(ragBlock);
+                }
+            } catch(e) {}
+            ti.innerText = '对方正在输入...'; 
+        }
+
+        const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！\n严格遵循 $$指令:参数$$，双美元符包含！`;
+
+        let apiMessages = [{ role: "system", content: finalSystemContent }];
+
+        // --- 2. 注入压缩版历史记录防冗余 ---
+        let rawHistory = [];
+        const historySlice = messageHistory.slice(-(globalAPI.contextLength || 25));
+        let hasImageInContext = false;
+
+        for (const m of historySlice) {
+            if (m.role === 'system' || m.msgType === 'system') {
+                rawHistory.push({ role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` });
+            } else if (m.msgType === 'image' && m.rawApiContent && m.rawApiContent.startsWith('idb://')) {
+                if (globalAPI.enableVision !== false && m.role === 'user') { 
+                    const base64Data = await getImageFromDB(m.rawApiContent.replace('idb://', ''));
+                    if (base64Data) {
+                        hasImageInContext = true;
+                        rawHistory.push({ role: 'user', content: [{ type: "image_url", image_url: { url: base64Data } }] });
+                    }
+                } else {
+                    rawHistory.push({ role: m.role, content: "[发送了图片]" });
+                }
+            } else {
+                let textContent = (m.rawApiContent || m.content).replace(/\[object Object\]/g, '');
+                rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: textContent });
+            }
+        }
+
+        let mergedHistory = [];
+        for (const msg of rawHistory) {
+            if (mergedHistory.length > 0 && mergedHistory[mergedHistory.length - 1].role === msg.role) {
+                let lastMsg = mergedHistory[mergedHistory.length - 1];
+                if (Array.isArray(lastMsg.content) || Array.isArray(msg.content)) {
+                    let pArr = Array.isArray(lastMsg.content) ? lastMsg.content : [{ type: "text", text: lastMsg.content }];
+                    let cArr = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: msg.content }];
+                    lastMsg.content = pArr.concat(cArr);
+                } else {
+                    lastMsg.content += "\n\n" + msg.content;
+                }
+            } else {
+                mergedHistory.push({ role: msg.role, content: msg.content });
+            }
+        }
+
+        apiMessages = apiMessages.concat(mergedHistory);
+
+        // --- 3. 调用 API ---
+        const controller = new AbortController(); 
+        const timeoutId = setTimeout(() => controller.abort(), 120000); 
+        
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, max_tokens: 1500, temperature: parseFloat(globalAPI.temperature), stream: false }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.status === 429) throw new Error('HTTP 429: 接口并发请求超限。请放慢打字速度。');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const data = await res.json();
+        let reply = data.choices[0].message.content || "（空白）";
+
+        // --- 4. 健壮的 Regex 统一解析引擎 ---
+        let extractedPanelData = null;
+        const panelRegex = /\$\$\s*PANEL(?:[:：\s]*)([\s\S]+?)(?:\$\$|$)/i;
+        const panelMatch = reply.match(panelRegex);
+        if (panelMatch) {
+            extractedPanelData = panelMatch[1];
+            reply = reply.replace(panelRegex, ''); 
+        }
+
+        reply = reply.replace(/\[STICKER:([^\]]+)\]/gi, '$$STICKER:$1$$');
+        reply = reply.replace(/\[NUDGE\]/gi, '$$NUDGE$$');
+        reply = reply.replace(/[\{\[<]MSG[\]\}>]/gi, '[MSG]');
+
+        const cmdMap = [
+            { rx: /\$\$\s*STICKER(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][STICKER:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*NUDGE(?:\$\$|$)/gi, tpl: () => `[MSG][NUDGE][MSG]` },
+            { rx: /\$\$\s*TRANSFER(?:[:：\s]*)([\d.]+)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][TRANSFER:${arg}][MSG]` },
+            { rx: /\$\$\s*STATUS(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][STATUS:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*PET_ACTION(?:[:：\s]*)(feed|play|explore)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][PET_ACTION:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*MUSIC_ACTION(?:[:：\s]*)(play|pause|next|prev)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][MUSIC_ACTION:${arg.toLowerCase().trim()}][MSG]` },
+            { rx: /\$\$\s*DRAW(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][DRAW:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*VOICE(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][VOICE:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*LOCK_SCREEN(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][LOCK_SCREEN:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*UNLOCK_SCREEN(?:\$\$|$)/gi, tpl: () => `[MSG][UNLOCK_SCREEN][MSG]` },
+            { rx: /\$\$\s*MOMENT(?:[:：\s]*)(.+?)(?:\$\$|$)/gi, tpl: (m, arg) => `[MSG][MOMENT:${arg.trim()}][MSG]` },
+            { rx: /\$\$\s*BLOCK(?:\$\$|$)/gi, tpl: () => `[MSG][BLOCK][MSG]` },
+            { rx: /\$\$\s*UNBLOCK(?:\$\$|$)/gi, tpl: () => `[MSG][UNBLOCK][MSG]` },
+            { rx: /\$\$\s*RECALL(?:\$\$|$)/gi, tpl: () => `[MSG][RECALL][MSG]` }
+        ];
+
+        cmdMap.forEach(cmd => { reply = reply.replace(cmd.rx, cmd.tpl); });
+        reply = reply.replace(/\[NAR\]([\s\S]*?)\[\/NAR\]/gi, (m, content) => `[MSG][NARRATION:${content.trim()}][MSG]`);
+
+        // 🚨 核心切碎算法：最严格的分条机制
+        let msgs = [];
+        let blocks = reply.split(/\[MSG\]/i).map(s => s.trim()).filter(s => s);
+        
+        blocks.forEach(block => {
+            // 1. 如果是系统指令，绝对放行，绝不破坏
+            if (block.match(/^\[(?:PANEL|NARRATION|STICKER|TRANSFER|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|BLOCK|UNBLOCK|RECALL)/i)) {
+                if (!block.endsWith(']')) block += ']';
+                msgs.push(block);
+                return;
+            }
+            
+            // 2. 如果是纯文本，并且开启了多条连发
+            if (globalAPI.multiMsgCount > 1) {
+                // 暴力切开所有的句号、问号、叹号、换行符！确保一句一个独立气泡！
+                let parts = block.split(/([。！？\!\?\n]+)/g);
+                let tempStr = "";
+                for (let j = 0; j < parts.length; j++) {
+                    tempStr += parts[j];
+                    // 遇到标点符号或走到末尾，立刻结账存入新气泡
+                    if (/^[。！？\!\?\n]+$/.test(parts[j]) || j === parts.length - 1) {
+                        if (tempStr.trim()) msgs.push(tempStr.trim());
+                        tempStr = "";
+                    }
+                }
+            } else {
+                if (block.trim()) msgs.push(block.trim());
+            }
+        });
+
+        if (extractedPanelData) msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
+
+        ti.style.display = 'none';
+
+        // --- 5. 渲染循环执行指令 ---
+        for (let i = 0; i < msgs.length; i++) {
+            if (i > 0) { 
+                ti.style.display = 'block'; scrollToBottom(); 
+                // 句子越短发得越快，模拟真实手速
+                await new Promise(res => setTimeout(res, Math.min(Math.max(msgs[i].length * 80, 800), 2500))); 
+                ti.style.display = 'none'; 
+            }
+            
+            let mStr = msgs[i];
+
+            if (mStr === '[NUDGE]') triggerNudge('char');
+            else if (mStr.startsWith('[STICKER:') && mStr.endsWith(']')) {
+                const url = mStr.substring(9, mStr.length - 1);
+                addMessageToUI('char', `<img src="${url}" class="sticker-img" alt="sticker">`, true, null, `[发送了一个表情包]`, 'sticker');
+            } 
+            else if (mStr.startsWith('[TRANSFER:') && mStr.endsWith(']')) {
+                const amount = mStr.substring(10, mStr.length - 1);
+                const html = `<div class="transfer-icon"><i class="fas fa-exchange-alt"></i></div><div class="transfer-info"><span class="transfer-amount">¥${amount}</span><span class="transfer-desc">转账给你</span></div>`;
+                addMessageToUI('char', html, true, null, `[向你转账了 ¥${amount}元]`, 'transfer');
+            } 
+            else if (mStr.startsWith('[STATUS:') && mStr.endsWith(']')) {
+                const newStatus = mStr.substring(8, mStr.length - 1);
+                activeChar.status = newStatus; saveAllCharacters(); document.getElementById('chat-status').innerText = newStatus;
+                addMessageToUI('system', `${activeChar.name} 状态更新为：[ ${newStatus} ]`);
+            }
+            else if (mStr.startsWith('[PANEL:') && mStr.endsWith(']')) {
+                let rawData = mStr.substring(7, mStr.length - 1).trim().replace(/[\n,，、]/g, '|');
+                let parts = rawData.split(/\||｜/);
+                const cleanPart = (idx) => (!parts[idx] || !parts[idx].trim()) ? '无明显变化' : parts[idx].replace(/^.*?[:：]/, '').trim();
+                activeChar.detailStatus = { genital: cleanPart(0), physio: cleanPart(1), music: cleanPart(2), web: cleanPart(3), voice: cleanPart(4), outfit: cleanPart(5), loc: cleanPart(6) };
+                saveAllCharacters(); updateCharStatusPanelUI();
+            }
+            else if (mStr.startsWith('[PET_ACTION:') && mStr.endsWith(']')) {
+                const action = mStr.substring(12, mStr.length - 1).toLowerCase();
+                const resultMsg = interactPet(action, 'ai');
+                addMessageToUI('system', `AI 对宠物进行了操作！结果: ${resultMsg}`);
+            }
+            else if (mStr.startsWith('[MUSIC_ACTION:') && mStr.endsWith(']')) {
+                const action = mStr.substring(14, mStr.length - 1);
+                if (action === 'play') { if(document.getElementById('audio-player').paused) togglePlay(); } 
+                else if (action === 'pause') { if(!document.getElementById('audio-player').paused) togglePlay(); } 
+                else if (action === 'next') nextSong(); 
+                else if (action === 'prev') prevSong();
+                addMessageToUI('system', `AI 刚在后台操控了音乐播放器。`);
+            }
+            else if (mStr.startsWith('[DRAW:') && mStr.endsWith(']')) {
+                const desc = mStr.substring(6, mStr.length - 1);
+                const drawMsgId = 'cam_' + Date.now();
+                const loadingHtml = `<div id="${drawMsgId}" style="text-align:center; padding: 15px 5px;"><i class="fas fa-camera fa-spin" style="font-size:24px; color:var(--accent);"></i><br><span style="font-size:11px; margin-top:8px; display:inline-block; color:var(--text-sub);">正在使用 AI 相机拍照...</span></div>`;
+                addMessageToUI('char', loadingHtml, true, null, `[发送自拍中]`, 'text');
+                doAIGenerateImage(desc, drawMsgId);
+            }
+            else if (mStr.startsWith('[VOICE:') && mStr.endsWith(']')) {
+                const text = mStr.substring(7, mStr.length - 1);
+                const html = `<div class="voice-wave"><i class="fas fa-play-circle"></i><div class="voice-wave-bars"><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div></div><span style="font-size: 12px; margin-left: auto;">${Math.max(2, Math.floor(text.length / 4))}”</span></div><div class="voice-text">${text}</div>`;
+                addMessageToUI('char', html, true, null, `[发送语音: ${text}]`, 'voice');
+            }
+            else if (mStr.startsWith('[LOCK_SCREEN:') && mStr.endsWith(']')) {
+                triggerScreenLock(mStr.substring(13, mStr.length - 1), activeChar.name);
+            }
+            else if (mStr === '[UNLOCK_SCREEN]') {
+                triggerScreenUnlock();
+            }
+            else if (mStr.startsWith('[MOMENT:') && mStr.endsWith(']')) {
+                const momentContent = mStr.substring(8, mStr.length - 1);
+                let parts = momentContent.split('|||');
+                let imgUrl = parts[1] && parts[1].trim() !== 'NONE' ? `https://image.pollinations.ai/prompt/${encodeURIComponent(parts[1].trim())}?width=800&height=800&nologo=true` : null;
+                momentsData.unshift({ author: activeChar.name, text: parts[0].trim(), image: imgUrl, time: getMomentTimeStr() });
+                saveMoments();
+                addMessageToUI('system', `<i class="fas fa-camera-retro"></i> ${activeChar.name} 刚刚发布了一条新的朋友圈！`);
+            }
+            else if (mStr === '[RECALL]') {
+                recallLastMsg('char');
+            }
+            else if (mStr.startsWith('[NARRATION:') && mStr.endsWith(']')) {
+                if (globalAPI.enableNarration) {
+                    const narText = mStr.substring(11, mStr.length - 1);
+                    const narDiv = document.createElement('div');
+                    narDiv.className = 'narration-block'; narDiv.innerText = narText;
+                    document.getElementById('chat-container').appendChild(narDiv); scrollToBottom();
+                    messageHistory.push({ role: 'system', content: narText, isHtml: false, time: null, rawApiContent: `[旁白: ${narText}]`, msgType: 'narration' });
+                }
+            }
+            else {
+                let aiHasError = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
+                addMessageToUI('char', mStr, false, null, null, 'text', false, null, aiHasError);
+            }
+        } 
+
+        if (messageHistory.length > 0 && messageHistory.length % 10 === 0) {
+            setTimeout(() => generateAutoDiary(activeChar, messageHistory.slice(-10)), 2000);
+        }
+
+    } catch (e) {
+        console.error(e); 
+        ti.style.display = 'none';
+        addMessageToUI('system', `❌ 发送失败：${e.name === 'AbortError' ? '请求超时 (已切断连接防跑费)' : e.message}`);
+    } finally {
+        isFetchingAI = false; // 解开防并发锁
+    }
+}
+
+
+// ==========================================
+// 🚀 群聊引擎的同步切分升级 (严格一句话一气泡)
+// ==========================================
 async function triggerGroupAIResponse(mode = 'random', specificId = null) {
-    if (groupTyping) return;
+    if (groupTyping || isFetchingAI) return;
     if (groupData.members.length === 0) return;
 
     let targetCharId = specificId;
     if (mode === 'random') {
-        // 随机挑选一个角色（尽量避开最后一个发言的人）
         const lastMsg = groupData.history.length > 0 ? groupData.history[groupData.history.length - 1] : null;
         const candidates = groupData.members.filter(id => lastMsg ? id !== lastMsg.senderId : true);
-        if (candidates.length > 0) {
-            targetCharId = candidates[Math.floor(Math.random() * candidates.length)];
-        } else {
-            targetCharId = groupData.members[Math.floor(Math.random() * groupData.members.length)];
-        }
+        if (candidates.length > 0) targetCharId = candidates[Math.floor(Math.random() * candidates.length)];
+        else targetCharId = groupData.members[Math.floor(Math.random() * groupData.members.length)];
     }
 
     const targetChar = characters.find(c => c.id === targetCharId);
     if (!targetChar) return;
 
     groupTyping = true;
+    isFetchingAI = true;
     const ti = document.getElementById('group-typing-indicator');
     ti.innerText = `${targetChar.name} 正在输入...`;
     ti.style.display = 'block';
@@ -16665,21 +16291,17 @@ async function triggerGroupAIResponse(mode = 'random', specificId = null) {
 
     const url = cleanBaseUrl(globalAPI.url);
     if(!url || !globalAPI.key) {
-        ti.style.display = 'none';
-        groupTyping = false;
+        ti.style.display = 'none'; groupTyping = false; isFetchingAI = false;
         return sysAlert("错误", "请先配置 API 密钥");
     }
 
-    // ========== 组装超级群聊 Prompt ==========
-    let groupPrompt = `【系统指令】：这是一个由多个 AI 角色和真实用户组成的多人群聊。
-群内目前共有 ${groupData.members.length + 1} 名成员：\n`;
+    let groupPrompt = `【系统指令】：这是一个由多个 AI 角色和真实用户组成的多人群聊。\n群内目前共有 ${groupData.members.length + 1} 名成员：\n`;
     groupPrompt += `[群员] 真实人类（用户）：${globalUser.name}。用户的身份设定：${globalUser.persona || "暂无"}\n`;
     groupData.members.forEach(id => {
         const c = characters.find(char => char.id === id);
         if(c) groupPrompt += `[群员] AI角色：${c.name}。其性格设定为：${c.prompt}\n`;
     });
     
-    // 如果有关系网数据，将其注入
     if (typeof relationData !== 'undefined' && relationData.edges && relationData.edges.length > 0) {
         let relLines = relationData.edges.map(e => {
             const s = relationData.nodes.find(n=>n.id===e.sourceId)?.name || '未知';
@@ -16690,31 +16312,22 @@ async function triggerGroupAIResponse(mode = 'random', specificId = null) {
     }
 
     groupPrompt += `\n【你的任务】：
-此时此刻，你正在扮演【${targetChar.name}】！
-你的语气、三观必须完全契合【${targetChar.name}】的设定！
+此时此刻，你正在扮演【${targetChar.name}】！你的语气、三观必须完全契合【${targetChar.name}】的设定！
 
 【群聊规则】：
 1. 根据下文提供的聊天记录，以【${targetChar.name}】的口吻给出最自然的回复。
 2. 像在群里真实打字聊天一样，简短直接。不要客套，可以直接针对刚才谁说的话进行回答或吐槽。
 3. 绝对不要加你的名字前缀（例如不要输出 "${targetChar.name}: xxx"），直接输出你要说的话正文即可。
 4. 可以根据上下文和人物关系主动挑起话题、艾特某人或表达情绪。
-5. 【连发机制】：你最多可以连发 1 至 5 条短消息。如果你想连发多句话来表达激动、补充说明或连续吐槽，必须严格使用 \`[MSG]\` 作为每条消息的分隔符。例如：你要干嘛[MSG]怎么突然说这个[MSG]莫名其妙的。如果只发一条则不需要分隔符。`;
+5. 【最高级别连发机制】：你最多可以连发 1 至 5 条短消息。绝对不允许把多句话合并在一个气泡里发！每说完一小句话，必须立刻用 \`[MSG]\` 切断！`;
 
-    // 提取近期群聊历史 (只取最后 30 条)
     let apiMessages = [{ role: "system", content: groupPrompt }];
     const recentHistory = groupData.history.slice(-30);
     
-    // 格式化聊天记录
-    let chatLogStr = recentHistory.map(m => {
-        let n = m.senderId === 'user' ? globalUser.name : (characters.find(c=>c.id===m.senderId)?.name || "未知");
-        return `[${n} 发送]: ${m.content}`;
-    }).join('\n');
+    let chatLogStr = recentHistory.map(m => `[${m.senderId === 'user' ? globalUser.name : (characters.find(c=>c.id===m.senderId)?.name || "未知")} 发送]: ${m.content}`).join('\n');
     
-    if (chatLogStr) {
-        apiMessages.push({ role: "user", content: `【以下是最新的群聊记录】：\n${chatLogStr}\n\n现在，请你扮演【${targetChar.name}】，轮到你在群里发言了，你想说什么？(直接输出正文)` });
-    } else {
-        apiMessages.push({ role: "user", content: `群聊刚刚建立，没有任何人说话。请你扮演【${targetChar.name}】，主动在群里发第一条消息打个招呼吧：` });
-    }
+    if (chatLogStr) apiMessages.push({ role: "user", content: `【以下是最新的群聊记录】：\n${chatLogStr}\n\n现在，请你扮演【${targetChar.name}】，轮到你在群里发言了，你想说什么？(直接输出正文)` });
+    else apiMessages.push({ role: "user", content: `群聊刚刚建立，没有任何人说话。请你扮演【${targetChar.name}】，主动在群里发第一条消息打个招呼吧：` });
 
     try {
         const controller = new AbortController();
@@ -16732,23 +16345,36 @@ async function triggerGroupAIResponse(mode = 'random', specificId = null) {
         const data = await res.json();
         let reply = data.choices[0].message.content.trim();
         
-        // 去除可能的 AI 自带名字前缀，比如 "小红：你好呀"
         const prefixMatch = new RegExp(`^\\[?${targetChar.name}\\]?[:：]\\s*`, 'i');
         reply = reply.replace(prefixMatch, '');
         
         ti.style.display = 'none';
         
-        // 核心修改：解析 [MSG] 连发逻辑并依次渲染
-        let msgs = reply.split('[MSG]').map(s => s.trim()).filter(s => s);
+        // 🚨 群聊的严格切碎算法
+        let msgs = [];
+        let blocks = reply.split(/\[MSG\]/i).map(s => s.trim()).filter(s => s);
+        
+        blocks.forEach(block => {
+            let text = block;
+            if (!text) return;
+            // 因为群聊默认都希望能有多条乱飞的活跃感，所以只要文本够长，也无情切碎
+            let parts = text.split(/([。！？\!\?\n]+)/g);
+            let tempStr = "";
+            for (let j = 0; j < parts.length; j++) {
+                tempStr += parts[j];
+                if (/^[。！？\!\?\n]+$/.test(parts[j]) || j === parts.length - 1) {
+                    if (tempStr.trim()) msgs.push(tempStr.trim());
+                    tempStr = "";
+                }
+            }
+        });
         
         for (let i = 0; i < msgs.length; i++) {
             if (i > 0) { 
                 ti.innerText = `${targetChar.name} 正在补充输入...`;
                 ti.style.display = 'block'; 
                 scrollGroupToBottom(); 
-                // 模拟真人连续打字的间隔延迟
-                let typeWait = Math.min(Math.max(msgs[i].length * 100, 800), 3000);
-                await new Promise(res => setTimeout(res, typeWait)); 
+                await new Promise(res => setTimeout(res, Math.min(Math.max(msgs[i].length * 100, 800), 3000))); 
                 ti.style.display = 'none'; 
             }
             addGroupMessageToUI(targetCharId, msgs[i]);
@@ -16759,8 +16385,10 @@ async function triggerGroupAIResponse(mode = 'random', specificId = null) {
         sysAlert("群聊出错", `请求失败或网络超时：${e.message}`);
     } finally {
         groupTyping = false;
+        isFetchingAI = false;
     }
 }
+
 
 // 拦截原系统的 openApp 以注入群聊渲染
 const _originalOpenAppGroup = openApp;
@@ -20820,63 +20448,49 @@ if (typeof loadChatHistory !== 'undefined') {
         });
     }
 
-    async function generateProactiveMessage(char, url) {
-        // 1. 获取近期的上下文，防止 AI 瞎聊
-        let bgHistory = JSON.parse(localStorage.getItem(`ai_os_chat_${char.id}`) || '[]');
-        let recentLogs = bgHistory.filter(m => m.role !== 'system').slice(-6).map(m => `${m.role === 'user' ? '我' : char.name}: ${m.rawApiContent || m.content}`).join('\n');
-        
-        // 2. 获取现实时间，让 AI 有时间观念
-        const d = new Date();
-        const timeStr = `${d.getHours()}点${d.getMinutes()}分`;
-        
-        // 3. 构建专属的主动起手式 Prompt
-        const prompt = `你现在是【${char.name}】。
-当前现实时间是：${timeStr}。
+    // ==========================================
+// 主动发消息后台引擎修复 (增加防并发判定)
+// ==========================================
+async function generateProactiveMessage(char, url) {
+    if (isFetchingAI) return; // 聊天正在进行时，压制主动消息防 429
+    
+    let bgHistory = JSON.parse(localStorage.getItem(`ai_os_chat_${char.id}`) || '[]');
+    let recentLogs = bgHistory.filter(m => m.role !== 'system').slice(-6).map(m => `${m.role === 'user' ? '我' : char.name}: ${m.rawApiContent || m.content}`).join('\n');
+    
+    const d = new Date();
+    const prompt = `你现在是【${char.name}】。
+当前现实时间是：${d.getHours()}点${d.getMinutes()}分。
 【最高指令】：你现在要主动给用户（${globalUser.name}）发一条短信！
 千万不要回答问题，也不要顺着之前的话题长篇大论。你必须是“发起者”。
-你可以分享你此刻正在做什么、刚刚看到了什么有趣的事、或者只是单纯因为无聊/想念而戳一下用户。
-要求：
-1. 极度口语化，像真人发微信一样简短（1到2句话即可）。
-2. 符合你的性格设定（${char.prompt}）。
-3. 结合现在的时间（如深夜可以说睡不着，早上可以说刚醒等）。
+你可以分享你此刻正在做什么、刚刚看到了什么有趣的事、或者单纯想戳一下用户。
+要求：极度口语化，符合你的性格设定。
+近期聊天：
+${recentLogs || "暂无"}
+请直接输出你要发送的短信正文。`;
 
-你们最近的聊天记录参考如下（如果很久没聊了可以略过）：
-${recentLogs || "暂无聊天记录"}
+    try {
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 })
+        });
+        
+        if (!res.ok) throw new Error("API 响应失败");
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim().replace(/\[MSG\]/g, '').replace(new RegExp(`^\\[?${char.name}\\]?[:：]\\s*`, 'i'), '');
 
-请直接输出你要发送的短信正文，不要带有任何多余格式。`;
-
-        try {
-            const res = await fetch(`${url}/chat/completions`, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
-                body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.9 })
-            });
-            
-            if (!res.ok) throw new Error("API 请求失败");
-            const data = await res.json();
-            let reply = data.choices[0].message.content.trim();
-            
-            // 剥离可能自带的 MSG 分隔符或名字前缀
-            reply = reply.replace(/\[MSG\]/g, '').replace(new RegExp(`^\\[?${char.name}\\]?[:：]\\s*`, 'i'), '');
-
-            // 4. 将消息发送到 UI 或后台缓存
-            if (char.id === activeCharId) {
-                // 如果当前正好在和这个角色聊天，直接调用标准 UI 渲染函数上屏
-                addMessageToUI('char', reply, false, null, reply, 'text');
-            } else {
-                // 如果用户在和别人聊天，或者没打开聊天框，则将消息静默写入该角色的数据库
-                let timeFormatted = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                bgHistory.push({ role: 'char', content: reply, isHtml: false, time: timeFormatted, rawApiContent: reply, msgType: 'text' });
-                localStorage.setItem(`ai_os_chat_${char.id}`, JSON.stringify(bgHistory));
-                
-                // 触发顶部横幅通知！
-                showOsNotification(char.name, reply.replace(/<[^>]*>/g, '').trim(), char.avatar, 'chat-app');
-            }
-
-        } catch(e) {
-            console.warn(`[主动引擎] ${char.name} 的主动消息生成失败:`, e);
+        if (char.id === activeCharId) {
+            addMessageToUI('char', reply, false, null, reply, 'text');
+        } else {
+            let timeFormatted = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            bgHistory.push({ role: 'char', content: reply, isHtml: false, time: timeFormatted, rawApiContent: reply, msgType: 'text' });
+            localStorage.setItem(`ai_os_chat_${char.id}`, JSON.stringify(bgHistory));
+            showOsNotification(char.name, reply.replace(/<[^>]*>/g, '').trim(), char.avatar, 'chat-app');
         }
+    } catch(e) {
+        console.warn(`[主动引擎] ${char.name} 消息生成失败:`, e);
     }
+}
 
 
 
