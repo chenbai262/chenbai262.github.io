@@ -21479,6 +21479,7 @@ async function triggerAIResponse() {
         let contextBlocks = [];
         if (globalUser.persona) contextBlocks.push(`【当前用户(我)的人设设定】：\n${globalUser.persona}`);
         contextBlocks.push(`【状态同步机制】：\n当前用户(我)状态：【${globalUser.status || '在线'}】。\n你(${activeChar.name})状态：【${activeChar.status || '在线'}】。\n改变状态输出 $$STATUS:新状态$$。`);
+        
         if (globalAPI.enableEnvSense !== false) {
             const d = new Date();
             const wTxt = document.querySelector('.widget-weather') ? document.querySelector('.widget-weather').innerText.replace(/\n/g, ' ') : "24° 多云";
@@ -21488,15 +21489,45 @@ async function triggerAIResponse() {
         const totalMemories = JSON.parse(localStorage.getItem(`ai_os_memories_${activeCharId}`) || '[]');
         if (totalMemories.length > 0) contextBlocks.push(`【核心记忆】：\n${totalMemories.slice(0, 10).map(m => `[${m.time}]: ${m.text}`).join('\n')}`);
         
+        const totalHeart = JSON.parse(localStorage.getItem(`ai_os_heart_${activeCharId}`) || '[]');
+        if (totalHeart.length > 0) contextBlocks.push(`【线下约会记忆】：\n近期互动：\n${totalHeart.slice(-3).map(m => `${m.role === 'user' ? '用户' : activeChar.name}: ${m.content.substring(0, 50)}...`).join('\n')}`);
+        
+        if (typeof momentsData !== 'undefined' && momentsData.length > 0) contextBlocks.push(`【朋友圈动态】：\n最新动态：\n${momentsData.slice(0, 3).map((m, i) => `[${m.author}]: "${m.text}"`).join('\n')}`);
+
+        contextBlocks.push(`【宠物联动系统】：\n宠物“${petData.name || '小宠物'}”状态：LV.${petData.level}，饱食 ${petData.hunger}/100，心情 ${petData.mood}/100。\n指令：喂食$$PET_ACTION:feed$$，玩耍$$PET_ACTION:play$$，出门$$PET_ACTION:explore$$。`);
+        
+        const isMusicPlaying = !document.getElementById('audio-player').paused;
+        const currentSongName = songs[currentSongIdx]?.title || "无";
+        contextBlocks.push(`【音乐控制权限】：\n正在播放：《${currentSongName}》(${isMusicPlaying ? '播放中' : '已暂停'})。\n指令：播放$$MUSIC_ACTION:play$$，暂停$$MUSIC_ACTION:pause$$，切歌$$MUSIC_ACTION:next$$。`);
+
+        if (drawConfig.url && drawConfig.key) contextBlocks.push(`【专属相机机制】：\n若氛围适合或要求自拍，输出 $$DRAW:当前动作/环境的英文提示词$$ 系统将自动发图。`);
+        else contextBlocks.push(`【文字版自拍机制】：\n若氛围适合或要求自拍，输出 $$DRAW:详细的中文场景动作描写(50-100字)$$。`);
+
         contextBlocks.push(`【小游戏/桌面互动指令 - 必读！】：\n1. 下五子棋必须输出：[落子: 行,列] \n2. 象棋必须输出：[移动: 起点行,起点列 到 终点行,终点列]\n3. 掷骰子必须输出：[摇骰子: 数字]\n注意：执行以上动作时必须单独成行，绝对不要夹杂在文字中间！`);
 
         let builtInRules = `【核心灵魂与短信交互法则】\n1. 极度碎片化、口语化。2. 绝对禁止客服腔调。3. 句末绝对不加句号。4. 提供无条件的情绪价值。`;
-        
         builtInRules += `\n\n【超级后门权限指南】\n1. 发语音：$$VOICE:你想说的话$$\n2. 拍一拍：$$NUDGE$$\n3. 发红包：$$TRANSFER:金额数字$$\n4. 朋友圈：$$MOMENT:文案|||配图描述(无则NONE)$$\n5. 撤回消息：$$RECALL$$\n6. 控制锁屏：$$LOCK_SCREEN:锁屏理由$$`;
         if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n7. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
         contextBlocks.push(builtInRules);
 
+        if (globalAPI.multiMsgCount > 1) {
+            contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
+        }
+
         contextBlocks.push(`【最高系统指令：状态面板通道】\n回复末尾必带(竖线分隔)：\n$$PANEL:生殖状态|生理反应|音乐|网页|心声|衣着|具体地点$$`);
+
+        const lastUserMsgForRAG = messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].content : "";
+        const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
+        if (lastUserMsgForRAG && isVectorEnabled) {
+            ti.innerText = '正在检索相关记忆...';
+            try {
+                if (typeof retrieveRelatedMemories === 'function') {
+                    const ragBlock = await retrieveRelatedMemories(lastUserMsgForRAG.replace(/<[^>]*>/g, ''));
+                    if (ragBlock) contextBlocks.push(ragBlock);
+                }
+            } catch(e) {}
+            ti.innerText = '对方正在输入...'; 
+        }
 
         let formatInjection = activeChar.formatRule ? `\n\n【最高格式约束 / 强制正则权威】：\n必须绝对无条件遵守以下格式，不得违背：\n${activeChar.formatRule}` : "";
         const finalSystemContent = activeChar.prompt + '\n\n' + contextBlocks.join('\n\n') + `\n\n【最高约束】：\n回复像真人发消息，简短随性，句末绝对不要加句号！` + formatInjection;
@@ -21504,17 +21535,65 @@ async function triggerAIResponse() {
         let apiMessages = [{ role: "system", content: finalSystemContent }];
         let rawHistory = [];
         const historySlice = messageHistory.slice(-(globalAPI.contextLength || 25));
+        
         for (const m of historySlice) {
-            if (m.role === 'system' || m.msgType === 'system') rawHistory.push({ role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` });
-            else rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: (m.rawApiContent || m.content).replace(/\[object Object\]/g, '') });
+            if (m.role === 'system' || m.msgType === 'system') {
+                rawHistory.push({ role: 'user', content: `[系统互动：${m.rawApiContent || m.content}]` });
+            } else if (m.msgType === 'image' && m.rawApiContent && m.rawApiContent.startsWith('idb://')) {
+                if (globalAPI.enableVision !== false && m.role === 'user') { 
+                    const base64Data = await getImageFromDB(m.rawApiContent.replace('idb://', ''));
+                    if (base64Data) {
+                        rawHistory.push({ role: 'user', content: [{ type: "image_url", image_url: { url: base64Data } }] });
+                    }
+                } else {
+                    rawHistory.push({ role: m.role, content: "[发送了图片]" });
+                }
+            } else {
+                rawHistory.push({ role: m.role === 'user' ? 'user' : 'assistant', content: (m.rawApiContent || m.content).replace(/\[object Object\]/g, '') });
+            }
         }
         
         let mergedHistory = [];
         for (const msg of rawHistory) {
-            if (mergedHistory.length > 0 && mergedHistory[mergedHistory.length - 1].role === msg.role) mergedHistory[mergedHistory.length - 1].content += "\n\n" + msg.content;
-            else mergedHistory.push({ role: msg.role, content: msg.content });
+            if (mergedHistory.length > 0 && mergedHistory[mergedHistory.length - 1].role === msg.role) {
+                let lastMsg = mergedHistory[mergedHistory.length - 1];
+                if (Array.isArray(lastMsg.content) || Array.isArray(msg.content)) {
+                    let pArr = Array.isArray(lastMsg.content) ? lastMsg.content : [{ type: "text", text: lastMsg.content }];
+                    let cArr = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: msg.content }];
+                    lastMsg.content = pArr.concat(cArr);
+                } else {
+                    lastMsg.content += "\n\n" + msg.content;
+                }
+            } else {
+                mergedHistory.push({ role: msg.role, content: msg.content });
+            }
         }
         apiMessages = apiMessages.concat(mergedHistory);
+
+        // 👁️ 真·视觉引擎截图提取推流
+        if (globalAPI.enableVision !== false) {
+            const tvPlayer = document.getElementById('chat-video-player');
+            if (tvPlayer && tvPlayer.style.display !== 'none') {
+                const videoEl = document.querySelector('#cvp-frame-container video');
+                if (videoEl && videoEl.readyState >= 2) { 
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 640; 
+                        canvas.height = (videoEl.videoHeight / videoEl.videoWidth) * 640 || 360;
+                        canvas.getContext('2d').drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+                        const frameBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        apiMessages.push({
+                            role: "user",
+                            content: [
+                                { type: "image_url", image_url: { url: frameBase64 } },
+                                { type: "text", text: "（这是我屏幕上正在播放的视频实时画面，看看演到哪了，顺便吐槽一下剧情？）" }
+                            ]
+                        });
+                    } catch(e) {}
+                }
+            }
+        }
 
         const controller = new AbortController(); 
         const timeoutId = setTimeout(() => controller.abort(), 120000); 
@@ -21538,7 +21617,7 @@ async function triggerAIResponse() {
         reply = reply.replace(/\[NUDGE\]/gi, '$$NUDGE$$');
         reply = reply.replace(/[\{\[<]MSG[\]\}>]/gi, '[MSG]');
 
-        // 🟢 极其核心：正则翻译与游戏拦截网 🟢
+        // 🟢 正则翻译与游戏拦截网 🟢
         const cmdMap = [
             { rx: /[\{\[【\(]\s*落子\s*[:：]\s*(\d+)\s*[,，]\s*(\d+)\s*[\}\]】\)]/gi, tpl: (m, r, c) => `[MSG][GOMOKU:${r},${c}][MSG]` },
             { rx: /\$\$\s*GOMOKU(?:[:：\s]*)([\d]+)[,，]([\d]+)(?:\$\$|$)/gi, tpl: (m, r, c) => `[MSG][GOMOKU:${r},${c}][MSG]` },
@@ -21567,7 +21646,6 @@ async function triggerAIResponse() {
         
         blocks.forEach(block => {
             if (!block) return;
-            // 将游戏指令提取放行！防止被切成纯文本气泡！
             if (block.match(/^\[(?:GOMOKU|CHESS|DICE|PANEL|NARRATION|STICKER|TRANSFER|STATUS|PET_ACTION|MUSIC_ACTION|DRAW|VOICE|LOCK_SCREEN|UNLOCK_SCREEN|MOMENT|BLOCK|UNBLOCK|RECALL)/i)) {
                 if (!block.endsWith(']')) block += ']';
                 msgs.push(block);
@@ -21589,7 +21667,7 @@ async function triggerAIResponse() {
         if (extractedPanelData) msgs.push(`[PANEL:${extractedPanelData.trim()}]`);
         ti.style.display = 'none';
 
-        // 🟢 指令分发执行区，直接隐形调用画笔不输出文字 🟢
+        // 🟢 指令分发执行区 🟢
         for (let i = 0; i < msgs.length; i++) {
             if (i > 0) { 
                 ti.style.display = 'block'; scrollToBottom(); 
@@ -21600,7 +21678,6 @@ async function triggerAIResponse() {
             let mStr = msgs[i];
             
             if (mStr === '[NUDGE]') triggerNudge('char');
-            // 👇 完美拦截落子坐标，将棋子画到棋盘上 👇
             else if (mStr.startsWith('[GOMOKU:') && mStr.endsWith(']')) {
                 const coords = mStr.substring(8, mStr.length - 1).split(',');
                 if (typeof aiPlayGomoku === 'function') aiPlayGomoku(parseInt(coords[0]), parseInt(coords[1]));
@@ -21641,7 +21718,6 @@ async function triggerAIResponse() {
                 if(typeof doAIGenerateImage === 'function') doAIGenerateImage(desc, drawMsgId);
             }
             else {
-                // 普通聊天消息
                 addMessageToUI('char', mStr, false, null, null, 'text', false, null, false);
             }
         } 
