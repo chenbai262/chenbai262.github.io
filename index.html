@@ -4140,6 +4140,8 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
         <!-- 隐藏的输入控件 (新增: 文件与本地壁纸图库上传) -->
         <input type="file" id="wallpaper-upload-input" accept="image/*" style="display:none;" onchange="handleWallpaperFile(event)">
         <input type="file" id="chat-file-upload-input" style="display:none;" onchange="handleChatFileUpload(event)">
+        <input type="file" id="chat-image-upload-input" accept="image/*" style="display:none;" onchange="handleChatImageUpload(event)">
+
         <!-- 👇 新增这一行：表情包专属上传接口 -->
  <input type="file" id="sticker-upload-input" accept="image/*" multiple style="display:none;" onchange="handleStickerUpload(event)">
        <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
@@ -4659,10 +4661,11 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
                     <div id="sticker-panel" style="display: none; position: absolute; bottom: 100%; left: 0; right: 0; background: var(--bg-glass); border-top: 0.5px solid var(--border-color); padding: 15px; z-index: 5; max-height: 220px; overflow-y: auto; grid-template-columns: repeat(4, 1fr); gap: 12px; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);"></div>
                     
                     <div id="tools-panel" style="display: none; position: absolute; bottom: 100%; left: 0; right: 0; background: var(--bg-glass); border-top: 0.5px solid var(--border-color); padding: 20px 25px; z-index: 5; grid-template-columns: repeat(4, 1fr); gap: 15px; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);">
-                        <div class="tool-item" onclick="document.getElementById('chat-file-upload-input').click(); closeAllChatPanels();">
-                            <div class="tool-icon-wrap"><i class="fas fa-image" style="color: #9b59b6;"></i></div>
-                            <span>发图片</span>
-                        </div>
+                        <div class="tool-item" onclick="document.getElementById('chat-image-upload-input').click(); closeAllChatPanels();">
+    <div class="tool-icon-wrap"><i class="fas fa-image" style="color: #9b59b6;"></i></div>
+    <span>发图片</span>
+</div>
+
                         <div class="tool-item" onclick="document.getElementById('chat-file-upload-input').click(); closeAllChatPanels();">
                             <div class="tool-icon-wrap"><i class="fas fa-folder-open" style="color: #4a90e2;"></i></div>
                             <span>发文件</span>
@@ -7853,35 +7856,40 @@ window.fetchTtsModels = async function() { return; };
 
         // --- 新增：处理聊天框发送图片 ---
     function handleChatImageUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = async function() {
-                const canvas = document.createElement('canvas');
-                let width = img.width, height = img.height;
-                const maxDim = 1024; // 压缩至1024px，省流量且防止API报错
-                if (width > maxDim || height > maxDim) {
-                    if (width > height) { height *= maxDim / width; width = maxDim; }
-                    else { width *= maxDim / height; height = maxDim; }
-                }
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                const base64Url = canvas.toDataURL('image/jpeg', 0.8);
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = async function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width, height = img.height;
+            const maxDim = 1024;
+            if (width > maxDim || height > maxDim) {
+                if (width > height) { height *= maxDim / width; width = maxDim; }
+                else { width *= maxDim / height; height = maxDim; }
+            }
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const base64Url = canvas.toDataURL('image/jpeg', 0.8);
 
-                const imgId = 'chat_img_' + Date.now();
-                await saveImageToDB(imgId, base64Url); // 存入本地数据库防撑爆内存
+            const imgId = 'chat_img_' + Date.now();
+            await saveImageToDB(imgId, base64Url);
 
-                // 上屏显示
-                addMessageToUI('user', 'idb://' + imgId, true, null, 'idb://' + imgId, 'image');
-            };
-            img.src = event.target.result;
+            // 关键：rawApiContent 存储 idb:// 前缀的 key
+            // 这样在 triggerAIResponse 构建 API 消息时，
+            // 代码会识别 msgType === 'image' 且 rawApiContent 以 'idb://' 开头的记录，
+            // 从 IndexedDB 取出 Base64 并以 image_url 格式注入到 API 请求中，
+            // 让视觉模型能够真正"看见"这张图片。
+            addMessageToUI('user', 'idb://' + imgId, true, null, 'idb://' + imgId, 'image');
         };
-        reader.readAsDataURL(file);
-        e.target.value = '';
-    }
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
 
 
 
