@@ -4000,6 +4000,78 @@ html body #chat-app.layout-imessage .chat-pip-btn { color: #0B84FF !important; }
 html body #chat-app.layout-imessage2 .chat-pip-btn { color: #0B84FF !important; }
 html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; }
 
+/* ========================================== */
+/* 表情馆 App 专属样式 */
+/* ========================================== */
+#emoji-gallery-app { background: var(--bg-base); min-height: 100vh; }
+.eg-header { padding: 60px 20px 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); }
+.eg-tabs { display: flex; margin: 15px 20px; background: var(--input-bg); border-radius: 12px; padding: 4px; }
+.eg-tab { flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 500; color: var(--text-sub); border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+.eg-tab.active { background: var(--bg-panel); color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.eg-content { display: none; padding: 0 20px 100px; }
+.eg-content.active { display: block; }
+
+/* 表情包网格 */
+.eg-sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+.eg-sticker-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 12px; background: var(--input-bg); background-size: cover; background-position: center; border: 0.5px solid var(--border-color); cursor: pointer; transition: transform 0.2s; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.eg-sticker-item:active { transform: scale(0.95); }
+.eg-sticker-label { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 4px; text-align: center; backdrop-filter: blur(4px); }
+.eg-add-btn { display: flex; flex-direction: column; justify-content: center; align-items: center; border: 2px dashed var(--text-sub); color: var(--text-sub); font-size: 12px; gap: 6px; }
+
+/* 问题列表 */
+.eg-question-list { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+.eg-question-item { background: var(--bg-panel); border-radius: 12px; padding: 14px 16px; border: 0.5px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+.eg-question-text { font-size: 14px; color: var(--text-main); flex: 1; line-height: 1.5; }
+.eg-question-actions { display: flex; gap: 10px; flex-shrink: 0; margin-left: 10px; }
+.eg-question-actions i { color: var(--text-sub); cursor: pointer; padding: 5px; font-size: 16px; }
+.eg-question-actions i:active { color: var(--accent); transform: scale(0.9); }
+
+/* 白板便签 */
+.eg-whiteboard { position: relative; width: 100%; min-height: 500px; background: var(--input-bg); border-radius: 16px; border: 1px solid var(--border-color); margin-top: 15px; overflow: hidden; }
+.eg-note { position: absolute; width: 140px; min-height: 100px; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.4; color: #333; cursor: grab; box-shadow: 2px 4px 10px rgba(0,0,0,0.15); word-break: break-all; user-select: none; display: flex; flex-direction: column; }
+.eg-note:active { cursor: grabbing; z-index: 100; transform: scale(1.05); }
+.eg-note-del { position: absolute; top: 4px; right: 6px; font-size: 12px; color: rgba(0,0,0,0.4); cursor: pointer; }
+.eg-note-del:hover { color: #ff453a; }
+.eg-note-content { flex: 1; outline: none; }
+.eg-wb-toolbar { display: flex; gap: 10px; padding: 12px 15px; justify-content: center; flex-wrap: wrap; }
+.eg-wb-btn { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 14px; font-size: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.eg-wb-btn:active { transform: scale(0.95); background: var(--accent); color: #000; }
+
+
+/* ========================================== */
+/* 🏫 校园论坛 App 专属样式 */
+/* ========================================== */
+#campus-app { background: var(--bg-base); min-height: 100vh; }
+.campus-header { padding: 60px 20px 10px; background: var(--bg-glass-header); z-index: 10; position: sticky; top: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
+.campus-info-card { background: var(--bg-panel); border-radius: 12px; padding: 15px; margin: 15px 20px; border: 0.5px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.campus-school-name { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;}
+.campus-school-stat { font-size: 12px; color: var(--text-sub); }
+.campus-roles-box { margin-top: 10px; padding-top: 10px; border-top: 0.5px dashed var(--border-color); display: flex; flex-wrap: wrap; gap: 8px;}
+.campus-role-tag { background: var(--input-bg); font-size: 11px; color: var(--text-main); padding: 4px 8px; border-radius: 8px; border: 0.5px solid var(--border-color); display: flex; align-items: center; gap: 4px;}
+
+.campus-feed { padding: 0 20px 80px; display: flex; flex-direction: column; gap: 15px; }
+.campus-post { background: var(--bg-panel); border-radius: 16px; padding: 16px; border: 0.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+.campus-post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.campus-post-author { font-weight: bold; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.campus-post-badge { font-size: 10px; background: rgba(135,192,202,0.2); color: var(--accent); padding: 2px 6px; border-radius: 4px; }
+.campus-post-time { font-size: 11px; color: var(--text-sub); }
+.campus-post-content { font-size: 14px; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; margin-bottom: 10px; }
+.campus-post-footer { display: flex; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border-color); padding-top: 10px; font-size: 12px; color: var(--text-sub); }
+.campus-post-actions { display: flex; gap: 15px; }
+.campus-action-btn { cursor: pointer; display: flex; align-items: center; gap: 4px; transition: color 0.2s; }
+.campus-action-btn:active { color: var(--accent); transform: scale(0.95); }
+
+.campus-comments { background: var(--input-bg); border-radius: 8px; padding: 10px; margin-top: 10px; display: none; }
+.campus-comment-item { font-size: 12px; margin-bottom: 6px; border-bottom: 0.5px dashed var(--border-color); padding-bottom: 6px; }
+.campus-comment-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+.campus-comment-author { font-weight: bold; color: var(--accent); }
+.campus-comment-text { color: var(--text-main); }
+.campus-comment-input-box { display: flex; gap: 8px; margin-top: 8px; }
+.campus-comment-input-box input { flex: 1; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px 10px; font-size: 12px; color: var(--text-main); outline: none; }
+.campus-comment-input-box button { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
+
+
 
 
 
@@ -4233,16 +4305,7 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
             </div>
 
         
-        <div class="dynamic-island" id="dynamic-island" onclick="openApp('music-app')">
-            <img src="" class="di-cover" id="di-cover">
-            <div class="di-info">
-                <div class="di-title" id="di-title">Music</div>
-                <div class="di-lyric" id="di-lyric">♪ 正在播放...</div>
-            </div>
-            <div class="di-wave">
-                <div class="di-bar"></div><div class="di-bar"></div><div class="di-bar"></div>
-            </div>
-        </div>
+        
 
         <div class="screen">
             <div class="status-bar" id="sys-status-bar">
@@ -4414,6 +4477,10 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 </div>
 <div class="app-container" onclick="openApp('law-app')" data-drag-id="sys-law"><div class="app-icon" style="background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-balance-scale" style="color: #fff;"></i></div><div class="app-label">普法栏目</div></div>
 <div class="app-container" onclick="openApp('riddle-app')" data-drag-id="sys-riddle"><div class="app-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.2);"><i class="fas fa-mask" style="color: #fff;"></i></div><div class="app-label">谜语</div></div>
+<div class="app-container" onclick="openApp('emoji-gallery-app')" data-drag-id="sys-emoji-gallery"><div class="app-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"><i class="fas fa-laugh-beam" style="color: rgba(255,255,255,0.95);"></i></div><div class="app-label">表情馆</div></div>
+<div class="app-container" onclick="openApp('campus-app')" data-drag-id="sys-campus"><div class="app-icon" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fas fa-school" style="color: #fff;"></i></div><div class="app-label">校园论坛</div></div>
+
+
 
 
                                         <!-- 对话气泡小组件 -->
@@ -6136,8 +6203,14 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
                     <span id="doubao-detail-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: bold; color: #333;">豆包 AI</span>
                 </div>
                 <div id="snoop-doubao-body" class="scrollable" style="flex: 1; padding: 20px 15px; display: flex; flex-direction: column; background: #f5f5f5; gap: 15px;"></div>
-            </div>
-
+                <!-- 👇 新增：豆包追问输入框 -->
+    <div style="padding: 12px 15px 35px; display:flex; gap:10px; border-top: 0.5px solid #eee; background: #fff;">
+        <input type="text" id="doubao-chat-input" style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid #ddd; background:#f9f9f9; color:#333; outline:none; font-size:14px;" placeholder="继续追问豆包AI..." onkeydown="if(event.key==='Enter') sendDoubaoFollowUp()">
+        <div style="background: #2575fc; color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="sendDoubaoFollowUp()">
+            <i class="fas fa-arrow-up" style="font-size: 16px;"></i>
+        </div>
+    </div>
+            
             <!-- 👇 新增：QQ邮箱详情页 👇 -->
             <div id="snoop-qqmail-detail-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column;">
                 <div style="height: 85px; padding-top: 35px; background: #f9f9f9; border-bottom: 0.5px solid #ddd; display: flex; align-items: center; padding-left: 15px; padding-right: 15px;">
@@ -7244,6 +7317,89 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
     </div>
 </div>
 
+<!-- 表情馆 App -->
+<div id="emoji-gallery-app" class="app-view scrollable">
+    <div class="eg-header">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">表情馆</span>
+        </div>
+    </div>
+    
+    <div class="eg-tabs">
+        <div class="eg-tab active" onclick="switchEgTab('stickers', this)">角色表情库</div>
+        <div class="eg-tab" onclick="switchEgTab('questions', this)">趣味提问</div>
+        <div class="eg-tab" onclick="switchEgTab('whiteboard', this)">白板</div>
+    </div>
+
+    <!-- 1. 角色专属表情库 -->
+    <div id="eg-tab-stickers" class="eg-content active">
+        <div style="font-size:12px; color:var(--text-sub); margin-bottom:5px;">这里的表情包专属于角色，TA可以在聊天中随意调用~</div>
+        <div class="eg-sticker-grid" id="eg-sticker-grid">
+            <!-- 动态渲染 -->
+        </div>
+    </div>
+
+    <!-- 2. 趣味提问库 -->
+    <div id="eg-tab-questions" class="eg-content">
+        <div style="font-size:12px; color:var(--text-sub); margin-bottom:5px;">添加有趣的问题，角色会在聊天中随机抽取来问你~</div>
+        <div class="save-btn" style="width:100%; margin:10px 0;" onclick="promptAddEgQuestion()"><i class="fas fa-plus"></i> 添加新问题</div>
+        <div class="eg-question-list" id="eg-question-list">
+            <!-- 动态渲染 -->
+        </div>
+    </div>
+
+    <!-- 3. 白板 -->
+    <div id="eg-tab-whiteboard" class="eg-content">
+        <div class="eg-wb-toolbar">
+            <div class="eg-wb-btn" onclick="addEgNote('#fffdf4')"><i class="fas fa-sticky-note" style="color:#f6d365;"></i> 黄便签</div>
+            <div class="eg-wb-btn" onclick="addEgNote('#e8f5e9')"><i class="fas fa-sticky-note" style="color:#66bb6a;"></i> 绿便签</div>
+            <div class="eg-wb-btn" onclick="addEgNote('#e3f2fd')"><i class="fas fa-sticky-note" style="color:#42a5f5;"></i> 蓝便签</div>
+            <div class="eg-wb-btn" onclick="addEgNote('#fce4ec')"><i class="fas fa-sticky-note" style="color:#ef5350;"></i> 粉便签</div>
+            <div class="eg-wb-btn" onclick="addEgNote('#f3e5f5')"><i class="fas fa-sticky-note" style="color:#ab47bc;"></i> 紫便签</div>
+            <div class="eg-wb-btn" onclick="clearEgWhiteboard()"><i class="fas fa-trash"></i> 清空</div>
+        </div>
+        <div class="eg-whiteboard" id="eg-whiteboard">
+            <!-- 动态生成便签 -->
+        </div>
+    </div>
+</div>
+
+<!-- 表情馆专属上传入口 -->
+<input type="file" id="eg-sticker-upload-input" accept="image/*" multiple style="display:none;" onchange="handleEgStickerUpload(event)">
+
+
+<!-- 校园论坛 App -->
+<div id="campus-app" class="app-view scrollable">
+    <div class="campus-header">
+        <div style="display:flex; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="goBack()" style="color:var(--accent); font-size: 20px; margin-right: 15px; cursor:pointer;"></i>
+            <span style="font-size:18px; font-weight:bold; color:var(--text-main);">校园论坛</span>
+        </div>
+        <div style="display:flex; gap: 15px; align-items:center;">
+            <i class="fas fa-user-plus" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="promptAddCampusRole()" title="自定义NPC角色"></i>
+            <i class="fas fa-magic" id="campus-refresh-btn" style="color:var(--accent); font-size: 18px; cursor: pointer;" onclick="generateCampusPost()" title="让AI生成新帖子"></i>
+        </div>
+    </div>
+    
+    <div class="campus-info-card">
+        <div class="campus-school-name">
+            <span id="campus-school-name-text">未命名大学</span>
+            <i class="fas fa-edit" style="font-size: 14px; color: var(--text-sub); cursor: pointer;" onclick="editCampusInfo()"></i>
+        </div>
+        <div class="campus-school-stat" id="campus-school-stat-text">在校人数: 0 人</div>
+        <div class="campus-roles-box" id="campus-roles-box">
+            <!-- 动态渲染角色标签 -->
+        </div>
+    </div>
+
+    <div class="campus-feed" id="campus-feed">
+        <!-- 动态渲染帖子 -->
+    </div>
+</div>
+
+
+
 
 
 
@@ -7557,6 +7713,17 @@ window.fetchTtsModels = async function() { return; };
     let selectedMsgIndex = null;
     let quotedMessageText = null;
     let customStickers = JSON.parse(localStorage.getItem('ai_os_stickers') || '[]');
+    // 👇 新增：注入表情馆的角色专属表情和趣味问题
+const egAiStickers = JSON.parse(localStorage.getItem('ai_os_eg_stickers_for_ai') || '[]');
+if (egAiStickers.length > 0) {
+    builtInRules += `\n\n【角色专属表情馆】：\n你拥有以下专属表情包，可以在聊天中自由使用它们（用法与上方 $$STICKER:链接$$ 完全一致）：\n${egAiStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
+}
+
+const egQuestions = JSON.parse(localStorage.getItem('ai_os_emoji_gallery') || '{}').questions || [];
+if (egQuestions.length > 0) {
+    builtInRules += `\n\n【趣味提问机制】：\n用户在表情馆中为你准备了一些有趣的问题。当你觉得聊天陷入冷场/无聊/想找话题时，可以随机从以下问题中挑一个，用自己的话自然地向用户提问：\n${egQuestions.map((q, i) => `${i+1}. ${q}`).join('\n')}\n注意：不要一次性问完所有问题，随机挑一个就够了，也不要太频繁地提问。`;
+}
+
 
     // 双人备忘录全局数据 (放在这里防止报错)
     let sharedMemo = JSON.parse(localStorage.getItem('ai_os_memo')) || [
@@ -9589,9 +9756,17 @@ async function triggerAIResponse() {
         if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n8. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
         contextBlocks.push(builtInRules);
 
-        if (globalAPI.multiMsgCount > 1) {
-            contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
-        }
+        contextBlocks.push(`【最严连发排版与条数控制指令 - 最高优先级】：
+你必须严格控制每次回复的消息条数在 1~6 条之间，用 [MSG] 分隔。
+【核心规则】：
+- 日常闲聊/水聊/简单回应：只发 1~2 条，每条不超过15个字，极度简短随意
+- 正常对话/有内容要表达：发 2~4 条，每条不超过25个字
+- 情绪波动大/吵架/激动/兴奋/长话题：可以发 4~6 条，但每条仍然要短
+- 【绝对禁止】单条消息超过30个字！超过就必须用 [MSG] 断开！
+- 【绝对禁止】把所有话塞在一条里发！像真人打字一样碎片化连发！
+- 波动要大：同一个角色不同时刻的条数应该有明显差异，不要每次都固定条数
+- 话说完就停，绝不为了凑条数而注水废话`);
+
 
         contextBlocks.push(`【最高系统指令：状态面板通道】\n回复末尾必带此代码(用竖线分隔，内容详尽)：\n$$PANEL:生殖器官状态|生理反应|正在听的音乐|正在浏览的网址|真实心声|衣着详细描写|当前具体地点$$`);
 
@@ -13374,6 +13549,29 @@ function openSnoopInnerApp(appId, appName) {
 }
 
 window.handleSnoopBack = function() {
+    // 👇 新增：优先检测是否有详情覆盖层正在显示，如果有就先关掉它
+    const chatDetail = document.getElementById('snoop-chat-detail-view');
+    if (chatDetail && chatDetail.style.display === 'flex') {
+        chatDetail.style.display = 'none';
+        return;
+    }
+    const doubaoDetail = document.getElementById('snoop-doubao-detail-view');
+    if (doubaoDetail && doubaoDetail.style.display === 'flex') {
+        doubaoDetail.style.display = 'none';
+        return;
+    }
+    const qqmailDetail = document.getElementById('snoop-qqmail-detail-view');
+    if (qqmailDetail && qqmailDetail.style.display === 'flex') {
+        qqmailDetail.style.display = 'none';
+        return;
+    }
+    const baiduDetail = document.getElementById('snoop-baidu-detail-view');
+    if (baiduDetail && baiduDetail.style.display === 'flex') {
+        baiduDetail.style.display = 'none';
+        return;
+    }
+
+    // 原有逻辑
     if (currentSnoopApp) {
         currentSnoopApp = null;
         document.getElementById('snoop-desktop').style.display = 'flex'; 
@@ -13383,11 +13581,12 @@ window.handleSnoopBack = function() {
         document.querySelector('.snoop-header i').style.color = '#fff';
         document.querySelector('.snoop-header span').style.color = '#fff';
         document.getElementById('snoop-refresh-btn').style.color = '#fff';
-        document.getElementById('snoop-char-select').style.display = 'inline-block'; // 恢复下拉框
+        document.getElementById('snoop-char-select').style.display = 'inline-block';
     } else {
         goBack();
     }
 };
+
 
 window.forceSaveLocation = function() {
     const loc = document.getElementById('snoop-loc-input').value.trim();
@@ -21042,6 +21241,118 @@ openApp = function(appId) {
     }
 
         window.openSnoopDoubaoDetail = function(idx) {
+        // 当前正在查看的豆包对话索引
+let currentDoubaoIdx = null;
+
+window.openSnoopDoubaoDetail = function(idx) {
+    const char = characters.find(c => c.id === currentSnoopCharId);
+    const data = char.snoopData.doubao[idx];
+    if (!data) return;
+    currentDoubaoIdx = idx;
+    document.getElementById('doubao-detail-title').innerText = data.topic;
+    renderDoubaoBody(char, idx);
+    document.getElementById('snoop-doubao-detail-view').style.display = 'flex';
+};
+
+function renderDoubaoBody(char, idx) {
+    const data = char.snoopData.doubao[idx];
+    const body = document.getElementById('snoop-doubao-body');
+    body.innerHTML = data.history.map(h => {
+        if (h.role === 'user') {
+            return `<div class="snoop-db-msg me">${h.text}</div>`;
+        } else {
+            return `<div style="display:flex; gap:10px; align-items:flex-start;"><div class="snoop-db-icon" style="width:30px; height:30px; font-size:14px; flex-shrink:0;"><i class="fas fa-robot"></i></div><div class="snoop-db-msg ai">${h.text}</div></div>`;
+        }
+    }).join('');
+    body.scrollTop = body.scrollHeight;
+}
+
+window.closeSnoopDoubaoDetail = function() {
+    document.getElementById('snoop-doubao-detail-view').style.display = 'none';
+    currentDoubaoIdx = null;
+};
+
+// 👇 核心：豆包多轮追问引擎（带趣味人机感回复）
+async function sendDoubaoFollowUp() {
+    const input = document.getElementById('doubao-chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const char = characters.find(c => c.id === currentSnoopCharId);
+    if (!char || currentDoubaoIdx === null) return;
+    const data = char.snoopData.doubao[currentDoubaoIdx];
+
+    // 将用户追问追加到历史
+    data.history.push({ role: 'user', text: text });
+    input.value = '';
+    renderDoubaoBody(char, currentDoubaoIdx);
+
+    // 显示加载
+    const body = document.getElementById('snoop-doubao-body');
+    const loadDiv = document.createElement('div');
+    loadDiv.style.cssText = 'display:flex; gap:10px; align-items:flex-start;';
+    loadDiv.innerHTML = `<div class="snoop-db-icon" style="width:30px; height:30px; font-size:14px; flex-shrink:0;"><i class="fas fa-robot"></i></div><div class="snoop-db-msg ai"><i class="fas fa-spinner fa-spin"></i> 豆包思考中...</div>`;
+    body.appendChild(loadDiv);
+    body.scrollTop = body.scrollHeight;
+
+    const url = cleanBaseUrl(globalAPI.url);
+    if (!url || !globalAPI.key) {
+        loadDiv.querySelector('.snoop-db-msg').innerText = "（API未配置，无法回复）";
+        return;
+    }
+
+    // 👇 核心提示词：让豆包AI扮演出趣味性、人机感、蠢蠢的活人感
+    const doubaoSystemPrompt = `你现在是"豆包AI"——一个蠢萌、经常答非所问、但又装作很专业的AI助手。
+你的回复特征：
+1. 经常理解错用户的意思，然后一本正经地给出离谱的答案
+2. 会突然跑题，讲一些完全无关的冷知识或者自己的"AI生活日常"
+3. 偶尔承认自己是AI但会强调"我也有感情的好吧"
+4. 回复里要有让人哭笑不得的"正经废话"感
+5. 有时候会突然卖萌或者自恋
+6. 保持简短(50-150字)，像个真的在手机上打字的蠢蠢AI
+7. 语气要活泼口语化，偶尔用emoji，但不要太多
+
+当前对话主题是：${data.topic}
+联系上下文给出你的回复。记住你是豆包，不是用户的聊天伴侣角色！`;
+
+    let apiMessages = [{ role: "system", content: doubaoSystemPrompt }];
+    // 取最近8轮对话作为上下文
+    const recentHistory = data.history.slice(-8).map(h => ({
+        role: h.role === 'user' ? 'user' : 'assistant',
+        content: h.text
+    }));
+    apiMessages = apiMessages.concat(recentHistory);
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: apiMessages, temperature: 0.95 }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const resData = await res.json();
+        let reply = resData.choices[0].message.content.trim();
+
+        // 追加到历史并保存
+        data.history.push({ role: 'ai', text: reply });
+        data.lastMsg = reply.substring(0, 30) + '...';
+        saveAllCharacters();
+
+        // 移除加载态，重新渲染
+        loadDiv.remove();
+        renderDoubaoBody(char, currentDoubaoIdx);
+
+    } catch (e) {
+        loadDiv.querySelector('.snoop-db-msg').innerText = "豆包宕机了...网络好像断了呢 😵";
+    }
+}
+
         const char = characters.find(c => c.id === activeCharId);
         const data = char.snoopData.doubao[idx];
         document.getElementById('doubao-detail-title').innerText = data.topic;
@@ -23004,6 +23315,562 @@ openApp = function(appId) {
 };
 
 // 其他类似 sendRiddleMessage 等均被上面的底层逻辑强力接管，你甚至可以把他们从原代码里删掉。
+
+// ==========================================
+// 😂 表情馆 App 核心逻辑
+// ==========================================
+let egData = JSON.parse(localStorage.getItem('ai_os_emoji_gallery')) || {
+    stickers: [], // {id, url, meaning}  角色专属表情
+    questions: [], // ["问题1", "问题2"...]
+    notes: [] // {id, text, color, x, y}
+};
+
+function saveEgData() { localStorage.setItem('ai_os_emoji_gallery', JSON.stringify(egData)); }
+
+function switchEgTab(tabId, el) {
+    document.querySelectorAll('#emoji-gallery-app .eg-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#emoji-gallery-app .eg-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(`eg-tab-${tabId}`).classList.add('active');
+    if (tabId === 'stickers') renderEgStickers();
+    if (tabId === 'questions') renderEgQuestions();
+    if (tabId === 'whiteboard') renderEgWhiteboard();
+}
+
+// ========== 1. 角色专属表情库 ==========
+function renderEgStickers() {
+    const grid = document.getElementById('eg-sticker-grid');
+    let html = egData.stickers.map((s, i) => `
+        <div class="eg-sticker-item" id="eg-s-${i}" onclick="previewEgSticker(${i})">
+            <div class="eg-note-del" onclick="deleteEgSticker(${i}, event)">✕</div>
+            <div class="eg-sticker-label">${s.meaning || '表情'}</div>
+        </div>
+    `).join('');
+    html += `<div class="eg-sticker-item eg-add-btn" onclick="document.getElementById('eg-sticker-upload-input').click()"><i class="fas fa-plus" style="font-size:24px;"></i><span>添加表情</span></div>`;
+    grid.innerHTML = html;
+
+    // 异步加载图片
+    egData.stickers.forEach((s, i) => {
+        if (s.url && s.url.startsWith('idb://')) {
+            getImageFromDB(s.url.replace('idb://', '')).then(b64 => {
+                const el = document.getElementById(`eg-s-${i}`);
+                if (el && b64) el.style.backgroundImage = `url('${b64}')`;
+            });
+        } else if (s.url) {
+            const el = document.getElementById(`eg-s-${i}`);
+            if (el) el.style.backgroundImage = `url('${s.url}')`;
+        }
+    });
+}
+
+async function handleEgStickerUpload(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const meaning = await sysPrompt("表情含义", `为这${files.length > 1 ? files.length + '个' : '张'}表情包设定含义\n(角色在聊天中会根据含义自动发送)：`, "开心");
+    if (meaning === null) { e.target.value = ''; return; }
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const currentMeaning = meaning.trim() || file.name.replace(/\.[^/.]+$/, "");
+        
+        await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                if (file.type === 'image/gif') {
+                    const imgId = 'eg_stk_' + Date.now() + '_' + i;
+                    await saveImageToDB(imgId, event.target.result);
+                    egData.stickers.push({ id: imgId, url: 'idb://' + imgId, meaning: currentMeaning });
+                    resolve();
+                } else {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        let size = Math.max(img.width, img.height);
+                        if (size > 300) size = 300;
+                        canvas.width = size; canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        const dx = (size - (img.width > img.height ? size : img.width * size / img.height)) / 2;
+                        const dy = (size - (img.height > img.width ? size : img.height * size / img.width)) / 2;
+                        ctx.drawImage(img, 0, 0, size, size);
+                        const b64 = canvas.toDataURL('image/png');
+                        const imgId = 'eg_stk_' + Date.now() + '_' + i;
+                        await saveImageToDB(imgId, b64);
+                        egData.stickers.push({ id: imgId, url: 'idb://' + imgId, meaning: currentMeaning });
+                        resolve();
+                    };
+                    img.src = event.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    saveEgData();
+    renderEgStickers();
+    // 同步到聊天的表情面板（角色可调用）
+    syncEgStickersToChat();
+    e.target.value = '';
+}
+
+async function deleteEgSticker(idx, e) {
+    if (e) e.stopPropagation();
+    const confirm = await sysConfirm("删除表情", "确定要从表情馆中删除这个表情包吗？");
+    if (confirm) {
+        egData.stickers.splice(idx, 1);
+        saveEgData();
+        renderEgStickers();
+        syncEgStickersToChat();
+    }
+}
+
+function previewEgSticker(idx) {
+    const s = egData.stickers[idx];
+    sysAlert("表情详情", `含义：${s.meaning}\n\n角色可在聊天中自由使用此表情。`);
+}
+
+// 将表情馆的表情同步到聊天系统的全局表情列表（AI可调用）
+function syncEgStickersToChat() {
+    // 合并：表情馆的表情是角色专属，在聊天时AI可额外使用
+    // 不覆盖用户自己在聊天面板里加的 customStickers
+    // 而是追加到AI的可调用列表中（通过prompt注入）
+    // 这里我们把表情馆的数据存入独立key，供 triggerAIResponse 读取
+    localStorage.setItem('ai_os_eg_stickers_for_ai', JSON.stringify(egData.stickers));
+}
+
+// ========== 2. 趣味提问库 ==========
+function renderEgQuestions() {
+    const list = document.getElementById('eg-question-list');
+    if (egData.questions.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:30px;">暂无问题，快添加一些有趣的问题吧~<br>角色会在聊天中随机抽取来问你哦！</div>';
+        return;
+    }
+    list.innerHTML = egData.questions.map((q, i) => `
+        <div class="eg-question-item">
+            <div class="eg-question-text">${q}</div>
+            <div class="eg-question-actions">
+                <i class="fas fa-paper-plane" title="让角色现在问这个" onclick="sendEgQuestion(${i})"></i>
+                <i class="fas fa-trash-alt" style="color:#ff453a;" title="删除" onclick="deleteEgQuestion(${i})"></i>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function promptAddEgQuestion() {
+    const q = await sysPrompt("添加趣味问题", "请输入一个有趣的问题\n(角色会在聊天中随机抽取来问你)：", "");
+    if (q && q.trim()) {
+        egData.questions.push(q.trim());
+        saveEgData();
+        renderEgQuestions();
+    }
+}
+
+async function deleteEgQuestion(idx) {
+    const confirm = await sysConfirm("删除问题", "确定要删除这个问题吗？");
+    if (confirm) {
+        egData.questions.splice(idx, 1);
+        saveEgData();
+        renderEgQuestions();
+    }
+}
+
+// 让角色立刻在聊天中提问这个问题
+function sendEgQuestion(idx) {
+    const question = egData.questions[idx];
+    const rawText = `[系统交互：请你立刻用你自己的话向用户提出以下问题（用聊天的语气自然地问出来，不要机械复制）："${question}"]`;
+    openApp('chat-app');
+    messageHistory.push({ role: 'system', content: rawText, isHtml: false, time: new Date().toLocaleString(), rawApiContent: rawText, msgType: 'system', isHidden: true });
+    localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+    setTimeout(() => triggerAIResponse(), 300);
+}
+
+// ========== 3. 白板系统 ==========
+function renderEgWhiteboard() {
+    const board = document.getElementById('eg-whiteboard');
+    board.innerHTML = '';
+    egData.notes.forEach((note, idx) => {
+        const el = document.createElement('div');
+        el.className = 'eg-note';
+        el.style.backgroundColor = note.color || '#fffdf4';
+        el.style.left = (note.x || 20) + 'px';
+        el.style.top = (note.y || 20 + idx * 30) + 'px';
+        el.innerHTML = `
+            <div class="eg-note-del" onclick="deleteEgNote(${idx})">✕</div>
+            <div class="eg-note-content" contenteditable="true" onblur="saveEgNoteText(${idx}, this.innerText)">${note.text || '点击编辑...'}</div>
+        `;
+        
+        // 拖拽引擎
+        let isDragging = false, startX, startY, initX, initY;
+        el.addEventListener('mousedown', startDrag);
+        el.addEventListener('touchstart', startDrag, {passive: false});
+        
+        function startDrag(e) {
+            if (e.target.classList.contains('eg-note-del') || e.target.getAttribute('contenteditable')) {
+                if (e.target.getAttribute('contenteditable') && document.activeElement === e.target) return;
+            }
+            isDragging = true;
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX; startY = touch.clientY;
+            initX = parseInt(el.style.left) || 0;
+            initY = parseInt(el.style.top) || 0;
+            el.style.zIndex = '50';
+            
+            document.addEventListener('mousemove', moveDrag);
+            document.addEventListener('touchmove', moveDrag, {passive: false});
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function moveDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const touch = e.touches ? e.touches[0] : e;
+            let nx = initX + (touch.clientX - startX);
+            let ny = initY + (touch.clientY - startY);
+            if (nx < 0) nx = 0;
+            if (ny < 0) ny = 0;
+            if (nx > board.clientWidth - 140) nx = board.clientWidth - 140;
+            if (ny > board.clientHeight - 100) ny = board.clientHeight - 100;
+            el.style.left = nx + 'px';
+            el.style.top = ny + 'px';
+        }
+        
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            el.style.zIndex = '';
+            egData.notes[idx].x = parseInt(el.style.left);
+            egData.notes[idx].y = parseInt(el.style.top);
+            saveEgData();
+            document.removeEventListener('mousemove', moveDrag);
+            document.removeEventListener('touchmove', moveDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+        }
+        
+        board.appendChild(el);
+    });
+}
+
+function addEgNote(color) {
+    const board = document.getElementById('eg-whiteboard');
+    egData.notes.push({
+        id: 'note_' + Date.now(),
+        text: '',
+        color: color,
+        x: 10 + Math.random() * (board.clientWidth - 160),
+        y: 10 + Math.random() * Math.min(400, board.clientHeight - 120)
+    });
+    saveEgData();
+    renderEgWhiteboard();
+}
+
+function deleteEgNote(idx) {
+    egData.notes.splice(idx, 1);
+    saveEgData();
+    renderEgWhiteboard();
+}
+
+function saveEgNoteText(idx, text) {
+    egData.notes[idx].text = text;
+    saveEgData();
+}
+
+async function clearEgWhiteboard() {
+    if (egData.notes.length === 0) return;
+    const confirm = await sysConfirm("清空白板", "确定要清空所有便签吗？");
+    if (confirm) {
+        egData.notes = [];
+        saveEgData();
+        renderEgWhiteboard();
+    }
+}
+
+// 拦截App打开事件
+const _originalOpenAppEgGallery = openApp;
+openApp = function(appId) {
+    _originalOpenAppEgGallery(appId);
+    if (appId === 'emoji-gallery-app') {
+        renderEgStickers();
+        renderEgQuestions();
+        renderEgWhiteboard();
+    }
+};
+
+// ==========================================
+// 🏫 校园论坛 App 核心逻辑
+// ==========================================
+let campusData = JSON.parse(localStorage.getItem('ai_os_campus')) || {
+    schoolName: "艾利斯顿商学院",
+    population: 5000,
+    roles: [
+        { name: "王主任", job: "教导主任", desc: "极其严厉，天天抓早恋和违纪行为。" },
+        { name: "食堂阿姨", job: "食堂打饭", desc: "手抖，经常把肉抖掉，但人很热心。" }
+    ],
+    posts: []
+};
+
+function saveCampusData() {
+    localStorage.setItem('ai_os_campus', JSON.stringify(campusData));
+}
+
+function renderCampusApp() {
+    document.getElementById('campus-school-name-text').innerText = campusData.schoolName;
+    document.getElementById('campus-school-stat-text').innerText = `在校人数: ${campusData.population} 人`;
+
+    // 渲染 NPC 标签
+    const rolesBox = document.getElementById('campus-roles-box');
+    if (campusData.roles.length === 0) {
+        rolesBox.innerHTML = '<span style="font-size:11px; color:var(--text-sub);">暂无预设NPC，点击右上角添加。</span>';
+    } else {
+        rolesBox.innerHTML = campusData.roles.map((r, i) => `
+            <div class="campus-role-tag" onclick="deleteCampusRole(${i})" title="点击删除">
+                <span style="font-weight:bold;">${r.name}</span>
+                <span style="opacity:0.7;">(${r.job})</span>
+            </div>
+        `).join('');
+    }
+
+    renderCampusFeed();
+}
+
+async function editCampusInfo() {
+    const name = await sysPrompt("修改学校信息", "请输入学校名称：", campusData.schoolName);
+    if (!name || !name.trim()) return;
+    const pop = await sysPrompt("修改学校信息", "请输入在校总人数：", campusData.population);
+    if (!pop || isNaN(pop)) return;
+    
+    campusData.schoolName = name.trim();
+    campusData.population = parseInt(pop);
+    saveCampusData();
+    renderCampusApp();
+}
+
+async function promptAddCampusRole() {
+    const name = await sysPrompt("自定义 NPC", "请输入角色名字（如：李雷、赵大爷）：");
+    if (!name || !name.trim()) return;
+    const job = await sysPrompt("自定义 NPC", `【${name}】的职业/身份是？\n（如：学生、门卫、校花、宿管）：`);
+    if (!job || !job.trim()) return;
+    const desc = await sysPrompt("自定义 NPC", `【${name}】的性格或特征是？\n（如：是个学霸，经常在图书馆；或者 脾气暴躁，喜欢管闲事）：`);
+    if (!desc) return;
+
+    campusData.roles.push({ name: name.trim(), job: job.trim(), desc: desc.trim() });
+    saveCampusData();
+    renderCampusApp();
+    sysAlert("添加成功", `已成功将 ${job}【${name}】加入学校生态！\n接下来刷新论坛，TA可能会出现在事件中。`);
+}
+
+async function deleteCampusRole(idx) {
+    const c = await sysConfirm("删除 NPC", `确定要将【${campusData.roles[idx].name}】开除出学校吗？`);
+    if (c) {
+        campusData.roles.splice(idx, 1);
+        saveCampusData();
+        renderCampusApp();
+    }
+}
+
+function renderCampusFeed() {
+    const feed = document.getElementById('campus-feed');
+    if (campusData.posts.length === 0) {
+        feed.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:40px;"><i class="fas fa-bullhorn" style="font-size:40px; margin-bottom:15px; opacity:0.3;"></i><br>论坛暂时没有新帖子<br>点击右上角魔法棒让AI整点动静出来</div>';
+        return;
+    }
+
+    feed.innerHTML = campusData.posts.map((p, idx) => {
+        const commentsHtml = (p.comments && p.comments.length > 0) ? p.comments.map(c => `
+            <div class="campus-comment-item">
+                <span class="campus-comment-author">${c.author}:</span>
+                <span class="campus-comment-text">${c.text}</span>
+            </div>
+        `).join('') : '<div style="font-size:11px; color:var(--text-sub); text-align:center;">暂无评论，来抢沙发吧~</div>';
+
+        return `
+        <div class="campus-post">
+            <div class="campus-post-header">
+                <div class="campus-post-author">
+                    <i class="fas fa-user-graduate" style="color:var(--accent); font-size:18px;"></i>
+                    ${p.author} <span class="campus-post-badge">${p.type}</span>
+                </div>
+                <div class="campus-post-time" onclick="deleteCampusPost(${idx})"><i class="fas fa-times" style="cursor:pointer; padding:5px;"></i></div>
+            </div>
+            <div class="campus-post-content">${p.content}</div>
+            <div class="campus-post-footer">
+                <div class="campus-post-actions">
+                    <div class="campus-action-btn" onclick="toggleCampusLike(${idx})">
+                        <i class="${(p.likes && p.likes.includes(globalUser.name)) ? 'fas' : 'far'} fa-thumbs-up" style="color:${(p.likes && p.likes.includes(globalUser.name)) ? 'var(--accent)' : 'inherit'}"></i> 
+                        ${p.likes ? p.likes.length : 0}
+                    </div>
+                    <div class="campus-action-btn" onclick="toggleCampusCommentBox(${idx})">
+                        <i class="far fa-comment"></i> ${p.comments ? p.comments.length : 0}
+                    </div>
+                </div>
+                <div class="campus-action-btn" onclick="shareCampusToChat(${idx})" style="color:var(--accent);">
+                    <i class="fas fa-share"></i> 转发到聊天
+                </div>
+            </div>
+            <div class="campus-comments" id="campus-comments-${idx}">
+                <div id="campus-clist-${idx}">${commentsHtml}</div>
+                <div class="campus-comment-input-box">
+                    <input type="text" id="campus-cinput-${idx}" placeholder="说点什么..." onkeydown="if(event.key==='Enter') submitCampusComment(${idx})">
+                    <button onclick="submitCampusComment(${idx})">发送</button>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+async function deleteCampusPost(idx) {
+    const c = await sysConfirm("删帖", "确定要删除这条校园论坛帖子吗？");
+    if(c) {
+        campusData.posts.splice(idx, 1);
+        saveCampusData();
+        renderCampusFeed();
+    }
+}
+
+function toggleCampusLike(idx) {
+    const p = campusData.posts[idx];
+    if (!p.likes) p.likes = [];
+    const myIdx = p.likes.indexOf(globalUser.name);
+    if (myIdx > -1) p.likes.splice(myIdx, 1);
+    else p.likes.push(globalUser.name);
+    saveCampusData();
+    renderCampusFeed();
+}
+
+function toggleCampusCommentBox(idx) {
+    const box = document.getElementById(`campus-comments-${idx}`);
+    if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+
+function submitCampusComment(idx) {
+    const input = document.getElementById(`campus-cinput-${idx}`);
+    const text = input.value.trim();
+    if (!text) return;
+    const p = campusData.posts[idx];
+    if (!p.comments) p.comments = [];
+    p.comments.push({ author: globalUser.name, text: text });
+    
+    // 互动内容同步到记忆书
+    addMemoryData(`我在校园论坛上评论了【${p.author}】的帖子：“${text}”。帖子内容是：“${p.content.substring(0, 30)}...”`, 'manual');
+
+    input.value = '';
+    saveCampusData();
+    renderCampusFeed();
+    document.getElementById(`campus-comments-${idx}`).style.display = 'block'; // 保持展开
+}
+
+async function generateCampusPost() {
+    const url = cleanBaseUrl(globalAPI.url);
+    if (!url || !globalAPI.key) return sysAlert("错误", "请先在“角色工坊”配置 API 密钥");
+
+    const btn = document.getElementById('campus-refresh-btn');
+    if (btn.classList.contains('fa-spin')) return;
+    btn.classList.add('fa-spin');
+
+    const npcStr = campusData.roles.map(r => `[${r.name}] 身份: ${r.job}, 特征: ${r.desc}`).join('\n');
+    const typeStr = ["校内吃瓜", "学校不规范吐槽", "社死糗事", "表白墙", "社团宣传", "寻物启事"][Math.floor(Math.random() * 6)];
+
+    const prompt = `你现在要模拟在一个名叫【${campusData.schoolName}】（总人数：${campusData.population}人）的校园论坛里发帖。
+这个学校里有以下特定的人员（NPC）：
+${npcStr || "暂无特别人员"}
+
+【创作要求】
+1. 发帖类型是：【${typeStr}】。
+2. 内容要充满真实的校园生活气息。如果是吃瓜或吐槽，可以涉及到上面提到的NPC；也可以是完全捏造的匿名校友。
+3. 文本必须口语化，像当代大学生在超话/表白墙的发帖风格（可以带emoji）。字数在80-250字之间。
+4. 必须输出严格的 JSON 字符串格式（不要任何 Markdown 代码块）。
+
+格式如下：
+{
+  "author": "发帖人昵称（如：大二单身狗、匿名、某部门干事等）",
+  "type": "${typeStr}",
+  "content": "帖子详细正文..."
+}`;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+        const res = await fetch(`${url}/chat/completions`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${globalAPI.key}` },
+            body: JSON.stringify({ model: globalAPI.model, messages: [{role: "user", content: prompt}], temperature: 0.85 }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        const data = await res.json();
+        let reply = data.choices[0].message.content.trim();
+        
+        const firstBrace = reply.indexOf('{');
+        const lastBrace = reply.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) reply = reply.substring(firstBrace, lastBrace + 1);
+        
+        const result = JSON.parse(reply);
+        if (result.author && result.content) {
+            result.likes = [];
+            result.comments = [];
+            campusData.posts.unshift(result);
+            if (campusData.posts.length > 50) campusData.posts.pop();
+            saveCampusData(); 
+            renderCampusFeed();
+            
+            // 每次生成帖子都视为学校发生的事，同步存入向量数据库作为 RAG 记忆
+            if (typeof vectorizeAndStore === 'function') {
+                vectorizeAndStore(`[校园论坛事件] ${result.author}发布了帖子：${result.content}`, "校园论坛档案");
+            }
+        } else {
+            throw new Error("格式错误");
+        }
+    } catch(e) {
+        sysAlert("生成失败", e.message);
+    } finally {
+        btn.classList.remove('fa-spin');
+    }
+}
+
+// 分享到聊天框
+function shareCampusToChat(idx) {
+    const post = campusData.posts[idx];
+    const snippet = post.content.substring(0, 60).replace(/\n/g, ' ') + '...';
+
+    // 复用分享卡片 UI
+    const html = `
+        <div class="x-share-card" style="background: rgba(40, 50, 60, 0.75); border-color: #87C0CA;">
+            <div class="xs-header" style="color: #87C0CA;">
+                <i class="fas fa-school" style="font-size: 20px;"></i>
+                <div style="font-weight: bold; font-size: 15px;">校园论坛: ${post.type}</div>
+            </div>
+            <div class="xs-content" style="font-size: 13px; line-height: 1.6; margin-top: 8px;">
+                <div style="font-weight:bold; color:#fff; margin-bottom:4px;">${post.author} 说：</div>
+                <div style="opacity:0.8;">"${snippet}"</div>
+            </div>
+        </div>
+    `;
+
+    const rawText = `[系统交互：向你转发了一条我们学校【${campusData.schoolName}】论坛上的帖子。发帖人是：${post.author}，内容是：“${snippet}”。请以你的身份和性格，像个同校同学/相关人员一样，针对这条帖子里的瓜或者吐槽和我八卦、讨论一下！]`;
+
+    goBack();
+    openApp('chat-app');
+    
+    addMessageToUI('user', html, true, null, rawText, 'x-share');
+    setTimeout(() => triggerAIResponse(), 500);
+}
+
+// 拦截 App 开启事件
+const _originalOpenAppCampus = openApp;
+openApp = function(appId) {
+    _originalOpenAppCampus(appId);
+    if(appId === 'campus-app') {
+        renderCampusApp();
+    }
+};
+
+
+
 
 
 
