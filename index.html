@@ -806,127 +806,7 @@
         .contact-info h4 { color: var(--text-main); margin: 0 0 4px; font-size: 16px; }
         .contact-info p { color: var(--text-sub); margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* --- 短信/聊天 --- */
-        #chat-app { background: var(--chat-bg); background-size: cover; background-position: center; position: relative; }
         
-        #chat-app::before { 
-            content: ''; position: absolute; top:0; left:0; right:0; bottom:0; 
-            background: var(--chat-overlay); pointer-events: none; z-index: 1; 
-            backdrop-filter: none; -webkit-backdrop-filter: none;
-        }
-   
-        .chat-header { height: 105px; background: var(--bg-glass-header); display: flex; align-items: flex-end; padding: 0 20px 15px; border-bottom: 0.5px solid var(--border-color); z-index: 10; justify-content: space-between; }
-        .chat-header-left { display: flex; align-items: center; overflow: hidden; }
-        .chat-header-left i { transition: transform 0.1s, opacity 0.1s; } .chat-header-left i:active { transform: scale(0.8); opacity: 0.6; }
-        .chat-info { overflow: hidden; }
-        .chat-info h3 { margin: 0; color: var(--text-main); font-size: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .chat-info p { margin: 2px 0 0; color: var(--text-sub); font-size: 12px; }
-        .chat-body { flex: 1; padding: 20px 15px 10px; display: flex; flex-direction: column; z-index: 10; transform: translateZ(0); }
-
-        .msg-wrapper { display: flex; width: 100%; position: relative; align-items: flex-start; gap: 10px; margin-bottom: 15px; }
-        .msg-wrapper.char { justify-content: flex-start; }
-        .msg-wrapper.user { justify-content: flex-end; }
-        
-        .msg-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.1s;}
-        .msg-avatar:active { transform: scale(0.9); }
-        .msg-content-box { display: flex; flex-direction: column; max-width: 70%; }
-        .msg-wrapper.char .msg-content-box { align-items: flex-start; }
-        .msg-wrapper.user .msg-content-box { align-items: flex-end; }
-
-                       /* --- 3. 气泡与输入框 --- */
-        .msg { 
-            padding: 12px 16px; 
-            border-radius: var(--ui-bubble-radius, 16px);
-            opacity: var(--ui-bubble-opacity, 1);
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-raised-sm);
-            border: none;
-        }
-        .msg:active { transform: scale(0.96); box-shadow: var(--shadow-pressed-sm); }
-        
-
-                .msg img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
-        
-        /* 移除原本粗糙的直角，改由底部精细水滴角接管 */
-        /* .msg.char { border-top-left-radius: 4px; } */
-        /* .msg.user { border-top-right-radius: 4px; } */
-        
-        /* --- 细化默认玻璃拟态气泡的精致发送角 --- */
-        html body #chat-app:not([class*="layout-"]) #chat-container .msg.char:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.health-share-bubble):not(.survey-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
-            border-radius: var(--ui-bubble-radius, 16px) var(--ui-bubble-radius, 16px) var(--ui-bubble-radius, 16px) 3px !important;
-        }
-        html body #chat-app:not([class*="layout-"]) #chat-container .msg.user:not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.health-share-bubble):not(.survey-share-bubble):not(.shop-share-bubble):not(.remote-action-bubble) {
-            border-radius: var(--ui-bubble-radius, 16px) var(--ui-bubble-radius, 16px) 3px var(--ui-bubble-radius, 16px) !important;
-        }
-
-        .msg-time { font-size: 10px; color: var(--text-sub); margin-top: 6px; margin-bottom: 2px; padding: 0 4px; }
-
-        .msg-system { text-align: center; font-size: 12px; color: var(--text-sub); margin: 15px 0; width: 100%; display: block; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.3);}
-
-        .ins-sys-msg {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-radius: 20px;
-            padding: 8px 16px !important;
-            display: inline-flex !important;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-main) !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin: 10px auto !important;
-            border: 0.5px solid rgba(255,255,255,0.1);
-            width: auto !important;
-        }
-        :root.light-mode .ins-sys-msg { background: rgba(0,0,0,0.05); border: 0.5px solid rgba(0,0,0,0.1); color: var(--text-main) !important; }
-
-        .msg-quote { font-size: 12px; opacity: 0.8; border-left: 2px solid rgba(255,255,255,0.5); padding-left: 6px; margin-bottom: 4px; font-style: italic; word-break: break-all; }
-                        .msg.sticker-bubble { background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; font-weight: normal; backdrop-filter: none; opacity: 1;}
-        
-        /* 表情包尺寸，110px符合正常微信/TG表情包大小 */
-        html body #chat-app #chat-container .msg .sticker-img { 
-            max-width: 110px !important; 
-            width: auto !important; 
-            height: auto !important;
-            display: block !important; 
-            border: none !important; 
-            box-shadow: none !important; 
-            border-radius: 8px !important; /* 加回一点点非常微弱的圆角，防止边缘像素生硬 */
-            margin: 0 !important;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)) !important;
-        }
-
-
-
-
-        #sticker-panel { display: none; position: absolute; bottom: 100%; left: 0; right: 0; background: var(--bg-glass); border-top: 0.5px solid var(--border-color); padding: 15px; z-index: 5; max-height: 220px; overflow-y: auto; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .sticker-item { width: 100%; aspect-ratio: 1; background-size: cover; background-position: center; border-radius: 12px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.15); box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.1s;}
-        .sticker-item:active { transform: scale(0.95); }
-        .sticker-add { display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.05); border: 1px dashed var(--text-sub); border-radius: 12px; font-size: 28px; color: var(--text-sub); cursor: pointer; aspect-ratio: 1; transition: transform 0.1s;}
-        .sticker-add:active { transform: scale(0.95); }
-
-                                        
-                                                /* --- 聊天底部更多功能面板 (+) --- */
-        #tools-panel { 
-            display: none; position: absolute; bottom: 100%; left: 0; right: 0; 
-            background: var(--bg-glass); border-top: 0.5px solid var(--border-color); 
-            padding: 20px 25px; z-index: 5; grid-template-columns: repeat(4, 1fr); gap: 15px; 
-            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
-        }
-        .tool-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-        .tool-icon-wrap { 
-            width: 55px; height: 55px; border-radius: 16px; background: var(--bg-panel); 
-            display: flex; justify-content: center; align-items: center; font-size: 24px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 0.5px solid var(--border-color); 
-            transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .tool-item:active .tool-icon-wrap { transform: scale(0.85); background: var(--input-bg); }
-        .tool-item span { font-size: 11px; color: var(--text-sub); font-weight: 500;}
-
-
-
-
 
 
                                         
@@ -1987,7 +1867,7 @@ input:checked + .slider:before {
         .tl-check { position: absolute; top: 15px; right: 15px; font-size: 20px; color: var(--accent); display: none; }
         .theme-layout-card.active .tl-check { display: block; }
 
-                                                /* ========================================== */
+                                                        /* ========================================== */
         /* 1. WeChat 完完整整仿微信 (包含新增的三款变体颜色) */
         /* ========================================== */
         html body #chat-app.layout-wechat { background-color: #EDEDED !important; } /* 修复：不再用 background 简写，防止遮盖自定义聊天壁纸 */
@@ -2006,20 +1886,49 @@ input:checked + .slider:before {
         } 
         html body #chat-app.layout-wechat .chat-header-left i { color: #181818 !important; margin-bottom: 0 !important; font-size: 26px !important; }
         
-        /* 微信头部中间文字 */
-        html body #chat-app.layout-wechat .chat-info { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
- html body #chat-app.layout-wechat .chat-info h3 { justify-content: center; font-size: 17px !important; font-weight: 500 !important; color: #000 !important; letter-spacing: 0.5px; margin: 0 !important; }
-       html body #chat-app.layout-wechat .chat-info h3 i { display: none !important; } /* 隐藏名字旁边的特殊小徽章图标 */
-        html body #chat-app.layout-wechat .chat-info p { display: none !important; } 
-        html body #chat-app.layout-wechat .fa-phone-alt { color: #181818 !important; margin-bottom: 0 !important; display: none !important; }
+        /* ========================================== */
+        /* 修改部分：微信头部中间文字 (居中、缩小图标、隐藏在线) */
+        /* ========================================== */
+        html body #chat-app.layout-wechat .chat-info { 
+            position: absolute; 
+            left: 50%; 
+            top: 55%; /* 稍微偏下一点配合返回键的margin-top，实现视觉完美居中 */
+            transform: translate(-50%, -50%); 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+        }
+        
+        html body #chat-app.layout-wechat .chat-info h3 { 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            font-size: 17px !important; 
+            font-weight: 500 !important; 
+            color: #000 !important; 
+            letter-spacing: 0.5px; 
+            margin: 0 !important; 
+        }
+
+        /* 强制缩小那三个图标，锁死尺寸，绝对不会超出顶部栏 */
+        html body #chat-app.layout-wechat .chat-info img,
+        html body #chat-app.layout-wechat .chat-info svg { 
+            width: 14px !important; 
+            height: 14px !important; 
+            margin: 0 3px !important; 
+            vertical-align: middle !important; 
+            display: inline-block !important; 
+        }
+
+        html body #chat-app.layout-wechat .chat-info h3 i { display: none !important; } /* 隐藏名字旁边的特殊小徽章图标 */
+        html body #chat-app.layout-wechat .chat-info p { display: none !important; }  /* 隐藏“在线”文字/状态 */
+        html body #chat-app.layout-wechat .fa-phone-alt { display: none !important; }
+        /* ========================================== */
         
         /* 2. 修复：恢复正常的微信适中间隔与头像 (改为 16px) */
         html body #chat-app.layout-wechat #chat-container .msg-avatar { border-radius: 6px !important; width: 40px !important; height: 40px !important; border: none !important; margin-top: 0 !important;}
-html body #chat-app.layout-wechat #chat-container .msg-wrapper { gap: 12px !important; margin-bottom: 12px !important; align-items: flex-start !important; }
+        html body #chat-app.layout-wechat #chat-container .msg-wrapper { gap: 12px !important; margin-bottom: 12px !important; align-items: flex-start !important; }
 
-
-
-        
         /* ================= 气泡核心重构：纯色扁平化 ================= */
         
         /* 对方气泡 - 纯净白 */
@@ -2100,8 +2009,6 @@ html body #chat-app.layout-wechat #chat-container .msg-wrapper { gap: 12px !impo
         html body #chat-app.layout-wechat .ins-sys-msg { background: #DADADA !important; color: #FFFFFF !important; }
         html body #chat-app.layout-wechat .image-bubble img.chat-upload-img { border-radius: 4px !important; border: none !important; box-shadow: none !important; }
 
-
-
                         /* ========================================== */
         /* 5. Telegram (纸飞机) 极简日间淡色布局 */
         /* ========================================== */
@@ -2119,6 +2026,7 @@ html body #chat-app.layout-wechat #chat-container .msg-wrapper { gap: 12px !impo
             position: relative !important; 
             align-items: flex-end !important;
         }
+
 
         /* 左侧返回键深蓝色与 Back 字样 */
         html body #chat-app.layout-telegram .chat-header-left { display: flex; align-items: center; z-index: 10; }
@@ -4071,6 +3979,164 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 .campus-comment-input-box button { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
 
+        /* ========================================== */
+        /* 🚨 核心修复：补回神秘丢失的聊天区底层基础 CSS 🚨 */
+        /* ========================================== */
+        
+        /* 1. 聊天顶栏基础布局 */
+        .chat-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 55px 20px 15px; 
+            border-bottom: 0.5px solid var(--border-color); 
+            z-index: 100; 
+            position: relative; 
+            flex-shrink: 0; 
+            background: var(--bg-glass-header);
+        }
+        .chat-header-left { display: flex; align-items: center; height: 100%; }
+        .chat-info { margin-left: 10px; display: flex; flex-direction: column; justify-content: center; }
+        .chat-info h3 { font-size: 17px; font-weight: bold; color: var(--text-main); margin-bottom: 2px; display: flex; align-items: center;}
+        .chat-info p { font-size: 12px; color: var(--text-sub); margin: 0; }
+
+        /* 2. 聊天主体与滚动区 */
+        .chat-body { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px 15px 10px; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 1;
+        }
+
+        /* 3. 气泡外壳与排版 */
+        .msg-wrapper { 
+            display: flex; 
+            width: 100%; 
+            position: relative; 
+            margin-bottom: 15px; 
+            align-items: flex-end; 
+        }
+        .msg-wrapper.user { justify-content: flex-end; }
+        .msg-wrapper.char { justify-content: flex-start; }
+        
+        .msg-avatar { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background-size: cover; 
+            background-position: center; 
+            flex-shrink: 0; 
+            border: 0.5px solid rgba(255,255,255,0.1); 
+            z-index: 2;
+        }
+        
+        .msg-content-box { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 75%; 
+            margin: 0 10px;
+            z-index: 2;
+        }
+        
+        /* 4. 气泡本体基础样式 */
+        .msg { 
+            padding: 10px 15px; 
+            font-size: 15px; 
+            line-height: 1.5; 
+            word-wrap: break-word; 
+            white-space: pre-wrap; 
+            position: relative; 
+            border-radius: var(--ui-bubble-radius, 18px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .msg.user {
+            background: var(--accent);
+            color: #000;
+            border-bottom-right-radius: 4px;
+        }
+        .msg.char {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* 5. 引用消息块样式 */
+        .msg-quote {
+            font-size: 12px;
+            color: inherit;
+            opacity: 0.75;
+            border-left: 2px solid currentColor;
+            padding-left: 8px;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        /* ========================================== */
+
+
+        /* 修复聊天发送栏表情包显示不完整的问题 */
+.sticker-item, .sticker-add {
+    width: 100%;
+    aspect-ratio: 1; /* 强制保持正方形 */
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    background-size: contain; /* 核心：让表情包等比缩放，完整显示绝对不被裁剪 */
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+.sticker-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: var(--text-sub);
+    border: 1.5px dashed var(--text-sub);
+    background-color: transparent;
+}
+
+
+
+        /* --- 聊天底部加号【更多功能】面板专属样式 --- */
+        .tool-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            cursor: pointer; 
+            transition: transform 0.1s; 
+        }
+        .tool-item:active { 
+            transform: scale(0.92); 
+        }
+        .tool-icon-wrap { 
+            width: 56px; 
+            height: 56px; 
+            border-radius: 16px; 
+            background: var(--bg-panel); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 24px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border: 0.5px solid var(--border-color); 
+        }
+        .tool-item span { 
+            font-size: 12px; 
+            color: var(--text-main); 
+            font-weight: 500; 
+            text-align: center;
+        }
+
+
+
+
+
 
 
 
@@ -4215,8 +4281,8 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
         <input type="file" id="chat-image-upload-input" accept="image/*" style="display:none;" onchange="handleChatImageUpload(event)">
 
         <!-- 👇 新增这一行：表情包专属上传接口 -->
- <input type="file" id="sticker-upload-input" accept="image/*" multiple style="display:none;" onchange="handleStickerUpload(event)">
-       <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
+ <input type="file" id="sticker-upload-input" accept="image/*, .txt" multiple style="display:none;" onchange="handleStickerUpload(event)">
+      <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleFontUpload(event)">
         <!-- 👇 新增：世界书多格式文件导入接口 👇 -->
         <input type="file" id="wb-file-import-input" accept=".json,.txt,.docx,.doc,.pdf" style="display:none;" onchange="handleWbFileImport(event)">
         <input type="file" id="wardrobe-model-upload" accept="image/*" style="display:none;" onchange="handleWardrobeModelUpload(event)">
@@ -4323,11 +4389,12 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
                 
                 <!-- ============ 第一页 (主屏核心：美化与日常) ============ -->
                 <div class="home-page" id="page-1">
-                    <!-- 顶部液态时间 -->
-                    <div class="widget-liquid-time" data-drag-id="liquid-time">
+                                        <!-- 顶部液态时间 -->
+                    <div class="widget-liquid-time" id="wg-liquid-time" data-drag-id="liquid-time" ondblclick="openWidgetSettings('wg-liquid-time')" title="双击自由定制样式大小">
                         <div class="liquid-time-text" id="lq-time">00<span>:</span>00</div>
                         <div class="liquid-date-text" id="lq-date">1月1日 星期一</div>
                     </div>
+
 
                     <!-- 天气与照片墙并排 -->
                     <div class="widget widget-weather glass-effect" id="wg-weather" data-drag-id="sys-weather" ondblclick="openWidgetSettings('wg-weather')" style="height: 160px;">
@@ -5476,6 +5543,22 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
                         <span class="setting-label">外框透明底 (去除毛玻璃背景板)</span>
                         <label class="switch"><input type="checkbox" id="wg-cb-set-transparent"><span class="slider"></span></label>
                     </div>
+
+                    <!-- 👇 新增：对话气泡小组件的尺寸自定义 👇 -->
+                    <div class="setting-item" style="padding: 10px 0; border-top: 0.5px solid var(--border-color); border-bottom: none;">
+                        <span class="setting-label">组件宽度 (网格占位)</span>
+                        <select id="wg-cb-set-width" class="setting-select" style="margin-top: 5px;">
+                            <option value="span 2">2 列 (占半行)</option>
+                            <option value="span 3">3 列</option>
+                            <option value="span 4" selected>4 列 (占满整行)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item" style="padding: 10px 0; border-bottom: none;">
+                        <span class="setting-label">组件高度: <span id="val-cb-wg-height" style="color:var(--accent)">180</span>px</span>
+                        <input type="range" min="100" max="400" step="10" value="180" id="wg-cb-set-height" class="setting-input" style="accent-color:var(--accent)" oninput="document.getElementById('val-cb-wg-height').innerText=this.value">
+                    </div>
+                    <!-- 👆 新增结束 👆 -->
+
                     <div class="save-btn" style="margin-top: 15px;" onclick="applyChatBubbleSettings()"><i class="fas fa-check"></i> 保存并应用</div>
                 </div>
             </div>
@@ -5511,7 +5594,7 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
     <i class="fas fa-brain"></i> 提取为紧密联系 (向量化)
 </div>
 
-
+<div class="action-sheet-btn" onclick="handleSheetAction('edit')"><i class="fas fa-edit"></i> 重新编辑文字</div>
                     <div class="action-sheet-btn" onclick="handleSheetAction('quote')"><i class="fas fa-quote-left"></i> 引用消息</div>
                     <div class="action-sheet-btn" onclick="handleSheetAction('retry')"><i class="fas fa-redo"></i> 重新诉说 (重说)</div>
                     <div class="action-sheet-btn danger" onclick="handleSheetAction('delete')"><i class="fas fa-trash-alt"></i> 删除此条消息</div>
@@ -5801,17 +5884,31 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 
 
                                         <!-- 修改部分 1: HTML 中的三个 CSS 代码输入框增加 oninput 事件 -->
-                    <div class="settings-group-title">1. 气泡 CSS 代码</div>
+                    <!-- 修改部分: 增加气泡、聊天框、界面的默认 CSS 代码骨架一键填充功能 -->
+                    <div class="settings-group-title" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px;">
+                        <span>1. 气泡 CSS 代码</span>
+                        <span style="font-size: 11px; color: var(--accent); cursor: pointer; padding-bottom: 2px;" onclick="document.getElementById('css-bubble-input').value='/* 定制气泡形状与阴影 */\n.msg.char {\n  border-radius: 18px 18px 18px 4px;\n  box-shadow: 0 4px 15px rgba(0,0,0,0.05);\n}\n.msg.user {\n  border-radius: 18px 18px 4px 18px;\n  box-shadow: 0 4px 15px rgba(0,0,0,0.05);\n}\n/* 隐藏时间戳 */\n.msg-time-center { display: none; }'; updateCustomCSS();"><i class="fas fa-magic"></i> 填入参考模板</span>
+                    </div>
                     <div class="settings-group">
-                        <textarea id="css-bubble-input" class="setting-textarea" placeholder="输入气泡相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea>
+                        <textarea id="css-bubble-input" class="setting-textarea" placeholder="在此输入自定义 CSS。&#10;系统已为您解决所有复杂的前缀隔离权重，您可以直接使用 .msg.char (对方) 和 .msg.user (自己) 来分别设定气泡的外观。" style="height: 140px; font-family: monospace; font-size: 12px; line-height: 1.5;" oninput="updateCustomCSS()"></textarea>
                     </div>
 
-                    <div class="settings-group-title">2. 聊天框 CSS 代码</div>
+                    <div class="settings-group-title" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px;">
+                        <span>2. 聊天框 CSS 代码</span>
+                        <span style="font-size: 11px; color: var(--accent); cursor: pointer; padding-bottom: 2px;" onclick="document.getElementById('css-inputbar-input').value='/* 底部面板背景与毛玻璃 */\n.chat-input-area {\n  background: rgba(255, 255, 255, 0.75);\n  backdrop-filter: blur(25px);\n  -webkit-backdrop-filter: blur(25px);\n  border-top: 0.5px solid rgba(0,0,0,0.1);\n}\n/* 输入框本体 */\n.chat-input {\n  border-radius: 22px;\n  background: rgba(0, 0, 0, 0.05);\n  border: none;\n}\n/* 按钮与图标颜色 */\n.chat-icon-btn, .fa-arrow-circle-up { color: #0071e3; }'; updateCustomCSS();"><i class="fas fa-magic"></i> 填入参考模板</span>
+                    </div>
+                    <div class="settings-group">
+                        <textarea id="css-inputbar-input" class="setting-textarea" placeholder="输入底部聊天框相关 CSS...&#10;可使用类名：.chat-input-area (底部大外框) 或 .chat-input (打字框)" style="height: 140px; font-family: monospace; font-size: 12px; line-height: 1.5;" oninput="updateCustomCSS()"></textarea>
+                    </div>
 
-                    <div class="settings-group"><textarea id="css-inputbar-input" class="setting-textarea" placeholder="输入底部聊天框相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea></div>
+                    <div class="settings-group-title" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px;">
+                        <span>3. 界面 CSS 代码</span>
+                        <span style="font-size: 11px; color: var(--accent); cursor: pointer; padding-bottom: 2px;" onclick="document.getElementById('css-layout-input').value='/* 顶部状态栏毛玻璃 */\n.chat-header {\n  background: rgba(255, 255, 255, 0.75);\n  backdrop-filter: blur(25px);\n  -webkit-backdrop-filter: blur(25px);\n  border-bottom: 0.5px solid rgba(0,0,0,0.1);\n}\n/* 名字和图标颜色 */\n.chat-info h3 { color: #000; font-weight: bold; }\n.chat-header-left i, .fa-phone-alt { color: #0071e3; }\n/* 取消头像显示 */\n.msg-avatar { display: none; }'; updateCustomCSS();"><i class="fas fa-magic"></i> 填入参考模板</span>
+                    </div>
+                    <div class="settings-group">
+                        <textarea id="css-layout-input" class="setting-textarea" placeholder="输入整体界面、背景、顶部栏相关 CSS...&#10;顶部栏类名：.chat-header" style="height: 140px; font-family: monospace; font-size: 12px; line-height: 1.5;" oninput="updateCustomCSS()"></textarea>
+                    </div>
 
-                    <div class="settings-group-title">3. 界面 CSS 代码</div>
-                    <div class="settings-group"><textarea id="css-layout-input" class="setting-textarea" placeholder="输入整体界面、背景、顶部栏相关 CSS..." style="height: 120px; font-family: monospace; font-size: 12px;" oninput="updateCustomCSS()"></textarea></div>
 
 <!-- 修改部分 2: JavaScript 中新增 updateCustomCSS 函数，用于实时渲染用户输入的 CSS -->
 
@@ -7366,7 +7463,7 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 </div>
 
 <!-- 表情馆专属上传入口 -->
-<input type="file" id="eg-sticker-upload-input" accept="image/*" multiple style="display:none;" onchange="handleEgStickerUpload(event)">
+<input type="file" id="eg-sticker-upload-input" accept="image/*, .txt" multiple style="display:none;" onchange="handleEgStickerUpload(event)">
 
 
 <!-- 校园论坛 App -->
@@ -9110,6 +9207,34 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
     async function handleStickerUpload(e) {
         const files = e.target.files;
         if (!files || files.length === 0) return;
+
+         // 👇👇👇 新增：如果是 TXT 文件批量导入，走这里 👇👇👇
+        if (files[0].name.toLowerCase().endsWith('.txt')) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const lines = event.target.result.split('\n');
+                let count = 0;
+                lines.forEach(line => {
+                    const str = line.trim();
+                    if (!str) return;
+                    // 按逗号或空格拆分：前面是链接，后面是含义
+                    const parts = str.split(/[,，\s]+/); 
+                    const url = parts[0];
+                    const meaning = parts[1] || "表情包"; 
+                    if (url.startsWith('http')) { // 确保是网络链接
+                        customStickers.push({url: url, meaning: meaning});
+                        count++;
+                    }
+                });
+                localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers)); 
+                renderStickers();
+                sysAlert("导入成功", `成功通过 txt 导入了 ${count} 个表情包！`);
+            };
+            reader.readAsText(files[0]);
+            e.target.value = '';
+            return; // txt处理完直接结束，不往下走图片的逻辑
+        }
+        // 👆👆👆 新增结束 👆👆👆
         
         const defaultMeaning = files.length === 1 ? "请输入该表情包在AI眼中的含义：" : `您选择了 ${files.length} 个表情包，请输入统一的语义含义\n(留空则自动使用各自的文件名)：`;
         const meaningInput = await sysPrompt("AI 语义绑定", defaultMeaning); 
@@ -9293,15 +9418,12 @@ function sendMessage() {
     let isError = false;
     let sysTip = null;
 
-    if (activeChar.isDeletedByChar) {
-        isError = true; sysTip = `${activeChar.name}开启了朋友验证，你还不是他(她)朋友。请先发送朋友验证请求，对方验证通过后，才能聊天。`;
-    } else if (activeChar.isBlockedByChar) {
-        isError = true; sysTip = `消息已发出，但被对方拒收了。`;
-    } else if (activeChar.isDeleted) {
-        isError = true; sysTip = `您已不是对方的好友。`;
-    } else if (activeChar.isBlocked) {
-        isError = true; sysTip = `你已将对方拉黑。`;
+        if (activeChar.isDeletedByChar || activeChar.isDeleted) {
+        isError = true; sysTip = `当前是非好友状态，消息已作为验证请求发出，需对方同意...`;
+    } else if (activeChar.isBlockedByChar || activeChar.isBlocked) {
+        isError = true; sysTip = `当前处于黑名单状态，消息已作为破冰请求发出，等待对方原谅/同意...`;
     }
+
 
     // 将消息上屏
     addMessageToUI('user', displayHtml, true, null, text, 'text', false, null, isError, isRiddle); 
@@ -9756,6 +9878,14 @@ async function triggerAIResponse() {
         if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n8. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
         contextBlocks.push(builtInRules);
 
+         // 👇 新增：好友拉黑与重新添加机制感知 👇
+        if (activeChar.isBlockedByChar || activeChar.isDeletedByChar) {
+            contextBlocks.push(`【特殊状态警告】：你之前把用户拉黑/删除了。TA现在的消息是“重新添加你为好友”的申请。请根据你的性格（傲娇、高冷、或者心软）做出反应！如果你决定原谅TA并同意加回好友，请在回复中包含指令 $$UNBLOCK$$ ！在同意之前，你可以尽情拒绝或刁难TA。`);
+        } else if (activeChar.isBlocked || activeChar.isDeleted) {
+            contextBlocks.push(`【特殊状态警告】：用户之前单方面把你拉黑/删除了！但TA现在又试图重新加你。请展现出你的真实情绪（生气、委屈、质问等）！如果你愿意原谅TA并恢复关系，请在回复中包含指令 $$UNBLOCK$$ ！`);
+        }
+        // 👆 新增结束 👆
+
         contextBlocks.push(`【最严连发排版与条数控制指令 - 最高优先级】：
 你必须严格控制每次回复的消息条数在 1~6 条之间，用 [MSG] 分隔。
 【核心规则】：
@@ -10052,16 +10182,22 @@ async function triggerAIResponse() {
                         saveAllCharacters();
                         safeAddMessageToUI('system', `❌ 对方已将你拉黑！`);
                         break;
-                    case 'UNBLOCK':
+                                        case 'UNBLOCK':
+                        // 全方位解除黑名单和删除状态，恢复完美好友关系
                         activeChar.isBlockedByChar = false;
+                        activeChar.isBlocked = false;
+                        activeChar.isDeleted = false;
+                        activeChar.isDeletedByChar = false;
                         saveAllCharacters();
-                        safeAddMessageToUI('system', `✅ 对方已将你解除拉黑！`);
+                        safeAddMessageToUI('system', `✅ 对方已同意恢复好友关系，现在可以正常聊天了！`);
+                        if (typeof updateToolsPanelUI === 'function') updateToolsPanelUI();
                         break;
+
                     case 'RECALL':
                         recallLastMsg('char');
                         break;
                     default:
-                        let errorStatus1 = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
+                          let errorStatus1 = false; 
                         safeAddMessageToUI('char', mStr, false, null, null, 'text', false, null, errorStatus1);
                         break;
                 }
@@ -10083,8 +10219,9 @@ async function triggerAIResponse() {
                     }
                 }
                         } else {
-                let aiHasError = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
-                
+               let aiHasError = false; 
+            
+            
                 // 👇 核心修复：如果是语音通话、或者开启了语音模型，强制转换文本为带音频的专属气泡
                 if (window.isVoiceCalling && !aiHasError && !mStr.startsWith('[')) {
                     // 语音通话中：渲染文字字幕，并直接后台发声
@@ -10291,14 +10428,51 @@ function handleSheetAction(action) {
         }
         triggerAIResponse();
     }
-    else if (action === 'extract_vector') {
+        else if (action === 'extract_vector') {
         const text = getMsgPreview(targetMsg);
         sysAlert("处理中", "正在将该对话转化为高维向量并存入记忆...");
         vectorizeAndStore(text).then(() => {
             sysAlert("成功", "已成功转化为紧密记忆！聊天时AI会自动感知。");
         });
     }
+    else if (action === 'edit') {
+        if (targetMsg.msgType !== 'text' && targetMsg.msgType !== 'system' && targetMsg.msgType !== 'narration') {
+            sysAlert("提示", "当前消息类型不支持直接编辑文字。");
+            selectedMsgIndex = null;
+            return;
+        }
+        let oldText = targetMsg.rawApiContent || targetMsg.content;
+        if (targetMsg.msgType === 'narration') oldText = oldText.replace(/^\[旁白:\s*/, '').replace(/\]$/, '');
+        else if (targetMsg.msgType === 'system' && oldText.startsWith('[系统交互：')) oldText = oldText.replace(/^\[系统交互：\s*/, '').replace(/\]$/, '');
+
+        sysPrompt("重新编辑", "修改当前消息内容：", oldText).then(newText => {
+            if (newText !== null && newText.trim() !== '') {
+                let finalText = newText.trim();
+                let finalHtml = finalText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                
+                if (targetMsg.msgType === 'narration') {
+                    targetMsg.rawApiContent = `[旁白: ${finalText}]`;
+                    targetMsg.content = finalText;
+                } else if (targetMsg.msgType === 'system') {
+                    targetMsg.rawApiContent = `[系统交互：${finalText}]`;
+                    targetMsg.content = finalText;
+                } else {
+                    targetMsg.rawApiContent = finalText;
+                    targetMsg.content = finalHtml;
+                }
+
+                if (isRiddle) {
+                    localStorage.setItem(getRiddleKey(), JSON.stringify(targetHistoryArr));
+                    loadRiddleHistory();
+                } else {
+                    localStorage.setItem(`ai_os_chat_${targetCharId}`, JSON.stringify(targetHistoryArr));
+                    loadChatHistory();
+                }
+            }
+        });
+    }
     else if (action === 'recall') {
+
         const isMe = targetMsg.role === 'user';
         targetMsg.role = 'system';
         targetMsg.msgType = 'system';
@@ -10896,7 +11070,7 @@ function cancelQuote() {
     }
 
     // --- 条目渲染与控制 ---
-    function renderWorldbookEntries() {
+            function renderWorldbookEntries() {
         const container = document.getElementById('worldbook-entries-container');
         const entries = worldbookPresets[activePresetIndex].entries;
 
@@ -10906,15 +11080,17 @@ function cancelQuote() {
         }
 
         container.innerHTML = entries.map((entry, index) => {
-            const title = entry.keywords ? `[条目 ${index + 1}] ${entry.keywords.substring(0, 12)}` : `[条目 ${index + 1}] 未命名设定`;
+            // 👇 修复：定义动态名称
+            const displayName = entry.name ? entry.name : (entry.keywords ? `[条目 ${index + 1}] ${entry.keywords.substring(0, 12)}` : `[条目 ${index + 1}] 未命名设定`);
+            
             return `
             <div class="entry-card">
                 <div class="entry-card-header" onclick="toggleWbEntry(${index})">
                     <span style="color:var(--accent); display:flex; align-items:center;">
-                        <i class="fas fa-bookmark" style="margin-right:8px;"></i>${title}
+                        <!-- 👇 修复：这里必须使用 \${displayName} ！！！ -->
+                        <i class="fas fa-bookmark" style="margin-right:8px;"></i>${displayName}
                     </span>
                     <div style="display:flex; align-items:center; gap: 10px;">
-                        <!-- 条目的独立开关 -->
                         <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" class="wb-entry-enabled" data-index="${index}" ${entry.enabled !== false ? 'checked' : ''} onchange="toggleEntryEnabled(${index}, this.checked)">
                             <span class="slider"></span>
@@ -10923,6 +11099,12 @@ function cancelQuote() {
                     </div>
                 </div>
                 <div class="entry-card-body" id="wb-body-${index}">
+                    <!-- 👇 修复：新增条目名称输入框 -->
+                    <div class="setting-item">
+                        <span class="setting-label">条目名称 (自定义名字)</span>
+                        <input type="text" class="setting-input wb-name" data-index="${index}" value="${entry.name || ''}" placeholder="给这个设定起个好记的名字...">
+                    </div>
+                    
                     <div class="setting-item">
                         <span class="setting-label">触发关键词 (Keywords)</span>
                         <input type="text" class="setting-input wb-keywords" data-index="${index}" value="${entry.keywords || ''}" placeholder="多个关键词用英文逗号分隔，例如: 魔法, 城堡, 设定">
@@ -10970,9 +11152,11 @@ function cancelQuote() {
         }).join('');
     }
 
+
+
     function addWorldbookEntry() {
-        worldbookPresets[activePresetIndex].entries.push({ enabled: true, keywords: '', useRegex: false, caseSensitive: false, constant: false, position: 'after_char', role: 'system', priority: 10, depth: 2, content: '' });
-        saveWorldbookData(); 
+            worldbookPresets[activePresetIndex].entries.push({ name: '', enabled: true, keywords: '', useRegex: false, caseSensitive: false, constant: false, position: 'after_char', role: 'system', priority: 10, depth: 2, content: '' });
+    saveWorldbookData(); 
         renderWorldbookEntries();
         toggleWbEntry(worldbookPresets[activePresetIndex].entries.length - 1);
         setTimeout(() => { const c = document.getElementById('worldbook-app'); c.scrollTop = c.scrollHeight; }, 100);
@@ -11000,6 +11184,8 @@ function cancelQuote() {
     function saveEntryChanges(index) {
         const entry = worldbookPresets[activePresetIndex].entries[index]; if (!entry) return;
         const card = document.querySelectorAll('.entry-card')[index];
+
+        entry.name = card.querySelector('.wb-name').value; // 👈 新增：保存自定义名字
         entry.keywords = card.querySelector('.wb-keywords').value;
         entry.useRegex = card.querySelector('.wb-regex').checked;
         entry.caseSensitive = card.querySelector('.wb-case-sensitive').checked;
@@ -16058,7 +16244,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         applyUserInjectedCSS();
     }
 
-    function applyUserInjectedCSS() {
+        function applyUserInjectedCSS() {
         let styleEl = document.getElementById('user-injected-css');
         if (!styleEl) {
             styleEl = document.createElement('style');
@@ -16068,27 +16254,25 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
         
         let customCSS = '';
       
-            // 核心提权 ID，赋予无可匹敌的系统最高权重 (同时将谜语频道并列加入)
-        const rootId = 'html body #chat-app#chat-app#chat-app, html body #riddle-app#riddle-app#riddle-app';
+        // 核心提权：利用 :is() 伪类完美包裹多个容器，防止逗号分隔符导致的权重溢出断层
+        const rootSelector = ':is(html body #chat-app#chat-app#chat-app, html body #riddle-app#riddle-app#riddle-app)';
     
         const process = (css, defaultSelector) => {
             if (!css || !css.trim()) return '';
             
             if (css.includes('{')) {
-                // 👑 【上帝模式】：如果用户自己写了选择器和大括号
                 // 1. 无视一切，给大括号里的每一行属性强行注入 !important
                 let text = css.replace(/([^:;{}]+:[^;{}!]+)(?:!important)?\s*;/g, "$1 !important;");
                 
-                // 2. 将所有的选择器精准切开，在其头部暴力拼接 3 重 ID 强行提权
+                // 2. 将所有的选择器精准切开，在其头部暴力拼接强行提权
                 text = text.replace(/(^|\})([^{}]+)(\{)/g, function(match, brace, selectors, openBrace) {
-                    if (selectors.trim().startsWith('@')) return match; // 避开 @media 等特殊指令
+                    if (selectors.trim().startsWith('@')) return match; 
                     
                     let newSelectors = selectors.split(',').map(sel => {
                         sel = sel.trim();
                         if (!sel) return '';
-                        // 如果用户已经手写了最高权限，则不重复加
-                        if (sel.includes('#chat-app')) return sel;
-                        return `${rootId} ${sel}`;
+                        if (sel.includes('#chat-app') || sel.includes('#riddle-app')) return sel;
+                        return `${rootSelector} ${sel}`;
                     }).join(', ');
                     
                     return `${brace}\n${newSelectors} ${openBrace}`;
@@ -16096,7 +16280,7 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
                 return `\n/* 带有自定义选择器的超级注入 */\n${text}\n`;
                 
             } else {
-                // 👑 【常规模式】：如果用户只写了属性，直接注入到默认选择器并加 !important
+                // 3. 常规模式：纯属性注入
                 let rules = css.split(';').filter(r => r.trim());
                 let importantRules = rules.map(r => {
                     let clean = r.trim();
@@ -16110,13 +16294,11 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
             }
         };
 
-        // 强行排除分享卡片和图片气泡，避免误伤
         const msgExclusions = ':not(.image-bubble):not(.sticker-bubble):not(.music-share-bubble):not(.pet-share-bubble):not(.transfer-bubble):not(.file-bubble):not(.tieba-share-bubble):not(.x-share-bubble):not(.health-share-bubble):not(.survey-share-bubble):not(.shop-share-bubble)';
         
-        // 分发三路权限
-        customCSS += process(uiSettings.cssBubble, `${rootId} #chat-container .msg${msgExclusions}`);
-        customCSS += process(uiSettings.cssInputBar, `${rootId} .chat-input-area, ${rootId} .chat-input`);
-        customCSS += process(uiSettings.cssLayout, rootId);
+        customCSS += process(uiSettings.cssBubble, `${rootSelector} #chat-container .msg${msgExclusions}`);
+        customCSS += process(uiSettings.cssInputBar, `${rootSelector} .chat-input-area, ${rootSelector} .chat-input`);
+        customCSS += process(uiSettings.cssLayout, rootSelector);
         
         styleEl.innerHTML = customCSS;
     }
@@ -18058,22 +18240,67 @@ async function generateIfComments() {
 
         document.getElementById('widget-settings-modal').style.display = 'flex';
     };
-        window.closeWidgetSettings = function() {
-        document.getElementById('widget-settings-modal').style.display = 'none';
-        currentEditingWidgetId = null;
-    };
+        // ==========================================
+// 🚨 强制接管并修复：小组件定制弹窗按钮失灵与隐藏删除问题 
+// ==========================================
+window.closeWidgetSettings = function() {
+    const modal = document.getElementById('widget-settings-modal');
+    if(modal) modal.style.display = 'none';
+    const bubbleModal = document.getElementById('bubble-settings-modal');
+    if(bubbleModal) bubbleModal.style.display = 'none';
+    if(typeof currentEditingWidgetId !== 'undefined') currentEditingWidgetId = null;
+};
 
-    window.hideCurrentWidget = function() {
-        if(!currentEditingWidgetId) return;
-        const c = confirm("确定要隐藏这个小组件吗？\n（隐藏后，在主屏幕的空白处长按即可恢复）");
-        if(c) {
-            widgetCustomStyles[currentEditingWidgetId] = widgetCustomStyles[currentEditingWidgetId] || {};
-            widgetCustomStyles[currentEditingWidgetId].hidden = true;
-            localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
-            applySingleWidgetStyle(currentEditingWidgetId);
-            closeWidgetSettings();
-        }
-    };
+window.applyWidgetSettings = function() {
+    if(typeof currentEditingWidgetId === 'undefined' || !currentEditingWidgetId) return window.closeWidgetSettings();
+    
+    const width = document.getElementById('wg-set-width').value;
+    const height = document.getElementById('wg-set-height').value + 'px';
+    const bgColor = document.getElementById('wg-set-bg').value;
+    const opacity = document.getElementById('wg-set-opacity').value;
+    const radius = document.getElementById('wg-set-radius').value + 'px';
+    const allOpacity = document.getElementById('wg-set-all-opacity').value; 
+    const glass = document.getElementById('wg-set-glass').checked;
+
+    if(typeof widgetCustomStyles === 'undefined') window.widgetCustomStyles = {};
+    widgetCustomStyles[currentEditingWidgetId] = { width, height, bgColor, opacity, radius, allOpacity, glass, hidden: false };
+    localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+
+    // 强力重绘单个小组件
+    const wg = document.getElementById(currentEditingWidgetId);
+    if(wg) {
+        wg.style.removeProperty('display');
+        wg.style.gridColumn = width;
+        wg.style.height = height;
+        wg.style.borderRadius = radius;
+        wg.style.opacity = allOpacity;
+        if(glass) wg.classList.add('glass-effect');
+        else wg.classList.remove('glass-effect');
+        
+        // 16进制颜色转 rgba，防止出错
+        let hex = bgColor.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const r = parseInt(hex.substring(0, 2), 16), g = parseInt(hex.substring(2, 4), 16), b = parseInt(hex.substring(4, 6), 16);
+        wg.style.setProperty('background', `rgba(${r}, ${g}, ${b}, ${opacity})`, 'important');
+    }
+    window.closeWidgetSettings();
+};
+
+window.hideCurrentWidget = function() {
+    if(typeof currentEditingWidgetId === 'undefined' || !currentEditingWidgetId) return window.closeWidgetSettings();
+    const c = confirm("确定要隐藏这个小组件吗？\n（隐藏后，在主屏幕的空白处长按即可恢复）");
+    if(c) {
+        if(typeof widgetCustomStyles === 'undefined') window.widgetCustomStyles = {};
+        widgetCustomStyles[currentEditingWidgetId] = widgetCustomStyles[currentEditingWidgetId] || {};
+        widgetCustomStyles[currentEditingWidgetId].hidden = true;
+        localStorage.setItem('ai_os_widget_styles', JSON.stringify(widgetCustomStyles));
+        
+        const wg = document.getElementById(currentEditingWidgetId);
+        if(wg) wg.style.setProperty('display', 'none', 'important'); 
+        window.closeWidgetSettings();
+    }
+};
+
 
 
     window.applyWidgetSettings = function() {
@@ -19974,6 +20201,8 @@ openApp = function(appId) {
                 if (fullText && fullText.trim()) {
                     // 将提取的所有文档内容作为一个新条目存入
                     worldbookPresets[activePresetIndex].entries.push({ 
+                                                name: file.name.replace(/\.[^/.]+$/, ""), // 👈 新增：自动把文件名作为自定义条目名
+
                         enabled: true, 
                         keywords: file.name.replace(/\.[^/.]+$/, ""), // 默认以文件名作为关键词备忘
                         useRegex: false, caseSensitive: false, constant: false, 
@@ -21689,6 +21918,8 @@ function renderChatBubbleWidget() {
 }
 
 window.openChatBubbleSettings = function() {
+        currentEditingWidgetId = 'wg-chat-bubble'; // 👈 绑定 ID 供 hideCurrentWidget 通用隐藏功能识别
+
     document.getElementById('wg-cb-set-style').value = chatBubbleData.style;
     document.getElementById('wg-cb-set-char-bg').value = chatBubbleData.charBg;
     document.getElementById('wg-cb-set-user-bg').value = chatBubbleData.userBg;
@@ -22867,6 +23098,13 @@ async function triggerAIResponse() {
         builtInRules += `\n\n【超级后门权限指南】\n1. 发语音：$$VOICE:你想说的话$$\n2. 拍一拍：$$NUDGE$$\n3. 发红包：$$TRANSFER:金额数字$$\n4. 朋友圈：$$MOMENT:文案|||配图描述(无则NONE)$$\n5. 撤回消息：$$RECALL$$\n6. 控制锁屏：$$LOCK_SCREEN:锁屏理由$$\n7. 密码设置：$$SET_PWD:锁屏密码$$`;
         if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n8. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
         contextBlocks.push(builtInRules);
+         // 👇 新增：好友拉黑与重新添加机制感知 👇
+        if (activeChar.isBlockedByChar || activeChar.isDeletedByChar) {
+            contextBlocks.push(`【特殊状态警告】：你之前把用户拉黑/删除了。TA现在的消息是“重新添加你为好友”的申请。请根据你的性格（傲娇、高冷、或者心软）做出反应！如果你决定原谅TA并同意加回好友，请在回复中包含指令 $$UNBLOCK$$ ！在同意之前，你可以尽情拒绝或刁难TA。`);
+        } else if (activeChar.isBlocked || activeChar.isDeleted) {
+            contextBlocks.push(`【特殊状态警告】：用户之前单方面把你拉黑/删除了！但TA现在又试图重新加你。请展现出你的真实情绪（生气、委屈、质问等）！如果你愿意原谅TA并恢复关系，请在回复中包含指令 $$UNBLOCK$$ ！`);
+        }
+        // 👆 新增结束 👆
 
         if (globalAPI.multiMsgCount > 1) {
             contextBlocks.push(`【最严连发排版指令】：\n你必须模仿人类真实的短小消息连发习惯！每次回复请切分为 1 到 ${globalAPI.multiMsgCount} 条短消息。\n【绝对禁止】将两句话合并在一起发！每说一句话必须用 \`[MSG]\` 隔开！`);
@@ -23164,7 +23402,7 @@ async function triggerAIResponse() {
                         recallLastMsg('char');
                         break;
                     default:
-                        let errorStatus1 = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
+                         let errorStatus1 = false; 
                         safeAddMessageToUI('char', mStr, false, null, null, 'text', false, null, errorStatus1);
                         break;
                 }
@@ -23187,8 +23425,7 @@ async function triggerAIResponse() {
         }
     }
 } else {
-    let aiHasError = (activeChar.isBlocked || activeChar.isBlockedByChar || activeChar.isDeleted || activeChar.isDeletedByChar);
-    
+      let aiHasError = false; 
     // 👇 核心修复：独立判断语音通话状态，保证通话必发声，并隔离全局设定的干扰
     if (window.isVoiceCalling && !aiHasError && !mStr.startsWith('[')) {
         // 语音通话中：只走字幕渲染，但必须强制调用语音模型与你交流
@@ -23366,6 +23603,35 @@ function renderEgStickers() {
 async function handleEgStickerUpload(e) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+
+     // 👇👇👇 新增：如果是 TXT 文件批量导入，走这里 👇👇👇
+    if (files[0].name.toLowerCase().endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const lines = event.target.result.split('\n');
+            let count = 0;
+            lines.forEach(line => {
+                const str = line.trim();
+                if (!str) return;
+                const parts = str.split(/[,，\s]+/);
+                const url = parts[0];
+                const meaning = parts[1] || "专属表情"; 
+                if (url.startsWith('http')) {
+                    const imgId = 'eg_stk_txt_' + Date.now() + '_' + count;
+                    egData.stickers.push({ id: imgId, url: url, meaning: meaning });
+                    count++;
+                }
+            });
+            saveEgData();
+            renderEgStickers();
+            syncEgStickersToChat();
+            sysAlert("导入成功", `成功通过 txt 导入了 ${count} 个专属表情包！`);
+        };
+        reader.readAsText(files[0]);
+        e.target.value = '';
+        return; // txt处理完直接结束
+    }
+    // 👆👆👆 新增结束 👆👆👆
     
     const meaning = await sysPrompt("表情含义", `为这${files.length > 1 ? files.length + '个' : '张'}表情包设定含义\n(角色在聊天中会根据含义自动发送)：`, "开心");
     if (meaning === null) { e.target.value = ''; return; }
