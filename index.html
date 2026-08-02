@@ -1290,8 +1290,9 @@ input:checked + .slider:before {
 
                              
 
-                /* 给发送的图片彻底脱掉气泡外壳 */
-        .msg.image-bubble {
+                        /* 给发送的图片和表情包彻底脱掉气泡外壳 */
+        .msg.image-bubble,
+        .msg.sticker-bubble {
             background: transparent !important;
             box-shadow: none !important;
             padding: 0 !important;
@@ -1300,7 +1301,26 @@ input:checked + .slider:before {
             -webkit-backdrop-filter: none !important;
         }
 
+        /* 限制聊天区内表情包的实际显示大小，防止霸屏 */
+        img.sticker-img {
+            max-width: 130px !important;
+            max-height: 130px !important;
+            object-fit: contain;
+            display: block;
+            margin: 0;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 强行抹杀所有主题可能带来的表情包气泡小尾巴 */
+        html body #chat-app #chat-container .msg.sticker-bubble::before,
+        html body #chat-app #chat-container .msg.sticker-bubble::after {
+            display: none !important;
+        }
+
         /* 👇 修改：强制图片本身不透明，并加上纯白底板 👇 */
+
         .image-bubble img.chat-upload-img {
             max-width: 220px; 
             border-radius: 16px;
@@ -3920,8 +3940,9 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 .eg-content.active { display: block; }
 
 /* 表情包网格 */
-.eg-sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
-.eg-sticker-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 12px; background: var(--input-bg); background-size: cover; background-position: center; border: 0.5px solid var(--border-color); cursor: pointer; transition: transform 0.2s; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.eg-sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+.eg-sticker-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 10px; background: var(--input-bg); background-size: contain; background-repeat: no-repeat; background-position: center; border: 0.5px solid var(--border-color); cursor: pointer; transition: transform 0.2s; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
 .eg-sticker-item:active { transform: scale(0.95); }
 .eg-sticker-label { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 4px; text-align: center; backdrop-filter: blur(4px); }
 .eg-add-btn { display: flex; flex-direction: column; justify-content: center; align-items: center; border: 2px dashed var(--text-sub); color: var(--text-sub); font-size: 12px; gap: 6px; }
