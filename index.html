@@ -11372,39 +11372,29 @@ function cancelQuote() {
         return allActiveEntries;
     }
 
+        // 👇 补充全局接口防止社交模块发帖时报错
+    function getWorldbookInjection() {
+        return typeof getSmartWorldbookContext === 'function' ? getSmartWorldbookContext('', activeCharId) : "";
+    }
+
+    // 👇 强行无视关键词，直接全量读取所有世界书设定的引擎
     function getSmartWorldbookContext(userMessage, charId = activeCharId) {
         if (!worldbookGlobalEnabled) return '';
+        
+        // 抓取当前角色绑定的所有处于“开启”状态的世界书条目
         const activeEntries = getActiveWorldbookEntries(charId).filter(e => e.content && e.content.trim()).sort((a, b) => (a.priority || 10) - (b.priority || 10));
         if (activeEntries.length === 0) return '';
 
-        let constants = [];
-        let triggered = [];
-
+        let result = '【世界书与背景知识设定】：\n';
+        
+        // 不做任何触发词、正则表达式判断，直接把所有开启的内容全部喂给AI
         activeEntries.forEach(entry => {
-            if (entry.constant) {
-                constants.push(`[${entry.name || '设定'}]: ${entry.content}`);
-            } else if (userMessage && entry.keywords) {
-                const keywords = entry.keywords.split(',').map(k => k.trim()).filter(k => k);
-                let isMatch = false;
-                for (const keyword of keywords) {
-                    if (entry.useRegex) {
-                        try { const regex = new RegExp(keyword, entry.caseSensitive ? 'g' : 'gi'); if (regex.test(userMessage)) { isMatch = true; break; } } catch(e) {}
-                    } else {
-                        const msg = entry.caseSensitive ? userMessage : userMessage.toLowerCase();
-                        const kw = entry.caseSensitive ? keyword : keyword.toLowerCase();
-                        if (msg.includes(kw)) { isMatch = true; break; }
-                    }
-                }
-                if (isMatch) triggered.push(`[${entry.name || '触发设定'}]: ${entry.content}`);
-            }
+            result += `[${entry.name || '设定'}]: ${entry.content}\n\n`;
         });
-
-        let result = '';
-        if (constants.length > 0) result += '【世界书常驻设定】：\n' + constants.join('\n') + '\n\n';
-        if (triggered.length > 0) result += '【世界书触发设定】：\n' + triggered.join('\n') + '\n\n';
         
         return result.trim();
     }
+
 
 
     // 执行初次加载
