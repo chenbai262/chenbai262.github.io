@@ -329,33 +329,7 @@
 
 
 
-/* 移动设备横屏提示 */
-@media screen and (max-device-width: 900px) and (orientation: landscape) and (pointer: coarse) {
-    body::before {
-        content: "宝宝。躺正^_^";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        color: #CCCCCC; 
-        z-index: 999999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 18px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        text-align: center;
-        padding: 20px;
-    }
-    .phone {
-        display: none !important;
-    }
-}
+
 
         /* 灵动岛 进化版 */
 .dynamic-island { 
@@ -3882,7 +3856,13 @@ html body #chat-app.layout-clay #chat-container .msg:not(.image-bubble):not(.sti
     transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
                 border-radius 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
                 transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    
+    /* 👇 新增下面三行：修复聊天壁纸被异常放大，使其与屏幕自适应完美铺满 👇 */
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
+
 
 #chat-app.pip-active {
     position: fixed !important; /* 👈 新增：强制固定定位，摆脱一切父级元素的束缚 */
@@ -3939,9 +3919,27 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
 .eg-content { display: none; padding: 0 20px 100px; }
 .eg-content.active { display: block; }
 
+
 /* 表情包网格 */
 .eg-sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-.eg-sticker-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 10px; background: var(--input-bg); background-size: contain; background-repeat: no-repeat; background-position: center; border: 0.5px solid var(--border-color); cursor: pointer; transition: transform 0.2s; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+/* 修复表情馆 App 中表情包透明背景显示异常/隐形的问题 */
+.eg-sticker-item { 
+    position: relative; 
+    width: 100%; 
+    aspect-ratio: 1; 
+    border-radius: 10px; 
+    background-color: transparent !important; /* 👈 核心修改：强制透明底，替换掉原来的 background: var(--input-bg); */
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    background-position: center; 
+    border: 0.5px solid var(--border-color); 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    overflow: hidden; 
+}
 
 .eg-sticker-item:active { transform: scale(0.95); }
 .eg-sticker-label { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 4px; text-align: center; backdrop-filter: blur(4px); }
@@ -4105,6 +4103,8 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
     width: 100%;
     aspect-ratio: 1; /* 强制保持正方形 */
     border-radius: 8px;
+        background-color: transparent !important; /* 👈 将 var(--input-bg) 改为透明 */
+
     background-color: var(--input-bg);
     background-size: contain; /* 核心：让表情包等比缩放，完整显示绝对不被裁剪 */
     background-position: center;
@@ -4153,6 +4153,99 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
             font-weight: 500; 
             text-align: center;
         }
+
+
+        /* ========================================== */
+/* 升级版：高仿 iOS 舒适布局，加高顶栏、放大头像与备注 */
+/* ========================================== */
+
+/* --- 1. 全局顶部栏加高（避开灵动岛/刘海） --- */
+html body #chat-app .chat-header { 
+    padding-top: 70px !important;  /* 留出充足的系统状态栏空间，呼吸感更强 */
+    min-height: 110px !important; 
+}
+
+/* --- 2. 全局备注名字、状态文字舒适放大 --- */
+html body #chat-app .chat-info h3 {
+    font-size: 18.5px !important; /* 原为17px，放大一丢丢，清晰但不夸张 */
+    font-weight: 600 !important;
+}
+html body #chat-app .chat-info p {
+    font-size: 13px !important; /* 在线状态文字也略微调大 */
+}
+
+/* --- 3. 各大主题高度与头像精细化适配 --- */
+
+/* WeChat (微信各种主题) */
+html body #chat-app.layout-wechat .chat-header { 
+    height: 115px !important; 
+    padding-top: 70px !important; 
+    padding-bottom: 12px !important; 
+}
+
+/* Telegram (纸飞机) 主题：放大右侧悬浮头像 */
+html body #chat-app.layout-telegram .chat-header { 
+    height: 115px !important; 
+    padding-bottom: 16px !important; 
+}
+html body #chat-app.layout-telegram .chat-header::after {
+    width: 46px !important; /* 原为36px，显著放大 */
+    height: 46px !important;
+    bottom: 10px !important;
+}
+
+/* iOS 原生 iMessage 主题：居中大头像 */
+html body #chat-app.layout-imessage .chat-header { 
+    height: 135px !important; 
+    padding-bottom: 16px !important; 
+}
+html body #chat-app.layout-imessage .chat-info::before {
+    width: 52px !important; /* 原为44px，放大到正好的真实果味比例 */
+    height: 52px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important; /* 增加一点质感 */
+}
+html body #chat-app.layout-imessage .chat-info h3 {
+    font-size: 13px !important; /* iOS短信原版名字偏小，从11px放大到13px */
+}
+
+/* iMessage 精致版 (带尾巴) 主题 */
+html body #chat-app.layout-imessage2 .chat-header {
+    height: 125px !important;
+    padding-bottom: 16px !important;
+}
+html body #chat-app.layout-imessage2 .chat-info::before {
+    width: 48px !important; /* 原为40px，适度放大 */
+    height: 48px !important;
+}
+
+/* QQ 简洁版 */
+html body #chat-app.layout-qq-simple .chat-header {
+    height: 115px !important;
+    padding-bottom: 12px !important;
+}
+html body #chat-app.layout-qq .chat-info h3 {
+    font-size: 20.5px !important; /* QQ本来就字大，再微调大一点点 */
+}
+
+/* --- 4. 修复“顶部面板高度”大小切换功能的底层代码 --- */
+html body #chat-app.header-size-small .chat-header,
+html body #chat-app[class*="layout-"].header-size-small .chat-header,
+html body #chat-app[class*="chat-size-"].header-size-small .chat-header {
+    height: 100px !important;
+    padding-top: 60px !important;
+}
+html body #chat-app.header-size-large .chat-header,
+html body #chat-app[class*="layout-"].header-size-large .chat-header,
+html body #chat-app[class*="chat-size-"].header-size-large .chat-header {
+    height: 140px !important;
+    padding-top: 80px !important;
+}
+
+
+       
+
+
+
 
 
 
@@ -5201,8 +5294,8 @@ html body #chat-app.layout-qq-simple .chat-pip-btn { color: #000000 !important; 
                         <div class="btn-row" style="margin: 15px;">
                             <div class="save-btn" style="flex: 1; background: #66889E; color: #fff; padding: 12px; font-size: 14px;" onclick="exportCharacterData()"><i class="fas fa-file-export"></i> 导出完整数据</div>
                             <div class="save-btn" style="flex: 1; background: #87C0CA; color: #000; padding: 12px; font-size: 14px;" onclick="triggerImportCharacter()"><i class="fas fa-file-import"></i> 导入角色包</div>
-                            <input type="file" id="character-import-input" accept=".json" style="display:none;" onchange="importCharacterData(event)">
-                        </div>
+  <input type="file" id="character-import-input" accept=".json,.txt,.docx,.doc" style="display:none;" onchange="importCharacterData(event)">
+                      </div>
                         <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 15px; padding: 0 10px;">将当前角色的各项设定、聊天记录、记忆书打包导出。换浏览器后可导入为新角色或覆盖现有角色。</p>
                     </div>
                     <!-- 👆 替换结束 👆 -->
@@ -7831,16 +7924,7 @@ window.fetchTtsModels = async function() { return; };
     let selectedMsgIndex = null;
     let quotedMessageText = null;
     let customStickers = JSON.parse(localStorage.getItem('ai_os_stickers') || '[]');
-    // 👇 新增：注入表情馆的角色专属表情和趣味问题
-const egAiStickers = JSON.parse(localStorage.getItem('ai_os_eg_stickers_for_ai') || '[]');
-if (egAiStickers.length > 0) {
-    builtInRules += `\n\n【角色专属表情馆】：\n你拥有以下专属表情包，可以在聊天中自由使用它们（用法与上方 $$STICKER:链接$$ 完全一致）：\n${egAiStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
-}
 
-const egQuestions = JSON.parse(localStorage.getItem('ai_os_emoji_gallery') || '{}').questions || [];
-if (egQuestions.length > 0) {
-    builtInRules += `\n\n【趣味提问机制】：\n用户在表情馆中为你准备了一些有趣的问题。当你觉得聊天陷入冷场/无聊/想找话题时，可以随机从以下问题中挑一个，用自己的话自然地向用户提问：\n${egQuestions.map((q, i) => `${i+1}. ${q}`).join('\n')}\n注意：不要一次性问完所有问题，随机挑一个就够了，也不要太频繁地提问。`;
-}
 
 
     // 双人备忘录全局数据 (放在这里防止报错)
@@ -8272,7 +8356,18 @@ if (egQuestions.length > 0) {
 
 
 
-        function openApp(appId) {
+            function openApp(appId) {
+        const target = document.getElementById(appId);
+        // 👇 核心修复：防止打开不存在的应用（如悬浮球里的通知）导致 classList 报错
+        if (!target) {
+            if (appId === 'notification-app') {
+                sysAlert('通知中心', '当前没有任何新通知哦！');
+            } else {
+                sysAlert('提示', '该应用仍在开发中，敬请期待！');
+            }
+            return;
+        }
+
         const currentActive = document.querySelector('.app-view.active');
         if (currentActive && currentActive.id !== appId) {
             navStack.push(currentActive.id);
@@ -8280,22 +8375,25 @@ if (egQuestions.length > 0) {
             currentActive.classList.remove('active');
             currentActive.classList.add('closing');
             setTimeout(() => {
-                currentActive.classList.remove('closing');
-            }, 200); // 👇 提速至 200ms
+                if (currentActive) currentActive.classList.remove('closing');
+            }, 200); // 提速至 200ms
         }
         
-        const target = document.getElementById(appId);
         target.classList.remove('closing');
         target.classList.add('active');
         
-        // 👇 【核心修复】：使用 visibility 替代 display: none，保护毛玻璃渲染层防卡顿白屏
-        setTimeout(() => { document.getElementById('os-home').style.visibility = 'hidden'; }, 200);
+        // 【核心修复】：使用 visibility 替代 display: none，保护毛玻璃渲染层防卡顿白屏
+        setTimeout(() => { 
+            const osHome = document.getElementById('os-home');
+            if (osHome) osHome.style.visibility = 'hidden'; 
+        }, 200);
 
         if(appId === 'contacts-app') renderContacts();
         if(appId === 'settings-app') renderCharList();
         if(appId === 'chat-app') scrollToBottom();
         if(appId === 'memory-app') renderMemoryBook();
     }
+
     
     function goBack() {
         const currentActive = document.querySelector('.app-view.active');
@@ -8306,21 +8404,28 @@ if (egQuestions.length > 0) {
             currentActive.classList.remove('active');
             currentActive.classList.add('closing');
             setTimeout(() => {
-                currentActive.classList.remove('closing');
-            }, 200); // 👇 提速至 200ms
+                if (currentActive) currentActive.classList.remove('closing');
+            }, 200); 
         }
 
         if (navStack.length > 0) {
             const prevAppId = navStack.pop();
             const prevApp = document.getElementById(prevAppId);
-            prevApp.classList.remove('closing');
-            prevApp.classList.add('active');
+            // 👇 核心修复：防止历史栈中有无效的 ID 导致报错
+            if (prevApp) {
+                prevApp.classList.remove('closing');
+                prevApp.classList.add('active');
+            } else {
+                const osHome = document.getElementById('os-home');
+                if (osHome) osHome.style.visibility = 'visible';
+            }
         } else {
-            // 👇 【核心修复】：重新设置为可见，不引起结构重排
-            document.getElementById('os-home').style.visibility = 'visible'; 
+            const osHome = document.getElementById('os-home');
+            if (osHome) osHome.style.visibility = 'visible'; 
             navStack = []; 
         }
     }
+
     
     function goHome() { 
         const currentActive = document.querySelector('.app-view.active');
@@ -8776,7 +8881,8 @@ if (egQuestions.length > 0) {
         
 
     async function fetchModels() {
-        const btn = document.getElementById('model-sync-btn'); btn.classList.add('fa-spin');
+         const btn = document.getElementById('model-sync-btn'); 
+        if (btn) btn.classList.add('fa-spin');
         const url = cleanBaseUrl(document.getElementById('global-url').value);
         const key = document.getElementById('global-key').value;
         if(!url || !key) { btn.classList.remove('fa-spin'); return sysAlert("错误", "拉取失败：请先填写完整的 URL 和 API Key！"); }
@@ -9197,8 +9303,9 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         const panel2 = document.getElementById('riddle-sticker-panel'); // 谜语app专属面板
 
         let html = customStickers.map((s, i) => `<div class="sticker-item" id="sticker-item-${i}" style="position:relative;" onclick="sendSticker('${s.url}', '${s.meaning}')"><div class="img-del-btn" style="top:4px; right:4px; width:22px; height:22px; font-size:11px;" onclick="deleteSticker(${i}, event)" title="删除"><i class="fas fa-times"></i></div></div>`).join('');
-        html += `<div class="sticker-add" onclick="document.getElementById('sticker-upload-input').click()"><i class="fas fa-plus"></i></div>`;
-        
+        // 👇 替换这两行：新增粘贴面板入口
+    html += `<div class="sticker-add" onclick="document.getElementById('sticker-upload-input').click()" title="上传单张/多张图片或TXT文本文档"><i class="fas fa-plus"></i></div>`;
+    html += `<div class="sticker-add" onclick="promptBatchStickers('chat')" style="border-color: var(--accent); color: var(--accent);" title="一键粘贴批量提取链接"><i class="fas fa-link"></i></div>`;
         if(panel1) panel1.innerHTML = html;
         if(panel2) panel2.innerHTML = html;
 
@@ -9230,31 +9337,20 @@ function createNewCharacter() { const newChar = { id: generateId(), name: "新�
         if (!files || files.length === 0) return;
 
          // 👇👇👇 新增：如果是 TXT 文件批量导入，走这里 👇👇👇
-        if (files[0].name.toLowerCase().endsWith('.txt')) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const lines = event.target.result.split('\n');
-                let count = 0;
-                lines.forEach(line => {
-                    const str = line.trim();
-                    if (!str) return;
-                    // 按逗号或空格拆分：前面是链接，后面是含义
-                    const parts = str.split(/[,，\s]+/); 
-                    const url = parts[0];
-                    const meaning = parts[1] || "表情包"; 
-                    if (url.startsWith('http')) { // 确保是网络链接
-                        customStickers.push({url: url, meaning: meaning});
-                        count++;
-                    }
-                });
-                localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers)); 
-                renderStickers();
-                sysAlert("导入成功", `成功通过 txt 导入了 ${count} 个表情包！`);
-            };
-            reader.readAsText(files[0]);
-            e.target.value = '';
-            return; // txt处理完直接结束，不往下走图片的逻辑
-        }
+            // 👇 替换 handleStickerUpload 函数最开头的 txt 判断段落 👇
+    if (files[0].name.toLowerCase().endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            // 直接将文本丢给新正则引擎处理
+            processStickerText(event.target.result, 'chat');
+        };
+        reader.readAsText(files[0]);
+        e.target.value = '';
+        return; 
+    }
+    // 👆 替换结束，下面原有的图片处理保持不变 👆
+
+        
         // 👆👆👆 新增结束 👆👆👆
         
         const defaultMeaning = files.length === 1 ? "请输入该表情包在AI眼中的含义：" : `您选择了 ${files.length} 个表情包，请输入统一的语义含义\n(留空则自动使用各自的文件名)：`;
@@ -9896,16 +9992,22 @@ async function triggerAIResponse() {
 
         let builtInRules = `【核心灵魂与短信交互法则】\n1. 极度碎片化、口语化。2. 绝对禁止客服腔调。3. 句末绝对不加句号。4. 提供无条件的情绪价值。`;
         builtInRules += `\n\n【超级后门权限指南】\n1. 发语音：$$VOICE:你想说的话$$\n2. 拍一拍：$$NUDGE$$\n3. 发红包：$$TRANSFER:金额数字$$\n4. 朋友圈：$$MOMENT:文案|||配图描述(无则NONE)$$\n5. 撤回消息：$$RECALL$$\n6. 控制锁屏：$$LOCK_SCREEN:锁屏理由$$\n7. 密码设置：$$SET_PWD:锁屏密码$$`;
-        if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n8. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
+                if (typeof customStickers !== 'undefined' && customStickers.length > 0) builtInRules += `\n8. 发送表情包：$$STICKER:图片链接$$。你的可用图库：\n${customStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
+        
+        // 👇 正确注入表情馆的角色专属表情和趣味问题 (必须放在 triggerAIResponse 函数内！)
+        const egAiStickers = JSON.parse(localStorage.getItem('ai_os_eg_stickers_for_ai') || '[]');
+        if (egAiStickers.length > 0) {
+            builtInRules += `\n\n【角色专属表情馆】：\n你拥有以下专属表情包，可以在聊天中自由使用它们（用法与上方 $$STICKER:链接$$ 完全一致）：\n${egAiStickers.map(s => `${s.meaning} -> ${s.url}`).join('\n')}`;
+        }
+
+        const egQuestions = JSON.parse(localStorage.getItem('ai_os_emoji_gallery') || '{}').questions || [];
+        if (egQuestions.length > 0) {
+            builtInRules += `\n\n【趣味提问机制】：\n用户在表情馆中为你准备了一些有趣的问题。当你觉得聊天陷入冷场/无聊/想找话题时，可以随机从以下问题中挑一个，用自己的话自然地向用户提问：\n${egQuestions.map((q, i) => `${i+1}. ${q}`).join('\n')}\n注意：不要一次性问完所有问题，随机挑一个就够了，也不要太频繁地提问。`;
+        }
+        // 👆 注入结束
+        
         contextBlocks.push(builtInRules);
 
-         // 👇 新增：好友拉黑与重新添加机制感知 👇
-        if (activeChar.isBlockedByChar || activeChar.isDeletedByChar) {
-            contextBlocks.push(`【特殊状态警告】：你之前把用户拉黑/删除了。TA现在的消息是“重新添加你为好友”的申请。请根据你的性格（傲娇、高冷、或者心软）做出反应！如果你决定原谅TA并同意加回好友，请在回复中包含指令 $$UNBLOCK$$ ！在同意之前，你可以尽情拒绝或刁难TA。`);
-        } else if (activeChar.isBlocked || activeChar.isDeleted) {
-            contextBlocks.push(`【特殊状态警告】：用户之前单方面把你拉黑/删除了！但TA现在又试图重新加你。请展现出你的真实情绪（生气、委屈、质问等）！如果你愿意原谅TA并恢复关系，请在回复中包含指令 $$UNBLOCK$$ ！`);
-        }
-        // 👆 新增结束 👆
 
         contextBlocks.push(`【最严连发排版与条数控制指令 - 最高优先级】：
 你必须严格控制每次回复的消息条数在 1~6 条之间，用 [MSG] 分隔。
@@ -11250,19 +11352,16 @@ function cancelQuote() {
         } catch (e) { await sysAlert("导入失败", `错误：${e.message}`); }
     }
 
-    // --- 运行引擎抓取逻辑 ---
-    function getActiveWorldbookEntries() {
+        // --- 世界书感知引擎：提取常驻设定与触发词设定 ---
+    function getActiveWorldbookEntries(charId = activeCharId) {
         if (!worldbookGlobalEnabled) return [];
         let allActiveEntries = [];
 
         worldbookPresets.forEach(preset => {
-            // 如果某套预设关闭了，跳过
             if (!preset.enabled) return;
-            // 校验预设是否关联了当前角色
             const bound = preset.boundChars || ['all'];
-            if (!bound.includes('all') && !bound.includes(activeCharId)) return;
+            if (!bound.includes('all') && !bound.includes(charId)) return;
 
-            // 只收集预设中开启的独立条目
             preset.entries.forEach(entry => {
                 if (entry.enabled !== false) {
                     allActiveEntries.push(entry);
@@ -11273,42 +11372,40 @@ function cancelQuote() {
         return allActiveEntries;
     }
 
-    function getWorldbookInjection() {
-        const activeEntries = getActiveWorldbookEntries().filter(e => e.content && e.content.trim()).sort((a, b) => (a.priority || 10) - (b.priority || 10));
+    function getSmartWorldbookContext(userMessage, charId = activeCharId) {
+        if (!worldbookGlobalEnabled) return '';
+        const activeEntries = getActiveWorldbookEntries(charId).filter(e => e.content && e.content.trim()).sort((a, b) => (a.priority || 10) - (b.priority || 10));
         if (activeEntries.length === 0) return '';
 
-        let injection = '\n\n【世界书 / 全局世界观注入】：\n';
-        activeEntries.forEach((entry, i) => {
-            injection += `\n[条目 ${i + 1}]`;
-            if (entry.keywords) injection += ` (触发词: ${entry.keywords})`;
-            injection += `:\n${entry.content}\n`;
-        });
-        return injection;
-    }
-
-    function checkWorldbookKeywords(userMessage) {
-        const matchedContents = [];
-        const activeEntries = getActiveWorldbookEntries();
+        let constants = [];
+        let triggered = [];
 
         activeEntries.forEach(entry => {
-            if (!entry.keywords || !entry.content || !entry.content.trim() || entry.constant) return; 
-            const keywords = entry.keywords.split(',').map(k => k.trim()).filter(k => k);
-            let isMatch = false;
-            for (const keyword of keywords) {
-                if (entry.useRegex) {
-                    try { const regex = new RegExp(keyword, entry.caseSensitive ? 'g' : 'gi'); if (regex.test(userMessage)) { isMatch = true; break; } } catch(e) {}
-                } else {
-                    const msg = entry.caseSensitive ? userMessage : userMessage.toLowerCase();
-                    const kw = entry.caseSensitive ? keyword : keyword.toLowerCase();
-                    if (msg.includes(kw)) { isMatch = true; break; }
+            if (entry.constant) {
+                constants.push(`[${entry.name || '设定'}]: ${entry.content}`);
+            } else if (userMessage && entry.keywords) {
+                const keywords = entry.keywords.split(',').map(k => k.trim()).filter(k => k);
+                let isMatch = false;
+                for (const keyword of keywords) {
+                    if (entry.useRegex) {
+                        try { const regex = new RegExp(keyword, entry.caseSensitive ? 'g' : 'gi'); if (regex.test(userMessage)) { isMatch = true; break; } } catch(e) {}
+                    } else {
+                        const msg = entry.caseSensitive ? userMessage : userMessage.toLowerCase();
+                        const kw = entry.caseSensitive ? keyword : keyword.toLowerCase();
+                        if (msg.includes(kw)) { isMatch = true; break; }
+                    }
                 }
+                if (isMatch) triggered.push(`[${entry.name || '触发设定'}]: ${entry.content}`);
             }
-            if (isMatch) matchedContents.push(entry.content);
         });
 
-        if (matchedContents.length > 0) return '\n\n【触发世界书上下文】：\n' + matchedContents.join('\n---\n');
-        return '';
+        let result = '';
+        if (constants.length > 0) result += '【世界书常驻设定】：\n' + constants.join('\n') + '\n\n';
+        if (triggered.length > 0) result += '【世界书触发设定】：\n' + triggered.join('\n') + '\n\n';
+        
+        return result.trim();
     }
+
 
     // 执行初次加载
     loadWorldbookData();
@@ -12510,7 +12607,7 @@ function cancelQuote() {
                 // ✨ 新增：提取并动态拼接文风提示词
         let styleInjection = heartSettings.writingStyle ? `\n7. 【文风/特殊设定强制优先级】：请务必遵循以下特殊文风及场景要求进行撰写 —— ${heartSettings.writingStyle}` : "";
 
-        // 👇 新增：短信记忆互通
+                // 👇 新增：短信记忆互通
         let smsInjectBlock = "";
         const smsKey = `ai_os_chat_${activeCharId}`;
         const totalSms = JSON.parse(localStorage.getItem(smsKey) || '[]');
@@ -12519,13 +12616,19 @@ function cancelQuote() {
             smsInjectBlock = `\n\n【手机短信记忆互通】：\n你们近期在手机短信上的聊天记录如下：\n${recentSms}\n请在这次线下约会中，自然地承接你们在手机上聊过的话题。`;
         }
 
+        // 👇 世界书感知引擎 👇
+        const lastUserMsgForRAG = heartHistory.length > 0 ? heartHistory[heartHistory.length - 1].content : "";
+        const wbContext = typeof getSmartWorldbookContext === 'function' ? getSmartWorldbookContext(lastUserMsgForRAG.replace(/<[^>]*>/g, ''), activeCharId) : "";
+        let wbInjectBlock = wbContext ? `\n\n${wbContext}` : "";
+
         const heartSystemPrompt = `【线下约会模式开启：轻小说叙事】
 1. 你现在不是在通过手机发短信，而是和用户在线下（面对面）真实相处。
 2. 你的回复必须是大段落的、充满细节的描写（环境、氛围、动作、心理），以推动真实的线下相处剧情。
 3. 每次回复篇幅要求在300-800字之间。
 4. 使用文学化的语言，生动刻画你（${activeChar.name}）与用户之间的情感互动。
 5. 必须保留你原本的人设：${activeChar.prompt}。
-6. 所有的对话必须自然地嵌入在描写之中。${styleInjection}${smsInjectBlock}`;
+6. 所有的对话必须自然地嵌入在描写之中。${styleInjection}${smsInjectBlock}${wbInjectBlock}`;
+
 
 
         let apiMessages = [{ role: "system", content: heartSystemPrompt }];
@@ -14134,6 +14237,12 @@ window.openSnoopChatDetail = function(idx) {
     document.getElementById('snoop-chat-detail-view').style.display = 'flex';
 };
 
+// 👇 补回缺失的返回关闭函数 👇
+window.closeSnoopChatDetail = function() { 
+    document.getElementById('snoop-chat-detail-view').style.display = 'none'; 
+};
+
+
 // 拦截 App 开启事件（包含锁屏校验）
 const _originalOpenAppSnoop = openApp;
 openApp = async function(appId) {
@@ -14747,67 +14856,127 @@ function triggerImportCharacter() {
     document.getElementById('character-import-input').click();
 }
 
-function importCharacterData(e) {
+async function importCharacterData(e) {
     const file = e.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
-    reader.onload = async function(event) {
-        try {
-            const imported = JSON.parse(event.target.result);
-            
-            // 兼容之前可能导出的纯数组格式聊天记录
-            if (Array.isArray(imported)) {
-                const confirmMerge = await sysConfirm("导入确认", "检测到旧版聊天记录备份。导入将覆盖当前角色的聊天记录，确定继续吗？");
-                if (confirmMerge) {
-                    messageHistory = imported;
-                    localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
-                    loadChatHistory();
-                    sysAlert("导入成功", "聊天记录已成功恢复！");
+    
+    const ext = file.name.split('.').pop().toLowerCase();
+    
+    // 1. 如果是 JSON，走全量数据恢复逻辑
+    if (ext === 'json') {
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            try {
+                const imported = JSON.parse(event.target.result);
+                
+                // 兼容纯数组聊天记录
+                if (Array.isArray(imported)) {
+                    const confirmMerge = await sysConfirm("导入确认", "检测到旧版聊天记录备份。导入将覆盖当前角色的聊天记录，确定继续吗？");
+                    if (confirmMerge) {
+                        messageHistory = imported;
+                        localStorage.setItem(`ai_os_chat_${activeCharId}`, JSON.stringify(messageHistory));
+                        loadChatHistory();
+                        sysAlert("导入成功", "聊天记录已成功恢复！");
+                    }
+                    return;
                 }
-                return;
+
+                if (imported.type !== "character_backup" || !imported.character) {
+                    throw new Error("文件格式错误，这不是一个有效的角色数据包");
+                }
+
+                const confirmAction = await sysConfirm("导入角色数据", `发现角色包【${imported.character.name}】的数据。\n\n你要覆盖当前正在编辑的角色，还是将其作为全新角色添加到列表中？\n\n【确定】直接覆盖当前角色\n【取消】作为新角色追加`);
+
+                let targetId;
+                if (confirmAction) {
+                    targetId = activeCharId;
+                    const idx = characters.findIndex(c => c.id === targetId);
+                    imported.character.id = targetId; 
+                    characters[idx] = imported.character;
+                } else {
+                    targetId = generateId();
+                    imported.character.id = targetId; 
+                    characters.push(imported.character);
+                }
+
+                saveAllCharacters();
+
+                if (imported.chat) localStorage.setItem(`ai_os_chat_${targetId}`, JSON.stringify(imported.chat));
+                if (imported.memories) localStorage.setItem(`ai_os_memories_${targetId}`, JSON.stringify(imported.memories));
+                if (imported.heart) localStorage.setItem(`ai_os_heart_${targetId}`, JSON.stringify(imported.heart));
+
+                loadCharacterState(targetId, true);
+                sysAlert("完美恢复", `角色【${imported.character.name}】的设定、气泡、聊天记录、记忆书等数据已满血复活！\n\n(注：使用超清模式上传的聊天背景因太大无法打包，请重新选一次背景图即可)`);
+
+            } catch(err) {
+                sysAlert("导入失败", "文件格式损坏或不是有效的角色备份包！");
+                console.error(err);
             }
-
-            // 严格格式校验
-            if (imported.type !== "character_backup" || !imported.character) {
-                throw new Error("文件格式错误，这不是一个有效的角色数据包");
-            }
-
-            const confirmAction = await sysConfirm("导入角色数据", `发现角色包【${imported.character.name}】的数据。\n\n你要覆盖当前正在编辑的角色，还是将其作为全新角色添加到列表中？\n\n【确定】直接覆盖当前角色\n【取消】作为新角色追加`);
-
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+        return;
+    }
+    
+    // 2. 如果是 TXT 或 Word 文档，走文本抽取注入逻辑
+    try {
+        sysAlert("解析中", "正在努力抽取文档内容，将转为角色人设...");
+        let fullText = "";
+        
+        if (ext === 'txt') {
+            fullText = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsText(file);
+            });
+        } else if (ext === 'docx' || ext === 'doc') {
+            if (typeof mammoth === 'undefined') throw new Error("缺少 Word 解析库支持");
+            const arrayBuffer = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsArrayBuffer(file);
+            });
+            const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+            fullText = result.value;
+        }
+        
+        if (fullText && fullText.trim()) {
+            document.getElementById('sys-dialog-overlay').style.display = 'none';
+            const confirmAction = await sysConfirm("导入人设文档", `已成功提取文档文本（共 ${fullText.length} 字）。\n\n你要将它覆盖【当前角色】的人设设定，还是创建【新角色】？\n\n【确定】覆盖当前角色核心设定\n【取消】以此文档创建新角色`);
+            
             let targetId;
             if (confirmAction) {
-                // 选择覆盖当前角色
                 targetId = activeCharId;
-                const idx = characters.findIndex(c => c.id === targetId);
-                imported.character.id = targetId; // 锁定 ID 为当前
-                characters[idx] = imported.character;
+                const char = characters.find(c => c.id === targetId);
+                char.prompt = fullText.trim();
             } else {
-                // 选择追加为新角色
                 targetId = generateId();
-                imported.character.id = targetId; // 赋予新 ID，防止冲突
-                characters.push(imported.character);
+                const charName = file.name.replace(/\.[^/.]+$/, ""); // 用去后缀的文件名作为AI名字
+                const newChar = { 
+                    id: targetId, 
+                    name: charName, 
+                    avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(charName) + "&background=random&color=fff", 
+                    chatBg: "", charColor: "#2c2c2e", charTextColor: "#ffffff", userColor: "#87C0CA", userTextColor: "#ffffff", 
+                    prompt: fullText.trim(), useActionDesc: false, nudgeAction: "拍了拍", formatRule: "" 
+                };
+                characters.push(newChar);
             }
-
-            saveAllCharacters();
-
-            // 恢复该角色绑定的各项记录
-            if (imported.chat) localStorage.setItem(`ai_os_chat_${targetId}`, JSON.stringify(imported.chat));
-            if (imported.memories) localStorage.setItem(`ai_os_memories_${targetId}`, JSON.stringify(imported.memories));
-            if (imported.heart) localStorage.setItem(`ai_os_heart_${targetId}`, JSON.stringify(imported.heart));
-
-            // 强制重新加载目标角色状态并刷新侧边栏
-            loadCharacterState(targetId, true);
             
-            sysAlert("完美恢复", `角色【${imported.character.name}】的设定、气泡、聊天记录、记忆书等数据已满血复活！\n\n(注：使用超清模式上传的聊天背景因太大无法打包，如有需要请在新浏览器重新选一次背景图即可)`);
-
-        } catch(err) {
-            sysAlert("导入失败", "文件格式损坏或不是有效的角色备份包！");
-            console.error(err);
+            saveAllCharacters();
+            loadCharacterState(targetId, true);
+            sysAlert("导入成功", "文档内容已如实运用到角色的核心设定（Prompt）中！");
+        } else {
+            throw new Error("未能从文件中提取到任何有效文本");
         }
-    };
-    reader.readAsText(file);
-    e.target.value = ''; // 清空选择，允许重新点同一个文件
+    } catch (err) {
+        document.getElementById('sys-dialog-overlay').style.display = 'none';
+        sysAlert("解析失败", "文档解析出错：" + err.message);
+    }
+    
+    e.target.value = '';
 }
+
+
 
 
 
@@ -14887,9 +15056,9 @@ async function generateHealthData() {
     const url = cleanBaseUrl(globalAPI.url);
     if(!url || !globalAPI.key) return sysAlert("错误", "请先在角色工坊配置 API 密钥");
 
-    const btn = document.getElementById('health-refresh-btn');
-    if (btn.classList.contains('fa-spin')) return;
-    
+      const btn = document.getElementById('health-refresh-btn');
+        if (!btn || btn.classList.contains('fa-spin')) return;
+
     const confirmScan = await sysConfirm("赛博体检", `即将调用 AI 对【${char.name}】进行全身生命体征扫描和余生推演。\n\n扫描结果将受到你们近期的聊天记录影响。`);
     if (!confirmScan) return;
 
@@ -15378,8 +15547,8 @@ async function doAIGenerateImage(actionDesc, msgWrapperId) {
     }
 
     async function fetchDrawModels() {
-        const btn = document.getElementById('draw-model-sync-btn'); 
-        btn.classList.add('fa-spin');
+       const btn = document.getElementById('draw-model-sync-btn'); 
+        if (btn) btn.classList.add('fa-spin');
         
         let url = document.getElementById('draw-url').value.trim();
         url = url.replace(/\/images\/generations\/?$/, '').replace(/\/$/, '');
@@ -16546,8 +16715,8 @@ ${isEnding ? "3. 这是整部小说的最后一章，请给出震撼、完美且
     }
 
         async function refreshScreenTime() {
-        const btn = document.getElementById('screentime-refresh-btn');
-        if (btn.classList.contains('fa-spin')) return;
+         const btn = document.getElementById('screentime-refresh-btn');
+        if (!btn || btn.classList.contains('fa-spin')) return;
         btn.classList.add('fa-spin');
 
         try {
@@ -23136,10 +23305,18 @@ async function triggerAIResponse() {
         // 👇 核心修复：分离目标对话的上下文历史记录
         const targetHistoryArr = isRiddle ? riddleHistory : messageHistory;
 
-        const lastUserMsgForRAG = targetHistoryArr.length > 0 ? targetHistoryArr[targetHistoryArr.length - 1].content : "";
+               const lastUserMsgForRAG = targetHistoryArr.length > 0 ? targetHistoryArr[targetHistoryArr.length - 1].content : "";
+        
+        // 👇 世界书感知引擎：提取常驻设定与触发词设定 👇
+        const wbContext = typeof getSmartWorldbookContext === 'function' ? getSmartWorldbookContext(lastUserMsgForRAG.replace(/<[^>]*>/g, ''), targetCharId) : "";
+        if (wbContext) {
+            contextBlocks.push(wbContext);
+        }
+
         const isVectorEnabled = document.getElementById('global-vector-toggle')?.checked || (typeof vectorConfig !== 'undefined' && vectorConfig.enabled);
         
         if (lastUserMsgForRAG && isVectorEnabled) {
+
             if(ti) ti.innerText = '正在检索相关记忆...';
             try {
                 if (typeof retrieveRelatedMemories === 'function') {
@@ -23595,63 +23772,54 @@ function switchEgTab(tabId, el) {
     if (tabId === 'whiteboard') renderEgWhiteboard();
 }
 
+
 // ========== 1. 角色专属表情库 ==========
 function renderEgStickers() {
     const grid = document.getElementById('eg-sticker-grid');
     let html = egData.stickers.map((s, i) => `
         <div class="eg-sticker-item" id="eg-s-${i}" onclick="previewEgSticker(${i})">
+            <img src="${s.url.startsWith('idb://') ? '' : s.url}" class="eg-stk-img" style="width:100%; height:100%; object-fit:contain; border-radius:10px;">
             <div class="eg-note-del" onclick="deleteEgSticker(${i}, event)">✕</div>
             <div class="eg-sticker-label">${s.meaning || '表情'}</div>
         </div>
     `).join('');
-    html += `<div class="eg-sticker-item eg-add-btn" onclick="document.getElementById('eg-sticker-upload-input').click()"><i class="fas fa-plus" style="font-size:24px;"></i><span>添加表情</span></div>`;
+    html += `<div class="eg-sticker-item eg-add-btn" onclick="document.getElementById('eg-sticker-upload-input').click()"><i class="fas fa-plus" style="font-size:24px;"></i><span>添加图片/TXT</span></div>`;
+    html += `<div class="eg-sticker-item eg-add-btn" onclick="promptBatchStickers('eg')" style="border-color: var(--accent); color: var(--accent);"><i class="fas fa-link" style="font-size:24px;"></i><span>粘贴批量提取</span></div>`;  
     grid.innerHTML = html;
 
     // 异步加载图片
     egData.stickers.forEach((s, i) => {
         if (s.url && s.url.startsWith('idb://')) {
             getImageFromDB(s.url.replace('idb://', '')).then(b64 => {
-                const el = document.getElementById(`eg-s-${i}`);
-                if (el && b64) el.style.backgroundImage = `url('${b64}')`;
+                // 找到对应的 img 标签并赋值
+                const imgEl = document.querySelector(`#eg-s-${i} .eg-stk-img`);
+                if (imgEl && b64) imgEl.src = b64;
             });
-        } else if (s.url) {
-            const el = document.getElementById(`eg-s-${i}`);
-            if (el) el.style.backgroundImage = `url('${s.url}')`;
         }
     });
 }
 
+
 async function handleEgStickerUpload(e) {
+
+    
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
      // 👇👇👇 新增：如果是 TXT 文件批量导入，走这里 👇👇👇
+        // 👇 替换 handleStickerUpload 函数最开头的 txt 判断段落 👇
     if (files[0].name.toLowerCase().endsWith('.txt')) {
         const reader = new FileReader();
         reader.onload = function(event) {
-            const lines = event.target.result.split('\n');
-            let count = 0;
-            lines.forEach(line => {
-                const str = line.trim();
-                if (!str) return;
-                const parts = str.split(/[,，\s]+/);
-                const url = parts[0];
-                const meaning = parts[1] || "专属表情"; 
-                if (url.startsWith('http')) {
-                    const imgId = 'eg_stk_txt_' + Date.now() + '_' + count;
-                    egData.stickers.push({ id: imgId, url: url, meaning: meaning });
-                    count++;
-                }
-            });
-            saveEgData();
-            renderEgStickers();
-            syncEgStickersToChat();
-            sysAlert("导入成功", `成功通过 txt 导入了 ${count} 个专属表情包！`);
+            // 直接将文本丢给新正则引擎处理
+            processStickerText(event.target.result, 'chat');
         };
         reader.readAsText(files[0]);
         e.target.value = '';
-        return; // txt处理完直接结束
+        return; 
     }
+    // 👆 替换结束，下面原有的图片处理保持不变 👆
+
     // 👆👆👆 新增结束 👆👆👆
     
     const meaning = await sysPrompt("表情含义", `为这${files.length > 1 ? files.length + '个' : '张'}表情包设定含义\n(角色在聊天中会根据含义自动发送)：`, "开心");
@@ -23669,18 +23837,22 @@ async function handleEgStickerUpload(e) {
                     await saveImageToDB(imgId, event.target.result);
                     egData.stickers.push({ id: imgId, url: 'idb://' + imgId, meaning: currentMeaning });
                     resolve();
-                } else {
+                               } else {
                     const img = new Image();
                     img.onload = async function() {
                         const canvas = document.createElement('canvas');
-                        let size = Math.max(img.width, img.height);
-                        if (size > 300) size = 300;
-                        canvas.width = size; canvas.height = size;
+                        let w = img.width, h = img.height;
+                        const maxDim = 300;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h *= maxDim / w; w = maxDim; }
+                            else { w *= maxDim / h; h = maxDim; }
+                        }
+                        canvas.width = w; canvas.height = h;
+                        
                         const ctx = canvas.getContext('2d');
-                        const dx = (size - (img.width > img.height ? size : img.width * size / img.height)) / 2;
-                        const dy = (size - (img.height > img.width ? size : img.height * size / img.width)) / 2;
-                        ctx.drawImage(img, 0, 0, size, size);
-                        const b64 = canvas.toDataURL('image/png');
+                        ctx.drawImage(img, 0, 0, w, h); // 👈 完美等比绘制，防拉伸
+                        
+                        const b64 = canvas.toDataURL('image/png'); // 👈 必须用 png 才能保留透明底
                         const imgId = 'eg_stk_' + Date.now() + '_' + i;
                         await saveImageToDB(imgId, b64);
                         egData.stickers.push({ id: imgId, url: 'idb://' + imgId, meaning: currentMeaning });
@@ -23688,6 +23860,7 @@ async function handleEgStickerUpload(e) {
                     };
                     img.src = event.target.result;
                 }
+
             };
             reader.readAsDataURL(file);
         });
@@ -24155,6 +24328,76 @@ openApp = function(appId) {
         renderCampusApp();
     }
 };
+
+
+// ==========================================
+// 🚀 全新智能表情包提取引擎 (支持直接粘贴与 TXT 提取)
+// ==========================================
+window.processStickerText = function(text, type) {
+    const lines = text.split('\n');
+    let count = 0;
+    
+    lines.forEach(line => {
+        // 强大的正则引擎：自动抓取该行任意位置混杂的网址链接
+        const match = line.match(/(https?:\/\/[^\s"'<>)\]]+)/);
+        if (match) {
+            const url = match[1];
+            // 剔除 URL 本身，并清除首尾的多余标点和空格，将剩余部分作为该表情的语义标签
+            let meaning = line.replace(url, '').replace(/^[-*=，。、；：.,;:\s]+|[-*=，。、；：.,;:\s]+$/g, '').trim(); 
+            if (!meaning) meaning = (type === 'eg' ? "专属表情" : "表情包");
+            
+            if (type === 'eg') {
+                const imgId = 'eg_stk_txt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                egData.stickers.push({ id: imgId, url: url, meaning: meaning });
+            } else {
+                customStickers.push({url: url, meaning: meaning});
+            }
+            count++;
+        }
+    });
+
+    if (count > 0) {
+        if (type === 'eg') {
+            saveEgData();
+            renderEgStickers();
+            syncEgStickersToChat();
+        } else {
+            localStorage.setItem('ai_os_stickers', JSON.stringify(customStickers));
+            renderStickers();
+        }
+        sysAlert("导入成功", `成功提取并导入了 ${count} 个图片链接！`);
+    } else {
+        sysAlert("提取失败", "未在文本中检测到任何有效的 http/https 图片链接，请检查格式！");
+    }
+};
+
+window.promptBatchStickers = function(type) {
+    const overlay = document.getElementById('sys-dialog-overlay');
+    document.getElementById('sys-dialog-title').innerText = "一键提取表情包链接";
+    const msgEl = document.getElementById('sys-dialog-msg');
+    
+    msgEl.innerHTML = `<textarea id="batch-sticker-textarea" style="width:100%; height:180px; background:var(--input-bg); border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); padding:10px; font-size:13px; outline:none; resize:none;" placeholder="在此直接粘贴包含链接的文本，例如：\n\n大笑 https://example.com/1.jpg\n惊讶 https://example.com/2.png\n\nAI 会自动精准提取混杂在文字中的图片网址，并把余下文字当做表情含义。"></textarea>`;
+    msgEl.style.display = 'block';
+    
+    document.getElementById('sys-dialog-input').style.display = 'none';
+    document.getElementById('sys-dialog-cancel').style.display = 'block';
+    overlay.style.display = 'flex';
+
+    const okBtn = document.getElementById('sys-dialog-ok');
+    const cancelBtn = document.getElementById('sys-dialog-cancel');
+    
+    okBtn.onclick = () => { 
+        const text = document.getElementById('batch-sticker-textarea').value;
+        overlay.style.display = 'none'; 
+        okBtn.onclick = null; cancelBtn.onclick = null; msgEl.innerHTML = '';
+        if(text.trim()) processStickerText(text, type);
+    };
+    cancelBtn.onclick = () => { 
+        overlay.style.display = 'none'; 
+        okBtn.onclick = null; cancelBtn.onclick = null; msgEl.innerHTML = '';
+    };
+};
+
 
 
 
